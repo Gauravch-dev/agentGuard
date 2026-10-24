@@ -1,5 +1,15 @@
 # AgentGuard 2.0 — integrated application and Linux platform work
 
+**Status: partially implemented MVP. The full handoff is not complete.**
+
+| Area | Verified today | Remaining |
+|---|---|---|
+| Application | Task Authority, brokers, evidence, reconciliation and dashboard | Complete protected task lifecycle |
+| Linux runtime | Restricted containers, staged admission, real broker peer checks, watchdog and cleanup | Connect staged admission to the full application runtime |
+| Sensors | Genuine Tetragon process/child observations and sampled loss metrics | File/connect hooks, network flows, continuous export/coverage and timestamp review |
+| AI model | Finance Agent client and local-model broker interface | Actual model setup and benign/injected protected runs |
+| Acceptance | 122 Linux tests plus 13 subtests; selected real Linux experiments | Full S01–S16 and baseline/performance comparisons |
+
 ## Latest Linux implementation round
 
 The Linux platform now has reproducible Docker/Tetragon setup, pinned images, a
@@ -19,21 +29,69 @@ See [the Linux handoff results](docs/linux_handoff_results.md),
 The integrated application can now be started on the Linux host with
 `python -m scripts.start_linux`; host-only credentials persist in a private directory.
 
-## Application integration checkpoint
+## Earlier application integration checkpoint
 
 This integration builds on Member 2's repository, commit
 `198aea6515954130ed58ed21601a23be767596a0`. It adds the Member 1 FastAPI/React application and
 explicit integration bridges. The earlier Member 1 workspace is preserved.
 
-**Protected AI execution is still disabled.** Member 2's preflight refuses it until
-live sensors, the protected launcher and cross-capsule socket tests are ready.
+**Protected AI execution is still disabled.** Real two-container checks now pass,
+but continuous sensor coverage and complete application admission are still pending.
 The prior application checkpoint used a Windows host without WSL or Docker. Its
 historical validation did not claim live Linux/model results; the newer Linux
 experiments are linked above. Dependency/advisory queries transfer no application data.
 
-## Run the integrated application
+## Run and test on the configured Ubuntu WSL host
 
-After the setup below, start the local application from this repository:
+On the configured laptop, Linux, Docker, the Linux Python environment and the built
+dashboard are already available. Open Ubuntu using `wsl -d Ubuntu` in PowerShell,
+then change to your checkout directory. From its root in Ubuntu, using the reviewed
+rootful host account:
+
+```bash
+source /var/lib/agentguard/venv/bin/activate
+python -m scripts.start_linux --lab-image-id "$(docker image inspect --format '{{.Id}}' agentguard-capsule:lab)"
+```
+
+Keep that terminal open. Open [http://127.0.0.1:8000](http://127.0.0.1:8000), paste
+the printed owner token, click **Connect**, then **+ New**. If the server is already
+running, use it instead of starting another server on the same port. The authorized
+host operator can retrieve its current owner token in another activated terminal:
+
+```bash
+python -c "import json; print(json.load(open('/var/lib/agentguard/control/credentials.json'))['owner'])"
+```
+
+The Linux service preserves its private credentials and database outside capsules.
+Stop it with Ctrl+C. **Request verified launch** currently refuses execution because
+the full runtime and required sensor coverage are incomplete; no protected binding
+or business success should be created by that refusal.
+
+In another Ubuntu terminal, open the checkout and activate the same environment.
+Run the automated suite or the complete regression/static checks:
+
+```bash
+python -m pytest -q
+python -m scripts.integration_validate_round --label linux
+```
+
+With the application running, test the real owner API and fixed Docker lab, then
+the real two-container broker, raw-row denial and watchdog checks:
+
+```bash
+python -m scripts.linux_application_smoke
+python -m scripts.linux_socket_lab --image-id "$(docker image inspect --format '{{.Id}}' agentguard-socket-lab:round1)"
+```
+
+Those lab commands should report `"passed": true`. They do not invoke a model or
+bypass output coverage. Source sensor gaps remain Unverified; a passing lab is not
+full AI-agent acceptance. See the [Linux runbook and S01–S16 matrix](docs/linux_handoff_results.md)
+for pinned image builds, sensor startup, raw evidence and remaining cases.
+
+## Windows application preview
+
+This runs the integrated UI/API on Windows. Use the Linux instructions above for
+real Docker/sensor experiments. After setup, start it from the repository root:
 
 ```powershell
 .\scripts\start-local.ps1
@@ -42,7 +100,8 @@ After the setup below, start the local application from this repository:
 Open http://127.0.0.1:8000 and paste the generated local owner token. The dashboard
 shows real platform capability/preflight results, contracts, events, findings and
 reports. Creating a task works; protected launch correctly refuses on this host.
-The script uses a fresh synthetic database and ephemeral keys for each session.
+The Windows script uses a fresh synthetic database and ephemeral keys each session;
+its state is separate from the Linux service. Run one server on port 8000 at a time.
 
 For a fresh checkout, use Python 3.12+, uv, Node 22.12+ and npm:
 
@@ -64,8 +123,8 @@ cd ../..
 - Member 2's Tetragon normalizer feeding an authenticated application endpoint.
   Collector metadata is preserved separately; the original shared event is unchanged.
 - Member 2's peer authorizer used by the application socket transport, with process
-  birth, cgroup inode and current contract/channel checks. Real two-container tests
-  are still required.
+  birth, cgroup inode and current contract/channel checks. The fixed real
+  two-container tests pass; broader stale-channel and full AI acceptance remain open.
 - Protected output release held on missing, lost, stale or insufficiently scoped
   independent coverage. Test-only bypasses remain in test fixtures.
 - A bounded local capture forwarder for operator-owned Tetragon JSONL. It never
@@ -73,8 +132,10 @@ cd ../..
 
 [Integration runbook and compatibility decisions](docs/member2_integration.md)
 cover API routes, schemas, peer wiring, collector use and remaining acceptance gates.
-[Current test/evidence results](docs/integration_validation.md) distinguish fixtures
-from actual host observations. The original shared handoffs remain in `docs/handoffs/`.
+[Latest Linux validation](docs/linux/validation_linux.json) and
+[Windows validation](docs/linux/validation_windows.json) record current checks.
+The [earlier application checkpoint results](docs/integration_validation.md) are
+historical. The original shared handoffs remain in `docs/handoffs/`.
 
 ## Validate
 
