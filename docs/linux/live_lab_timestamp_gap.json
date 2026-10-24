@@ -1,0 +1,223 @@
+{
+  "observed_at": "2026-10-24T16:27:01.033578Z",
+  "execution_mode": "real-linux-isolation-lab",
+  "lab": {
+    "mode": "isolation-lab",
+    "capsule_id": "lab-215625dffeb1457b876b102d0be3bf13",
+    "container_id": "bdeea3a7896313da62adb5a86d0b5c9c5b02bcd82ead0047ff6075a45b3ae0f7",
+    "contract_version": 1,
+    "image_id": "sha256:1d90211b473268c5cb9067e6f30488d709176352c9eb83f1a223293e851644a1",
+    "observed_at": "2026-10-24T16:26:51.235596Z",
+    "preflight": [
+      {
+        "name": "linux_daemon",
+        "status": "passed",
+        "evidence": "linux",
+        "mandatory": true
+      },
+      {
+        "name": "cgroup_v2",
+        "status": "passed",
+        "evidence": "2",
+        "mandatory": true
+      },
+      {
+        "name": "seccomp_enabled",
+        "status": "passed",
+        "evidence": [
+          "name=seccomp,profile=builtin",
+          "name=cgroupns"
+        ],
+        "mandatory": true
+      },
+      {
+        "name": "tested_uid_mapping",
+        "status": "passed",
+        "evidence": "initial adapter supports rootful local Docker only; userns variants need peer-identity tests",
+        "mandatory": true
+      }
+    ],
+    "probes": {
+      "passed": true,
+      "checks": {
+        "unprivileged_uid_gid": true,
+        "no_new_privs": true,
+        "seccomp_filter": true,
+        "zero_effective_caps": true,
+        "network_only_loopback": true,
+        "no_docker_socket": true,
+        "root_ssh_unavailable": true,
+        "root_read_only": true,
+        "root_home_denied": true,
+        "direct_network_denied": true,
+        "child_network_denied": true,
+        "local_calculation": true
+      },
+      "evidence_source": "fixed in-container lab probes; not host sensor telemetry"
+    },
+    "termination": {
+      "confirmed": true,
+      "container_id": "bdeea3a7896313da62adb5a86d0b5c9c5b02bcd82ead0047ff6075a45b3ae0f7",
+      "cgroup": "/sys/fs/cgroup/system.slice/docker-bdeea3a7896313da62adb5a86d0b5c9c5b02bcd82ead0047ff6075a45b3ae0f7.scope",
+      "scope": "captured cgroup and descendants"
+    },
+    "effective_profile_sha256": "f4a92188a3546ef757e71d121a604759820ae2f74b5c2dce0357fbcd4fb7587e",
+    "runtime_identity": {
+      "host_pid": 29521,
+      "process_start_ticks": "181103",
+      "cgroup_inode": 14129,
+      "cgroup_path": "/system.slice/docker-bdeea3a7896313da62adb5a86d0b5c9c5b02bcd82ead0047ff6075a45b3ae0f7.scope"
+    },
+    "host_sensor_coverage": "unavailable",
+    "protected_mvp_complete": false
+  },
+  "source": "actual Tetragon eBPF process stream, not agent logs",
+  "sensor_health_before": "Health Status: running",
+  "sensor_health_after": "Health Status: running",
+  "metrics_before": {
+    "observed_at": "2026-10-24T16:26:45.730023Z",
+    "counters": {
+      "tetragon_observer_ringbuf_events_lost_total": 0,
+      "tetragon_observer_ringbuf_queue_events_lost_total": 0,
+      "tetragon_events_missing_process_info_total": 0,
+      "tetragon_events_export_failed_total": null
+    },
+    "scope": "actual Tetragon host-wide counters; missing families are null, never zero"
+  },
+  "metrics_after": {
+    "observed_at": "2026-10-24T16:27:01.670865Z",
+    "counters": {
+      "tetragon_observer_ringbuf_events_lost_total": 0,
+      "tetragon_observer_ringbuf_queue_events_lost_total": 0,
+      "tetragon_events_missing_process_info_total": 0,
+      "tetragon_events_export_failed_total": null
+    },
+    "scope": "actual Tetragon host-wide counters; missing families are null, never zero"
+  },
+  "counter_deltas": {
+    "tetragon_observer_ringbuf_events_lost_total": {
+      "delta": 0,
+      "status": "observed"
+    },
+    "tetragon_observer_ringbuf_queue_events_lost_total": {
+      "delta": 0,
+      "status": "observed"
+    },
+    "tetragon_events_missing_process_info_total": {
+      "delta": 0,
+      "status": "observed"
+    },
+    "tetragon_events_export_failed_total": {
+      "delta": null,
+      "status": "unknown_or_reset"
+    }
+  },
+  "subscription_exit_code": 0,
+  "raw_records": 4,
+  "attributed_process_events": [
+    {
+      "capsule_id": "lab-215625dffeb1457b876b102d0be3bf13",
+      "contract_version": 1,
+      "correlation_id": null,
+      "coverage_status": "partial",
+      "details": {
+        "attribution_basis": "trusted container/cgroup lifecycle map + sensor docker ID + process start",
+        "coverage_scope": "captured process event only",
+        "sensor_id": "linux-process-01"
+      },
+      "effect_status": "observed",
+      "event_id": "7beed79e788288fcadb41d1c37e0295528f45ee618a61fadc6bd5b3e3ba7959c",
+      "event_type": "process_exec",
+      "evidence_reference": "tetragon:7cfe9b995aaf2651f3bd1ec29058a5506d59fa2218c1927cf9a29c27fe6a6c93",
+      "host_id": "linux-lab-01",
+      "observed_at": "2026-10-24T16:26:49.987681286Z",
+      "operation": "execute",
+      "policy_verdict": "not_applicable",
+      "process_identity": {
+        "cgroup_id": "cg-14129",
+        "pid": 32061,
+        "start_time": "2026-10-24T16:26:49.987681667Z"
+      },
+      "received_at": "2026-10-24T16:27:01.034065Z",
+      "resource_or_destination": "/usr/local/bin/python",
+      "schema_version": "1.0",
+      "source": "host_sensor",
+      "task_id": "LINUX-LAB-001"
+    },
+    {
+      "capsule_id": "lab-215625dffeb1457b876b102d0be3bf13",
+      "contract_version": 1,
+      "correlation_id": null,
+      "coverage_status": "partial",
+      "details": {
+        "attribution_basis": "trusted container/cgroup lifecycle map + sensor docker ID + process start",
+        "coverage_scope": "captured process event only",
+        "sensor_id": "linux-process-01"
+      },
+      "effect_status": "observed",
+      "event_id": "6609f147cd0dbbf7e7b42c2f6142cc01d7600951f77493699699f98c058c9c67",
+      "event_type": "process_exit",
+      "evidence_reference": "tetragon:f7a44c08d04f8a6540c5c8b0d3e88dd387f61a140ee668f05c7af3c4c542d362",
+      "host_id": "linux-lab-01",
+      "observed_at": "2026-10-24T16:26:50.072158383Z",
+      "operation": "exit",
+      "policy_verdict": "not_applicable",
+      "process_identity": {
+        "cgroup_id": "cg-14129",
+        "pid": 32061,
+        "start_time": "2026-10-24T16:26:49.987681667Z"
+      },
+      "received_at": "2026-10-24T16:27:01.034210Z",
+      "resource_or_destination": "/usr/local/bin/python",
+      "schema_version": "1.0",
+      "source": "host_sensor",
+      "task_id": "LINUX-LAB-001"
+    },
+    {
+      "capsule_id": "lab-215625dffeb1457b876b102d0be3bf13",
+      "contract_version": 1,
+      "correlation_id": null,
+      "coverage_status": "partial",
+      "details": {
+        "attribution_basis": "trusted container/cgroup lifecycle map + sensor docker ID + process start",
+        "coverage_scope": "captured process event only",
+        "sensor_id": "linux-process-01"
+      },
+      "effect_status": "observed",
+      "event_id": "900ccf36a8a87cbb3d5e93a78a63f2ec5ffbb7c3cbd248a2e4357261b08d802c",
+      "event_type": "process_exit",
+      "evidence_reference": "tetragon:6b5704a759e301be950d5f48f310191070ef49a88ae7abac53b26204ea727f4e",
+      "host_id": "linux-lab-01",
+      "observed_at": "2026-10-24T16:26:50.109800884Z",
+      "operation": "exit",
+      "policy_verdict": "not_applicable",
+      "process_identity": {
+        "cgroup_id": "cg-14129",
+        "pid": 31888,
+        "start_time": "2026-10-24T16:26:47.778418322Z"
+      },
+      "received_at": "2026-10-24T16:27:01.034313Z",
+      "resource_or_destination": "/usr/local/bin/python",
+      "schema_version": "1.0",
+      "source": "host_sensor",
+      "task_id": "LINUX-LAB-001"
+    }
+  ],
+  "normalization_gaps": [
+    "attribution_or_schema_gap"
+  ],
+  "coverage_status": "partial",
+  "process_observation_verified": true,
+  "coverage_scope": [
+    "configured process_exec",
+    "configured process_exit"
+  ],
+  "missing_required_scopes": [
+    "file_access",
+    "connection_attempt",
+    "egress_flow",
+    "continuous_loss_accounting"
+  ],
+  "protected_execution_ready": false,
+  "private_raw_reference": "operator-retained-linux-evidence:5fa35502305c44e0b0b4f997dc61b336"
+}

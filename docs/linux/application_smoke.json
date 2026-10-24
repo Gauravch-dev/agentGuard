@@ -1,0 +1,20 @@
+{
+  "observed_at": "2026-10-24T16:47:34.184439+00:00",
+  "mode": "real-linux-application-smoke",
+  "task_id": "FIN-00aaa0a6b8564badb70e5700759d3cae",
+  "checks": {
+    "health_ready": true,
+    "real_api_lab_passed": true,
+    "real_api_lab_termination_confirmed": true,
+    "fixed_lab_did_not_mark_business_complete": true,
+    "protected_launch_refused": true,
+    "no_protected_binding_created": true,
+    "no_new_staged_container_from_refused_launch": true,
+    "no_live_isolation_claim": true
+  },
+  "passed": true,
+  "task_state_after_refusal": "failed",
+  "fixed_lab_capsule_id": "lab-33238b79bfe1453190f31c803968df86",
+  "protected_execution_ready": false,
+  "model_invoked": false
+}

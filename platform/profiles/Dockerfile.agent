@@ -1,0 +1,7 @@
+ARG PYTHON_BASE
+FROM ${PYTHON_BASE}
+COPY platform/profiles/admission.py /opt/agentguard/admission.py
+COPY agent_demo/finance_agent.py /opt/agentguard/workload.py
+USER 65532:65532
+WORKDIR /work
+ENTRYPOINT ["python", "-I", "/opt/agentguard/admission.py"]

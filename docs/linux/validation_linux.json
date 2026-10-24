@@ -1,0 +1,38 @@
+{
+  "observed_at": "2026-10-24T16:40:16.093061+00:00",
+  "platform": "Linux",
+  "kernel": "6.18.33.2-microsoft-standard-WSL2",
+  "python": "3.14.4",
+  "steps": {
+    "pytest": {
+      "passed": true,
+      "exit_code": 0
+    },
+    "lint": {
+      "passed": true,
+      "exit_code": 0
+    },
+    "format": {
+      "passed": true,
+      "exit_code": 0
+    },
+    "application_types": {
+      "passed": true,
+      "exit_code": 0
+    },
+    "contract_compatibility": {
+      "passed": true,
+      "exit_code": 0
+    }
+  },
+  "tests": {
+    "passed": 122,
+    "skipped": 0,
+    "subtests_passed": 13
+  },
+  "warnings": [
+    "Starlette TestClient httpx deprecation"
+  ],
+  "passed": true,
+  "full_protected_mvp_complete": false
+}

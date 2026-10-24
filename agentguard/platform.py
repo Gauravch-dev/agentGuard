@@ -66,7 +66,7 @@ def host_audit():
             "checks": [asdict(c) for c in checks], "security_claim": "capability inventory; presence alone does not establish effective isolation"}
 
 
-def verify_inspect(info, contract, image_id):
+def verify_inspect(info, contract, image_id, *, capsule_mount=None, entrypoint=None):
     """Inspect the stopped container before any image code starts."""
     h, c = info.get("HostConfig", {}), info.get("Config", {})
     limits = contract["limits"]
@@ -78,7 +78,8 @@ def verify_inspect(info, contract, image_id):
 
     require(info.get("Image") == image_id, "immutable image mismatch")
     require(c.get("User") == "65532:65532", "unprivileged fixed UID/GID")
-    require(c.get("Entrypoint") == ["python", "-I", "/opt/agentguard/isolation_probe.py"], "fixed lab entrypoint")
+    expected_entrypoint = entrypoint or ["python", "-I", "/opt/agentguard/isolation_probe.py"]
+    require(c.get("Entrypoint") == expected_entrypoint, "fixed reviewed entrypoint")
     require(c.get("Cmd") in (None, []), "unexpected command override")
     require(c.get("WorkingDir") == "/work", "working directory")
     require(h.get("NetworkMode") == "none", "network deny")
@@ -95,7 +96,17 @@ def verify_inspect(info, contract, image_id):
     require(h.get("NanoCpus") == 1_000_000_000, "CPU limit")
     require(h.get("PidMode", "") == "" and h.get("IpcMode") == "private", "PID/IPC namespace")
     require(h.get("CgroupnsMode") == "private", "cgroup namespace")
-    require(not h.get("Binds") and not h.get("Mounts") and not info.get("Mounts"), "unexpected host mount")
+    if capsule_mount is None:
+        require(not h.get("Binds") and not h.get("Mounts") and not info.get("Mounts"), "unexpected host mount")
+    else:
+        mounts = info.get("Mounts", [])
+        requested_mounts = h.get("Mounts", [])
+        require(not h.get("Binds") and len(requested_mounts) == 1 and len(mounts) == 1, "exactly one dedicated channel mount")
+        if len(mounts) == 1:
+            mount = mounts[0]
+            require(mount.get("Type") == "bind" and mount.get("Source") == str(capsule_mount)
+                    and mount.get("Destination") == "/run/agentguard" and mount.get("RW") is False
+                    and mount.get("Propagation") == "rprivate", "private read-only broker mount")
     require(not h.get("Devices") and not h.get("DeviceRequests"), "device exposure")
     require(not h.get("VolumesFrom") and not h.get("Links"), "cross-container exposure")
     require(not c.get("Volumes"), "image-declared volumes")
@@ -106,6 +117,8 @@ def verify_inspect(info, contract, image_id):
         require({"rw", "noexec", "nosuid", "nodev", f"size={megabytes}m", "uid=65532", "gid=65532", "mode=700"} <= options, f"tmpfs restrictions: {path}")
     require(h.get("LogConfig", {}).get("Type") == "local", "bounded runtime logs")
     require(h.get("LogConfig", {}).get("Config", {}).get("max-size") == "1m", "log size limit")
+    log = h.get("LogConfig", {}).get("Config", {})
+    require(log.get("max-file") == "1" and log.get("compress") == "false", "bounded uncompressed log rotation")
     return failures
 
 
@@ -134,7 +147,7 @@ class DockerLab:
             checks.append(Check("local_daemon", "failed", str(exc)))
         if protected:
             checks.append(Check("independent_sensor_coverage", "failed", "live sensor interval attestation is pending; protected launch refused"))
-            checks.append(Check("broker_container_integration", "failed", "cross-capsule live acceptance tests have not passed"))
+            checks.append(Check("broker_container_integration", "failed", "protected agent admission is not connected to the full application/sensor lifecycle"))
         return checks
 
     @staticmethod
@@ -153,7 +166,7 @@ class DockerLab:
             "--cpus=1", "--restart=no", "--ulimit=nofile=256:256", "--ulimit=core=0:0",
             "--tmpfs=/tmp:rw,noexec,nosuid,nodev,size=16m,uid=65532,gid=65532,mode=700",
             "--tmpfs=/work:rw,noexec,nosuid,nodev,size=16m,uid=65532,gid=65532,mode=700",
-            "--workdir=/work", "--log-driver=local", "--log-opt=max-size=1m", "--log-opt=max-file=1",
+            "--workdir=/work", "--log-driver=local", "--log-opt=max-size=1m", "--log-opt=max-file=1", "--log-opt=compress=false",
             "--label", f"agentguard.task_id={contract['task_id']}",
             "--label", f"agentguard.contract_version={contract['contract_version']}",
             "--label", "agentguard.mode=isolation-lab",
@@ -233,6 +246,11 @@ class DockerLab:
             if not pid:
                 raise PlatformError("capsule ended before trusted cgroup mapping")
             cgroup = self._cgroup(pid)
+            from .transport import process_identity
+            identity = process_identity(pid, self.proc_root)
+            inode = cgroup.stat().st_ino
+            if process_identity(pid, self.proc_root) != identity:
+                raise PlatformError("process identity changed during cgroup registration")
             deadline = time.monotonic() + min(30, contract["limits"]["max_execution_seconds"])
             while self.inspect(container_id)["State"].get("Running"):
                 if time.monotonic() >= deadline:
@@ -250,6 +268,7 @@ class DockerLab:
                     "contract_version": contract["contract_version"], "image_id": image_id,
                     "observed_at": timestamp(), "preflight": [asdict(c) for c in checks], "probes": report,
                     "termination": termination, "effective_profile_sha256": hashlib.sha256(json.dumps(effective, sort_keys=True).encode()).hexdigest(),
+                    "runtime_identity": {"host_pid": pid, "process_start_ticks": identity["start_ticks"], "cgroup_inode": inode, "cgroup_path": identity["cgroup"]},
                     "host_sensor_coverage": "unavailable", "protected_mvp_complete": False}
         finally:
             if started and termination is None:

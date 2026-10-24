@@ -48,3 +48,9 @@ results describe Member 2's machine; this development host has no installed WSL 
 
 The next Linux round and return-to-application workflow are assigned in
 [Member 2 next steps](MEMBER_2_NEXT_STEPS.md).
+# Latest Linux round
+
+The preceding historical statuses describe the application checkpoint. The subsequent
+real Linux platform work, exact evidence and remaining gates are recorded in
+[`linux_handoff_results.md`](linux_handoff_results.md). The default protected
+application runtime is still disabled; no live-model/full-coverage result is claimed.

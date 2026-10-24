@@ -1,13 +1,35 @@
 # AgentGuard 2.0 — integrated application and Linux platform work
 
+## Latest Linux implementation round
+
+The Linux platform now has reproducible Docker/Tetragon setup, pinned images, a
+host-admitted staged launcher, private broker socket mounts and a detached durable
+deadline watchdog. Real Linux experiments verify peer/cgroup denial, raw-row output
+blocking, channel revocation, child cleanup and genuine Tetragon process observations.
+
+**Full protected AI execution remains disabled.** Process-only visibility, sampled
+metrics and a passing socket lab do not establish all required sensor coverage.
+One recorded source timestamp conflict is retained as an attribution gap. File/
+connection hooks, continuous loss accounting, network flows, protected application
+admission and the real local model round are still open.
+
+See [the Linux handoff results](docs/linux_handoff_results.md),
+[actual versions](docs/linux/version_manifest.json), and
+[real socket/containment evidence](docs/linux/socket_lab.json).
+The integrated application can now be started on the Linux host with
+`python -m scripts.start_linux`; host-only credentials persist in a private directory.
+
+## Application integration checkpoint
+
 This integration builds on Member 2's repository, commit
 `198aea6515954130ed58ed21601a23be767596a0`. It adds the Member 1 FastAPI/React application and
 explicit integration bridges. The earlier Member 1 workspace is preserved.
 
 **Protected AI execution is still disabled.** Member 2's preflight refuses it until
 live sensors, the protected launcher and cross-capsule socket tests are ready.
-Application validation used a Windows host without WSL or Docker. No live Linux/model
-result is claimed. Dependency downloads and advisory queries transfer no application data.
+The prior application checkpoint used a Windows host without WSL or Docker. Its
+historical validation did not claim live Linux/model results; the newer Linux
+experiments are linked above. Dependency/advisory queries transfer no application data.
 
 ## Run the integrated application
 
@@ -70,7 +92,7 @@ separate original policy workbench on port 8765. Its state, authority, synthetic
 payroll totals and three-field broker protocol are not the integrated application's
 state or protocol. Harness events must never be submitted as live evidence.
 
-The original Member 2 host reports and WSL results describe their environment, not
-this computer. No kernel, Docker, sensor or system service installation was attempted.
-The application checkpoint is ready for the next Linux implementation round.
+The original host reports are historical; use the latest Linux manifest for the
+current implementation round. Docker and the host sensor were installed explicitly
+in Ubuntu WSL; no kernel or GPU driver was changed. Full protected execution remains open.
 See [Member 2 next tasks](docs/MEMBER_2_NEXT_STEPS.md) and the [contribution workflow](CONTRIBUTING.md).

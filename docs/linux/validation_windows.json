@@ -1,0 +1,38 @@
+{
+  "observed_at": "2026-10-24T16:40:14.868866+00:00",
+  "platform": "Windows",
+  "kernel": "11",
+  "python": "3.14.2",
+  "steps": {
+    "pytest": {
+      "passed": true,
+      "exit_code": 0
+    },
+    "lint": {
+      "passed": true,
+      "exit_code": 0
+    },
+    "format": {
+      "passed": true,
+      "exit_code": 0
+    },
+    "application_types": {
+      "passed": true,
+      "exit_code": 0
+    },
+    "contract_compatibility": {
+      "passed": true,
+      "exit_code": 0
+    }
+  },
+  "tests": {
+    "passed": 118,
+    "skipped": 4,
+    "subtests_passed": 13
+  },
+  "warnings": [
+    "Starlette TestClient httpx deprecation"
+  ],
+  "passed": true,
+  "full_protected_mvp_complete": false
+}

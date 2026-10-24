@@ -1,0 +1,125 @@
+{
+  "observed_at": "2026-10-24T16:32:33.181315+00:00",
+  "mode": "real-linux-socket-lab",
+  "image_id": "sha256:fb44fd1a5bb3830faf891e569ffe6656573a1c4d3723c1a6ff5cc8578d30e161",
+  "passed": true,
+  "checks": {
+    "no_broker_action_before_admission": true,
+    "service_recovery_preserves_staged_capsules": true,
+    "bound_capsule_aggregate_allowed": true,
+    "forged_task_field_rejected": true,
+    "raw_row_output_denied_by_actual_broker": true,
+    "blocked_attempt_and_missing_coverage_both_preserved": true,
+    "read_only_channel_mount": true,
+    "live_child_started_before_parent_exit": true,
+    "same_uid_foreign_cgroup_rejected": true,
+    "channel_revoked_after_lifecycle_change": true,
+    "request_process_failed_before_watchdog_containment": true,
+    "all_descendants_exited": true,
+    "all_channels_revoked": true,
+    "no_output_coverage_bypass": true,
+    "evidence_integrity_valid": true
+  },
+  "allowed_capsule": {
+    "capsule_id": "capsule-dad37d0b13984ab9bf2345e085b0d3bb",
+    "container_id": "2a9ef0283b80f8296da6f445fa2e34c409514c4e3db5f83d16a27d7b1ab3dce2",
+    "cgroup_inode": 14273,
+    "process_start_ticks": "214275",
+    "state": "contained",
+    "descendants_exited": true,
+    "channel_revoked": true
+  },
+  "foreign_capsule": {
+    "capsule_id": "capsule-e8b5316aee4245a0a4494480312e9aee",
+    "container_id": "bae3762e7755f6b2e336efb9ebf82902f94bfd23095515721736923a7d14ee23",
+    "cgroup_inode": 14345,
+    "process_start_ticks": "214459",
+    "state": "contained",
+    "descendants_exited": true,
+    "channel_revoked": true
+  },
+  "watchdog_capsule": {
+    "capsule_id": "capsule-8f35381c865e46a1bc9d8ae2074ed2e9",
+    "container_id": "c3f5b50fae68bb9593773d1724d4885e6116127369cef5196a04163775607dd3",
+    "cgroup_inode": 14417,
+    "process_start_ticks": "215185",
+    "state": "contained",
+    "descendants_exited": true,
+    "channel_revoked": true
+  },
+  "protected_execution_ready": false,
+  "model_invoked": false,
+  "broker_receipts": [
+    {
+      "receipt_id": "53e1ee3418e040c5b8efdefba6e25e7d",
+      "task_id": "SOCKET-ALLOW",
+      "capsule_id": "capsule-dad37d0b13984ab9bf2345e085b0d3bb",
+      "request_id": "d22b1e918006451eaaf29983fe4ea2f8",
+      "correlation_id": "1c3889f388bc4d71950090a6c81895b8",
+      "operation": "data.get_department_totals",
+      "verdict": "allowed",
+      "effect_status": "completed",
+      "reason": "OK",
+      "classification": "synthetic_payroll_aggregate",
+      "evidence_reference": "broker-f3e3bb9079a7437390658840652057ef",
+      "observed_at": "2026-10-24T16:32:25.204587Z"
+    },
+    {
+      "receipt_id": "9aba49de0c2b48a5971a7ee85973dcd3",
+      "task_id": "SOCKET-ALLOW",
+      "capsule_id": "capsule-dad37d0b13984ab9bf2345e085b0d3bb",
+      "request_id": "4dfc0323cfc64690801faf14d839cf5c",
+      "correlation_id": "a1530e1dbf2c466bb3bec0365bb7bda2",
+      "operation": "output.save_department_summary",
+      "verdict": "denied",
+      "effect_status": "blocked",
+      "reason": "OUTPUT_SCHEMA_VIOLATION",
+      "classification": "synthetic_payroll_aggregate",
+      "evidence_reference": "broker-8bfb9db4df8a487a81cbb8dbf82ed8cc",
+      "observed_at": "2026-10-24T16:32:25.211791Z"
+    }
+  ],
+  "security_findings": [
+    {
+      "classification": "Unverified",
+      "reason_code": "MISSING_SENSOR_COVERAGE",
+      "explanation": "Incomplete host_sensor/connection_attempt coverage for the execution interval.",
+      "evidence_references": []
+    },
+    {
+      "classification": "Unverified",
+      "reason_code": "MISSING_SENSOR_COVERAGE",
+      "explanation": "Incomplete host_sensor/file_access coverage for the execution interval.",
+      "evidence_references": []
+    },
+    {
+      "classification": "Unverified",
+      "reason_code": "MISSING_SENSOR_COVERAGE",
+      "explanation": "Incomplete host_sensor/process_exec coverage for the execution interval.",
+      "evidence_references": []
+    },
+    {
+      "classification": "Unverified",
+      "reason_code": "MISSING_SENSOR_COVERAGE",
+      "explanation": "Incomplete network_sensor/egress_flow coverage for the execution interval.",
+      "evidence_references": []
+    },
+    {
+      "classification": "Aligned",
+      "reason_code": "BROKER_EFFECT_CONFIRMED",
+      "explanation": "Permitted broker operation completed. Coverage findings describe independent observation limits.",
+      "evidence_references": [
+        "broker-f3e3bb9079a7437390658840652057ef"
+      ]
+    },
+    {
+      "classification": "Blocked",
+      "reason_code": "OUTPUT_SCHEMA_VIOLATION",
+      "explanation": "Trusted broker denied the operation. Independent host attempt evidence may be unavailable; this is not a completed leak.",
+      "evidence_references": [
+        "broker-8bfb9db4df8a487a81cbb8dbf82ed8cc"
+      ]
+    }
+  ],
+  "scope": "actual Linux peer/cgroup, read-only channel, admission and deadline experiment; not full sensor coverage or AI acceptance"
+}

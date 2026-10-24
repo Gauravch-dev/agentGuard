@@ -1,0 +1,6 @@
+**
+!platform/
+!platform/profiles/
+!platform/profiles/**
+!agent_demo/
+!agent_demo/**

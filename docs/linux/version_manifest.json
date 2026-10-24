@@ -1,0 +1,22 @@
+{
+  "observed_at": "2026-10-24T16:38:36.574483Z",
+  "host_id": "linux-lab-01",
+  "kernel": "6.18.33.2-microsoft-standard-WSL2",
+  "python": "3.14.4",
+  "docker_engine": "29.9.2",
+  "docker_cgroup_version": "2",
+  "docker_security_options": [
+    "name=seccomp,profile=builtin",
+    "name=cgroupns"
+  ],
+  "python_base": "docker.io/library/python@sha256:7dff173021016c8829ae58d5ce112ffc388073ebe67f351aeb6ba2909e35f847",
+  "tetragon_image": "quay.io/cilium/tetragon@sha256:deda51c3f88e4d26b4d76c99ea207f2b05f9e40c210e0f04a37ca632ab7bf527",
+  "tetragon_signature_verified": true,
+  "tetragon_running": true,
+  "tetragon_network_mode": "none",
+  "tetragon_health": "Health Status: running",
+  "lab_image": "sha256:1d90211b473268c5cb9067e6f30488d709176352c9eb83f1a223293e851644a1",
+  "socket_lab_image": "sha256:fb44fd1a5bb3830faf891e569ffe6656573a1c4d3723c1a6ff5cc8578d30e161",
+  "model_runtime": "not installed or invoked in this round",
+  "full_protected_mvp_complete": false
+}

@@ -334,7 +334,7 @@ class RuntimeTests(unittest.TestCase):
             "Memory": 768 * 1024**2, "MemorySwap": 768 * 1024**2, "PidsLimit": 64, "NanoCpus": 1_000_000_000,
             "PidMode": "", "IpcMode": "private", "CgroupnsMode": "private", "Binds": [],
             "Tmpfs": {p: "rw,noexec,nosuid,nodev,size=16m,uid=65532,gid=65532,mode=700" for p in ("/tmp", "/work")},
-            "LogConfig": {"Type": "local", "Config": {"max-size": "1m"}},
+            "LogConfig": {"Type": "local", "Config": {"max-size": "1m", "max-file": "1", "compress": "false"}},
         }}
 
     def test_profile_is_fixed_and_pinned(self):
