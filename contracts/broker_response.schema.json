@@ -1,0 +1,132 @@
+{
+  "$defs": {
+    "Receipt": {
+      "additionalProperties": false,
+      "properties": {
+        "capsule_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.:-]+$",
+          "title": "Capsule Id",
+          "type": "string"
+        },
+        "classification": {
+          "const": "synthetic_payroll_aggregate",
+          "default": "synthetic_payroll_aggregate",
+          "title": "Classification",
+          "type": "string"
+        },
+        "correlation_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.:-]+$",
+          "title": "Correlation Id",
+          "type": "string"
+        },
+        "effect_status": {
+          "enum": [
+            "blocked",
+            "completed",
+            "unknown"
+          ],
+          "title": "Effect Status",
+          "type": "string"
+        },
+        "evidence_reference": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.:-]+$",
+          "title": "Evidence Reference",
+          "type": "string"
+        },
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        },
+        "operation": {
+          "title": "Operation",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "receipt_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.:-]+$",
+          "title": "Receipt Id",
+          "type": "string"
+        },
+        "request_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.:-]+$",
+          "title": "Request Id",
+          "type": "string"
+        },
+        "task_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.:-]+$",
+          "title": "Task Id",
+          "type": "string"
+        },
+        "verdict": {
+          "enum": [
+            "allowed",
+            "denied"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        }
+      },
+      "required": [
+        "receipt_id",
+        "task_id",
+        "capsule_id",
+        "request_id",
+        "correlation_id",
+        "operation",
+        "verdict",
+        "effect_status",
+        "reason",
+        "evidence_reference",
+        "observed_at"
+      ],
+      "title": "Receipt",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "receipt": {
+      "$ref": "#/$defs/Receipt"
+    },
+    "result": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Result"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "receipt"
+  ],
+  "title": "BrokerResponse",
+  "type": "object"
+}

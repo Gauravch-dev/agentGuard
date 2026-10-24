@@ -1,0 +1,72 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "capsule_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.:-]+$",
+      "title": "Capsule Id",
+      "type": "string"
+    },
+    "cgroup_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.:-]+$",
+      "title": "Cgroup Id",
+      "type": "string"
+    },
+    "channel_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.:-]+$",
+      "title": "Channel Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "minimum": 1,
+      "title": "Contract Version",
+      "type": "integer"
+    },
+    "host_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.:-]+$",
+      "title": "Host Id",
+      "type": "string"
+    },
+    "process_start": {
+      "format": "date-time",
+      "title": "Process Start",
+      "type": "string"
+    },
+    "registered_at": {
+      "format": "date-time",
+      "title": "Registered At",
+      "type": "string"
+    },
+    "simulated": {
+      "default": false,
+      "title": "Simulated",
+      "type": "boolean"
+    },
+    "task_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.:-]+$",
+      "title": "Task Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "task_id",
+    "contract_version",
+    "capsule_id",
+    "host_id",
+    "cgroup_id",
+    "process_start",
+    "registered_at",
+    "channel_id"
+  ],
+  "title": "Binding",
+  "type": "object"
+}

@@ -1,16 +1,46 @@
 [build-system]
-requires = ["setuptools==80.9.0"]
+requires = ["setuptools==84.1.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "agentguard"
-version = "0.1.0"
-description = "Task-bound agent security and evidence reconciliation prototype"
-requires-python = ">=3.11"
-dependencies = []
+version = "0.2.0"
+description = "AgentGuard 2.0 Member 1 control plane"
+requires-python = ">=3.12"
+dependencies = ["fastapi>=0.115,<1", "pydantic>=2.10,<3", "uvicorn>=0.34,<1", "httpx>=0.28,<1"]
 
 [project.scripts]
 agentguard = "agentguard.cli:main"
 
 [tool.setuptools.packages.find]
-include = ["agentguard*"]
+include = ["agentguard*", "application*", "agent_demo*"]
+
+[dependency-groups]
+dev = ["pytest==9.1.1", "ruff>=0.11,<1", "mypy>=1.15,<2", "jsonschema>=4,<5", "pip-audit>=2.9,<3", "detect-secrets>=1.5,<2"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+include = ["application/**/*.py", "agent_demo/**/*.py", "scripts/export_contracts.py", "scripts/integration_*.py", "tests/unit/**/*.py", "tests/contract/**/*.py", "tests/e2e/**/*.py", "tests/integration/**/*.py", "tests/conftest.py", "tests/__init__.py"]
+
+[tool.ruff.format]
+line-ending = "lf"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "S"]
+ignore = ["E501", "S101", "B008"]
+
+[tool.mypy]
+python_version = "3.12"
+platform = "linux"
+files = ["application", "agent_demo"]
+check_untyped_defs = true
+disallow_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = "agentguard.*"
+ignore_errors = true
+follow_imports = "silent"

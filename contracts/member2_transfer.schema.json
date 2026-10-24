@@ -1,0 +1,19 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "event": {
+      "$ref": "security-event-v1.schema.json"
+    },
+    "wire_format": {
+      "pattern": "^member2-normalized-1\\.0$",
+      "title": "Wire Format",
+      "type": "string"
+    }
+  },
+  "required": [
+    "wire_format",
+    "event"
+  ],
+  "title": "Member2Transfer",
+  "type": "object"
+}

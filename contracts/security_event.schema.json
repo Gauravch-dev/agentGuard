@@ -1,0 +1,240 @@
+{
+  "$defs": {
+    "ProcessIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "cgroup_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_.:-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cgroup Id"
+        },
+        "pid": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pid"
+        },
+        "start_time": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Start Time"
+        }
+      },
+      "title": "ProcessIdentity",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "capsule_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.:-]+$",
+      "title": "Capsule Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "minimum": 1,
+      "title": "Contract Version",
+      "type": "integer"
+    },
+    "correlation_id": {
+      "anyOf": [
+        {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.:-]+$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Correlation Id"
+    },
+    "coverage_status": {
+      "default": "unknown",
+      "enum": [
+        "complete",
+        "partial",
+        "unavailable",
+        "unknown"
+      ],
+      "title": "Coverage Status",
+      "type": "string"
+    },
+    "effect_status": {
+      "default": "unknown",
+      "enum": [
+        "attempted",
+        "blocked",
+        "observed",
+        "completed",
+        "unknown"
+      ],
+      "title": "Effect Status",
+      "type": "string"
+    },
+    "event_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.:-]+$",
+      "title": "Event Id",
+      "type": "string"
+    },
+    "event_type": {
+      "enum": [
+        "process_exec",
+        "process_exit",
+        "file_access",
+        "connection_attempt",
+        "egress_flow",
+        "broker_request",
+        "broker_release",
+        "policy_denial",
+        "sensor_health",
+        "runtime_lifecycle"
+      ],
+      "title": "Event Type",
+      "type": "string"
+    },
+    "evidence_reference": {
+      "anyOf": [
+        {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.:-]+$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Evidence Reference"
+    },
+    "host_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.:-]+$",
+      "title": "Host Id",
+      "type": "string"
+    },
+    "observed_at": {
+      "format": "date-time",
+      "title": "Observed At",
+      "type": "string"
+    },
+    "operation": {
+      "anyOf": [
+        {
+          "maxLength": 128,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Operation"
+    },
+    "policy_verdict": {
+      "default": "unknown",
+      "enum": [
+        "allowed",
+        "denied",
+        "not_applicable",
+        "unknown"
+      ],
+      "title": "Policy Verdict",
+      "type": "string"
+    },
+    "process_identity": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ProcessIdentity"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "resource_or_destination": {
+      "anyOf": [
+        {
+          "maxLength": 1024,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Resource Or Destination"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source": {
+      "enum": [
+        "host_sensor",
+        "network_sensor",
+        "trusted_broker",
+        "policy_engine",
+        "runtime",
+        "sensor_health"
+      ],
+      "title": "Source",
+      "type": "string"
+    },
+    "task_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.:-]+$",
+      "title": "Task Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_id",
+    "task_id",
+    "contract_version",
+    "capsule_id",
+    "host_id",
+    "source",
+    "event_type",
+    "observed_at"
+  ],
+  "title": "SecurityEvent",
+  "type": "object"
+}

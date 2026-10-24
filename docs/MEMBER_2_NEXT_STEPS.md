@@ -1,0 +1,164 @@
+# Member 2 next round: Linux runtime, sensors, and live validation
+
+Owner: @Gauravch-dev (Member 2). Start from the latest shared `main` branch after
+this application-integration checkpoint is pushed. Please own the remaining Linux,
+Docker, kernel/sensor, socket isolation, GPU/local-model setup and host-side
+validation. Commit and push your completed round back to this same repository so
+Member 1 can pull it, verify the application against real evidence, and continue.
+
+## Current application checkpoint
+
+Implemented and integrated: reviewed-template Task Authority; immutable signed
+contracts and lifecycle; synthetic payroll and strict aggregate/model/output
+brokers; evidence storage; Task-Effect Reconciliation Engine; authenticated FastAPI
+routes; React dashboard; event translation/capture forwarding; and peer-authorization
+adapters. The baseline has 115 passing tests, one genuine Linux-only skip and 13
+passing subtests. Full MVP completion is not claimed: actual protected execution,
+continuous independent coverage and a real model run have not been validated.
+
+Do not replace the integrated application with the older policy workbench. The
+workbench on port 8765 is a separate harness with different synthetic totals and a
+legacy protocol. The integrated application uses port 8000 and
+`dashboard/application/`. Existing fixtures never constitute live host evidence.
+
+## 1. Pull and establish the Linux baseline
+
+```sh
+git switch main
+git pull --ff-only origin main
+uv sync --locked
+uv run python -m agentguard audit --output platform/docs/linux_current_host.json
+uv run pytest -q
+```
+
+Use your owned Linux host/VM. Record distro, kernel, architecture, cgroup version,
+Docker Engine/security options, BTF, confinement support, user namespace behavior,
+time synchronization and available GPU/model runtime. Existing Windows/WSL reports
+are historical evidence, not proof of the current host's controls.
+
+Select and record immutable image digests. Do not auto-pull floating images or
+remove controls to pass a test. The initial socket/profile baseline supports local
+rootful Docker without user namespaces; expand support only with explicit tests.
+
+## 2. Implement the protected launcher and lifecycle
+
+Primary files: `agentguard/platform.py`, `application/member2_bridge.py`,
+`application/runtime_adapter.py`, and `platform/`.
+
+- Implement protected `launch`, `inspect`, `terminate` and observation wiring. The
+  current `Member2RuntimeAdapter` deliberately refuses protected execution.
+- Use the authority-approved contract and fixed reviewed runtime profile. No
+  agent/client-selected Docker arguments, commands, privileged mounts or image URLs.
+- Enforce network isolation, filesystem policy, unprivileged UID/GID, dropped
+  capabilities, no-new-privileges, seccomp, private namespaces and all resource limits.
+- Provide a genuine task/version -> capsule/container -> host/cgroup/process mapping,
+  including process start time/ticks and captured cgroup inode. No PID-only joins.
+- Arrange startup admission so the server has registered the trusted binding and
+  broker channel before untrusted Finance Agent code can request broker operations.
+- Implement a watchdog that survives request failure/restarts; revoke channels on
+  completion/failure and retain diagnostic evidence when cleanup is uncertain.
+- Confirm actual cgroup/descendant exit on termination. A kill request or exited
+  parent process alone must not produce a successful termination claim.
+
+Do not turn readiness flags on merely because the fixed isolation lab passes. The
+required sensor and broker/container gates must have real supporting evidence.
+
+## 3. Wire and test the real per-capsule broker socket
+
+Primary files: `agentguard/transport.py`, `application/broker_transport.py`, and
+`application/member2_bridge.py::Member2ChannelAuthorizer`.
+
+- Start one socket/channel per capsule under a private trusted host parent; mount
+  only that capsule's socket directory and never the Docker control socket.
+- Verify actual SO_PEERCRED, UID mapping, cgroup membership/inode, process birth and
+  current task/channel authorization. Include descendants and PID/cgroup reuse cases.
+- Test two real containers: cross-capsule access, forged task IDs, expired/revoked
+  contracts and inherited stale credentials must be refused.
+- Use the integrated four-field request envelope with request_id, not the legacy
+  three-field workbench session. `agent_demo/finance_agent.py` is the supplied client.
+- Validate ownership/mount permissions and pre/post-read peer checks on the actual
+  kernel/container configuration. Keep provider keys/data/DB files outside capsules.
+
+## 4. Complete live collectors, exporter, and continuous coverage
+
+Primary locations: `sensors/`, `agentguard/sensors.py`,
+`application/member2_exporter.py`, and the documented internal API routes.
+
+- Install a reviewed pinned Tetragon version outside capsules; capture genuine
+  process exec/exit events and supported file/connection hook behavior.
+- Implement attributable network-flow collection. Record when the hook cannot
+  observe a blocked attempt; do not invent traffic or infer encrypted contents.
+- Add continuous source authentication, tailing/reconnect/checkpoint behavior,
+  health checks, lost/export-failed/reset counters and coverage-window accounting.
+- Cover all required process/file/connection/network event classes. Process-only
+  records and EOF are insufficient. Sensor loss, stale data, unsupported hooks,
+  dropped events or uncertain attribution must remain Unverified and hold release.
+- Preserve source observation time, server receipt time, source identity and protected
+  raw references separately. Keep raw arguments, tokens and confidential data out of
+  committed fixtures and normal application logs.
+- Use the existing shared schema. The Member 2 event extension is translated via
+  `/internal/v1/member2/events`; coverage uses `/internal/v1/coverage`. Do not silently
+  add required fields, change enums, or bypass source credentials to make integration work.
+
+The existing capture forwarder is one-shot and process-only; it does not supply a
+continuous sensor service, health proof or complete coverage on its own.
+
+## 5. Set up and run the real local model outside the capsule
+
+Please handle Linux/GPU driver/runtime installation and model hosting on your
+machine. The application currently supports a fixed local Ollama endpoint at
+127.0.0.1:11434 with `qwen2.5:7b`. Keep it loopback-only, record the actual model/runtime
+version and model digest, and enable it only in the trusted broker environment.
+
+Run the Finance Agent through all three brokers inside the protected capsule using
+only the supplied synthetic fixture. Verify actual model-driven tool selection,
+independently correct totals, internal report release and no model credentials in
+capsule files, environment or descendants. Run both benign and injected lab inputs.
+If the model refuses an injected instruction, record that result; a deterministic
+adversarial driver can supplement testing but is not a real model attack result.
+No external model/data transfer or real confidential payroll is authorized.
+
+## 6. Finish the Linux acceptance round and return evidence
+
+Run S01–S16 from the original shared handoff, including denied file reads, Python
+and child/curl egress, DNS/IP/alternate-protocol attempts, raw-row output denial,
+expiry/readiness failure, sensor loss, unexplained effects, cross-capsule isolation,
+verified termination, fresh restarts and baseline comparisons.
+
+Before pushing, run the complete combined suite, contract checks and relevant
+static checks. Build/type-check the dashboard if changed. Scan any new dependencies
+and secrets. Do not mark missing/unsupported observations as passing.
+
+Return these artifacts in `docs/linux_handoff_results.md` and linked evidence:
+
+| Required artifact | Contents |
+|---|---|
+| Reproducible runbook | Exact supported host setup and start/stop/rollback commands |
+| Version manifest | Kernel, Docker, sensor/model versions and immutable image/model identifiers |
+| Runtime evidence | Effective profile, real task/capsule/host/cgroup mapping and termination evidence |
+| Collector evidence | Sanitized genuine events, raw references, scope/health/loss/coverage intervals |
+| End-to-end result | Run/task IDs, broker receipts, verified internal report and concurrent findings |
+| Acceptance matrix | Each S01–S16 result, evidence links and explicit unsupported/blocked/unverified cases |
+| Remaining issues | Exact failure, expected vs observed behavior and where Member 1 should continue |
+| Return reference | Pushed branch and exact commit SHA, plus concise validation summary |
+
+## Shared boundaries and commit/push cycle
+
+You may update the Linux runtime/transport/sensor code and application-side bridge
+needed to complete that wiring. Preserve Task Authority approval checks, broker
+payload restrictions, output verification, evidence integrity, schemas and the React
+application. Coordinate genuinely necessary schema changes with a versioned decision
+and compatibility tests rather than replacing interfaces wholesale.
+
+1. Pull current `main` before starting each round; do not overwrite another member's changes.
+2. Implement and verify the Linux work above; commit reproducible evidence and honest gaps.
+3. Commit and push back to the same repository without force pushing. If branch rules
+   require a pull request, use a neutral task branch and return its merged commit SHA.
+4. Reply to the handoff issue with the commit/branch, tests, real evidence and remaining blockers.
+5. Member 1 then pulls your changes, reruns combined checks and handles application
+   follow-ups: real-evidence reconciliation, any bounded agent coverage-hold retry,
+   API/dashboard integration adjustments and application regressions.
+6. Repeat focused rounds until the full joint acceptance matrix is genuinely complete.
+
+This checkpoint is ready to commit; the overall MVP remains open until those live
+Linux/model and application acceptance gates pass.

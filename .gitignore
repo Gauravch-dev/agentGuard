@@ -6,3 +6,11 @@ __pycache__/
 *.egg-info/
 build/
 dist/
+
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+var/
+node_modules/
+*.sqlite*
+*.log

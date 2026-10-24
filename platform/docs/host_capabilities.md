@@ -1,6 +1,6 @@
 # Host capability report
 
-Observed 24 October 2026 in the managed Codex session. Machine-readable results: `host_capabilities.json`.
+Observed 24 October 2026 in the managed development session. Machine-readable results: `host_capabilities.json`.
 
 | Feature | Result | Evidence/limit |
 |---|---|---|

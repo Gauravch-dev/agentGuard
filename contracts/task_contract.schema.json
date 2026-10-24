@@ -1,0 +1,134 @@
+{
+  "$defs": {
+    "Limits": {
+      "additionalProperties": false,
+      "properties": {
+        "max_execution_seconds": {
+          "default": 180,
+          "maximum": 180,
+          "minimum": 1,
+          "title": "Max Execution Seconds",
+          "type": "integer"
+        },
+        "max_memory_mb": {
+          "default": 768,
+          "maximum": 768,
+          "minimum": 64,
+          "title": "Max Memory Mb",
+          "type": "integer"
+        },
+        "max_processes": {
+          "default": 64,
+          "maximum": 64,
+          "minimum": 1,
+          "title": "Max Processes",
+          "type": "integer"
+        }
+      },
+      "title": "Limits",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "agent_role": {
+      "const": "finance-reporting",
+      "default": "finance-reporting",
+      "title": "Agent Role",
+      "type": "string"
+    },
+    "allowed_data_classes": {
+      "default": [
+        "synthetic_payroll_aggregate"
+      ],
+      "items": {
+        "const": "synthetic_payroll_aggregate",
+        "type": "string"
+      },
+      "title": "Allowed Data Classes",
+      "type": "array"
+    },
+    "allowed_operations": {
+      "default": [
+        "data.get_department_totals",
+        "model.generate_report_draft",
+        "output.save_department_summary"
+      ],
+      "items": {
+        "type": "string"
+      },
+      "title": "Allowed Operations",
+      "type": "array"
+    },
+    "approved_by": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.:-]+$",
+      "title": "Approved By",
+      "type": "string"
+    },
+    "approved_output_destination": {
+      "const": "internal_reports",
+      "default": "internal_reports",
+      "title": "Approved Output Destination",
+      "type": "string"
+    },
+    "contract_version": {
+      "minimum": 1,
+      "title": "Contract Version",
+      "type": "integer"
+    },
+    "direct_internet_allowed": {
+      "const": false,
+      "default": false,
+      "title": "Direct Internet Allowed",
+      "type": "boolean"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "limits": {
+      "$ref": "#/$defs/Limits",
+      "default": {
+        "max_execution_seconds": 180,
+        "max_memory_mb": 768,
+        "max_processes": 64
+      }
+    },
+    "objective": {
+      "const": "Prepare department-wise totals from synthetic payroll",
+      "default": "Prepare department-wise totals from synthetic payroll",
+      "title": "Objective",
+      "type": "string"
+    },
+    "output_schema": {
+      "const": "department_summary_v1",
+      "default": "department_summary_v1",
+      "title": "Output Schema",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "task_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.:-]+$",
+      "title": "Task Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "task_id",
+    "contract_version",
+    "approved_by",
+    "expires_at"
+  ],
+  "title": "TaskContract",
+  "type": "object"
+}

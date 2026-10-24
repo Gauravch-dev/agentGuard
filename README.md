@@ -1,52 +1,76 @@
-# AgentGuard 2.0
+# AgentGuard 2.0 — integrated application and Linux platform work
 
-Task-scoped permissions, restricted Linux execution, and independent verification for AI agents.
+This integration builds on Member 2's repository, commit
+`198aea6515954130ed58ed21601a23be767596a0`. It adds the Member 1 FastAPI/React application and
+explicit integration bridges. The earlier Member 1 workspace is preserved.
 
-This is the first implementation of the supplied proposal. It includes a working local policy/evidence workbench and a real Docker isolation-lab adapter. **It is not yet a validated agent security product.** Protected agent execution stays disabled until live sensor coverage and the broker/container integration pass the Linux acceptance gates.
+**Protected AI execution is still disabled.** Member 2's preflight refuses it until
+live sensors, the protected launcher and cross-capsule socket tests are ready.
+Application validation used a Windows host without WSL or Docker. No live Linux/model
+result is claimed. Dependency downloads and advisory queries transfer no application data.
 
-## Run on Windows, Linux or macOS
+## Run the integrated application
 
-Python 3.11+; no third-party Python dependencies.
+After the setup below, start the local application from this repository:
 
 ```powershell
-python -m agentguard audit --output platform/docs/host_capabilities.json
-python -m unittest discover -s tests -v
-python -m agentguard demo
-python -m agentguard serve
+.\scripts\start-local.ps1
 ```
 
-`serve` binds only to `127.0.0.1:8765`. Open that address and paste the local access key printed by the command. The dashboard can run a **policy harness**, inspect contracts, broker denials and findings. Harness execution runs trusted test code locally, never arbitrary agent code, and always reports unavailable independent OS coverage. It does not pretend to be a TaskCapsule.
+Open http://127.0.0.1:8000 and paste the generated local owner token. The dashboard
+shows real platform capability/preflight results, contracts, events, findings and
+reports. Creating a task works; protected launch correctly refuses on this host.
+The script uses a fresh synthetic database and ephemeral keys for each session.
 
-State defaults to `.agentguard/`: local authority key, SQLite contracts, append-only evidence with an HMAC chain, reports and a local UI access key. Keep that directory outside any untrusted capsule. SQLite/HMAC protects against accidental changes and agent-level tampering; a trusted host administrator can replace both the database and key. Local encryption at rest is not implemented.
+For a fresh checkout, use Python 3.12+, uv, Node 22.12+ and npm:
 
-## What is implemented
-
-- Strict version 1 task/event validation; immutable authority-approved contracts with integrity signatures and expiry checks.
-- Aggregate-only synthetic Data Broker; strict structured Output Broker; bounded Model Broker interface (no model provider configured by default).
-- Separate business outcomes and concurrent Aligned / Blocked / Unexplained / Unverified findings; evidence source, receipt time and raw reference preservation.
-- Local SQLite evidence journal with source-scoped deduplication and integrity verification.
-- Docker command builder, mandatory preflight, effective configuration inspection, lifecycle deadlines and cgroup termination verification for the Linux isolation lab.
-- Per-capsule Unix socket transport with Linux peer-credential/cgroup checks; Tetragon process-event normalizer and source identity mapping.
-- Authenticated local API and investigation dashboard, synthetic test harness and automated security regression tests.
-
-See [integration status](docs/integration_status.md), [Linux runbook](docs/runbook_linux.md), [threat model](docs/threat_model.md), and [acceptance matrix](docs/experiment_results.md). Their validation limits are part of the implementation.
-
-Validated on Windows (50 tests passed, one Linux-only test skipped) and the installed Ubuntu WSL2 distribution (51 passed). WSL has cgroup v2 and BTF, but Docker is not installed; no real container or live sensor security result is claimed.
-
-## Linux isolation lab
-
-On an owned, dedicated Linux host with local Docker Engine, cgroup v2 and seccomp:
-
-```sh
-# Choose and verify an approved immutable Python base image first.
-docker build --build-arg PYTHON_BASE=python@sha256:<verified-digest> -t agentguard-capsule:lab -f platform/profiles/Dockerfile .
-python -m agentguard isolation-lab --image agentguard-capsule:lab
+```powershell
+uv sync --locked
+cd dashboard/application
+npm ci --ignore-scripts
+npm run build
+cd ../..
+.\scripts\start-local.ps1
 ```
 
-The adapter resolves the local tag to an immutable image ID, never pulls implicitly, accepts no arbitrary Docker flags, and runs only the image's fixed lab entrypoint. It verifies restrictions before starting, checks active controls from inside the container, tests denied direct/child networking and writes a local calculation. The lab has no protected company data, model credentials or broker socket. **Passing this lab is not passing the full S01–S16 MVP.**
+## What was joined
 
-## Project layout
+- Member 1 Task Authority, aggregate/model/output brokers, Finance Agent, evidence
+  ledger, deterministic TERE and React dashboard.
+- Member 2's actual Docker preflight and fixed isolation lab, exposed through the
+  application. A passing lab never enables protected agent execution.
+- Member 2's Tetragon normalizer feeding an authenticated application endpoint.
+  Collector metadata is preserved separately; the original shared event is unchanged.
+- Member 2's peer authorizer used by the application socket transport, with process
+  birth, cgroup inode and current contract/channel checks. Real two-container tests
+  are still required.
+- Protected output release held on missing, lost, stale or insufficiently scoped
+  independent coverage. Test-only bypasses remain in test fixtures.
+- A bounded local capture forwarder for operator-owned Tetragon JSONL. It never
+  promotes process records into healthy sensors or complete coverage.
 
-`agentguard/` implements the application, shared schemas, platform adapter and collector interfaces. `contracts/` contains machine-readable JSON schemas. `platform/` contains the image and host reports. `sensors/` documents the Tetragon integration. `dashboard/` contains the local investigation UI. `tests/` and `docs/` hold verification and handoff material.
+[Integration runbook and compatibility decisions](docs/member2_integration.md)
+cover API routes, schemas, peer wiring, collector use and remaining acceptance gates.
+[Current test/evidence results](docs/integration_validation.md) distinguish fixtures
+from actual host observations. The original shared handoffs remain in `docs/handoffs/`.
 
-The two source documents were treated as requirements/context. Their presentation-authoring instructions do not request a slide deck; their member ownership boundaries describe an intended team, not evidence of existing code. The versioned shared interface in the Linux handoff takes precedence over the presentation's illustrative contract.
+## Validate
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest -q
+.\.venv\Scripts\python.exe -m ruff check .
+.\.venv\Scripts\python.exe -m ruff format --check .
+.\.venv\Scripts\python.exe -m mypy
+.\.venv\Scripts\python.exe -m scripts.export_contracts --check
+```
+
+The original `agentguard/`, `platform/`, `sensors/`, two upstream test files, and
+legacy contract schemas are retained. `python -m agentguard serve` still runs the
+separate original policy workbench on port 8765. Its state, authority, synthetic
+payroll totals and three-field broker protocol are not the integrated application's
+state or protocol. Harness events must never be submitted as live evidence.
+
+The original Member 2 host reports and WSL results describe their environment, not
+this computer. No kernel, Docker, sensor or system service installation was attempted.
+The application checkpoint is ready for the next Linux implementation round.
+See [Member 2 next tasks](docs/MEMBER_2_NEXT_STEPS.md) and the [contribution workflow](CONTRIBUTING.md).

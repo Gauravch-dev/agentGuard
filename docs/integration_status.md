@@ -36,3 +36,15 @@ The first sandboxed regression attempt could not use the default temporary direc
 4. Implement continuous coverage intervals and output hold on sensor loss/export failure; add protected workload binding and conservative authorization matching.
 5. Configure one approved real model provider outside the capsule with timeout/token/cost limits; run the payroll AI agent through all three brokers.
 6. Complete S01–S16, adversarial tests, baselines and performance measurements before changing protected readiness to true.
+
+## Integration update
+
+The local `member1-integration` branch now joins the Member 1 application with
+the existing platform/peer/sensor libraries. See `member2_integration.md` for exact
+compatibility decisions, current routes and pending gates, and
+`integration_validation.md` for the combined validation results. Protected execution
+remains disabled; the original rows above describe the upstream snapshot. Its WSL
+results describe Member 2's machine; this development host has no installed WSL or Docker.
+
+The next Linux round and return-to-application workflow are assigned in
+[Member 2 next steps](MEMBER_2_NEXT_STEPS.md).

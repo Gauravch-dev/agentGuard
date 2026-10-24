@@ -1,0 +1,105 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "capsule_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.:-]+$",
+      "title": "Capsule Id",
+      "type": "string"
+    },
+    "coverage_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.:-]+$",
+      "title": "Coverage Id",
+      "type": "string"
+    },
+    "end": {
+      "format": "date-time",
+      "title": "End",
+      "type": "string"
+    },
+    "event_classes": {
+      "items": {
+        "enum": [
+          "process_exec",
+          "process_exit",
+          "file_access",
+          "connection_attempt",
+          "egress_flow",
+          "broker_request",
+          "broker_release",
+          "policy_denial",
+          "sensor_health",
+          "runtime_lifecycle"
+        ],
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Event Classes",
+      "type": "array"
+    },
+    "lost_events": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Lost Events",
+      "type": "integer"
+    },
+    "sensor_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.:-]+$",
+      "title": "Sensor Id",
+      "type": "string"
+    },
+    "simulated": {
+      "default": false,
+      "title": "Simulated",
+      "type": "boolean"
+    },
+    "source": {
+      "enum": [
+        "host_sensor",
+        "network_sensor"
+      ],
+      "title": "Source",
+      "type": "string"
+    },
+    "start": {
+      "format": "date-time",
+      "title": "Start",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "complete",
+        "partial",
+        "unavailable",
+        "unknown"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "task_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.:-]+$",
+      "title": "Task Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "coverage_id",
+    "task_id",
+    "capsule_id",
+    "sensor_id",
+    "source",
+    "event_classes",
+    "start",
+    "end",
+    "status"
+  ],
+  "title": "Coverage",
+  "type": "object"
+}

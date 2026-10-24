@@ -1,0 +1,35 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "operation": {
+      "maxLength": 128,
+      "minLength": 1,
+      "title": "Operation",
+      "type": "string"
+    },
+    "payload": {
+      "additionalProperties": true,
+      "title": "Payload",
+      "type": "object"
+    },
+    "request_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.:-]+$",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "request_id",
+    "operation"
+  ],
+  "title": "BrokerRequest",
+  "type": "object"
+}
