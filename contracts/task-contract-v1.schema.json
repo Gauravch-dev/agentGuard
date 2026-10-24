@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "task-contract-v1",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "task_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$"
+    },
+    "contract_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "approved_by": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "agent_role": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "objective": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2048
+    },
+    "allowed_operations": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "data.get_department_totals",
+          "model.generate_report_draft",
+          "output.save_department_summary"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "allowed_data_classes": {
+      "const": [
+        "synthetic_payroll_aggregate"
+      ]
+    },
+    "approved_output_destination": {
+      "const": "internal_reports"
+    },
+    "output_schema": {
+      "const": "department_summary_v1"
+    },
+    "direct_internet_allowed": {
+      "const": false
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "limits": {
+      "type": "object",
+      "properties": {
+        "max_execution_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 600
+        },
+        "max_memory_mb": {
+          "type": "integer",
+          "minimum": 32,
+          "maximum": 2048
+        },
+        "max_processes": {
+          "type": "integer",
+          "minimum": 4,
+          "maximum": 128
+        }
+      },
+      "required": [
+        "max_execution_seconds",
+        "max_memory_mb",
+        "max_processes"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "task_id",
+    "contract_version",
+    "approved_by",
+    "agent_role",
+    "objective",
+    "allowed_operations",
+    "allowed_data_classes",
+    "approved_output_destination",
+    "output_schema",
+    "direct_internet_allowed",
+    "expires_at",
+    "limits"
+  ],
+  "additionalProperties": false
+}

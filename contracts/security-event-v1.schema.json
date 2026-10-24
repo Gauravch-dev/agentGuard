@@ -1,0 +1,197 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "security-event-v1",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "event_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "contract_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "capsule_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "host_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "source": {
+      "enum": [
+        "host_sensor",
+        "network_sensor",
+        "policy_engine",
+        "runtime",
+        "sensor_health",
+        "trusted_broker"
+      ]
+    },
+    "event_type": {
+      "enum": [
+        "broker_release",
+        "broker_request",
+        "connection_attempt",
+        "egress_flow",
+        "file_access",
+        "policy_denial",
+        "process_exec",
+        "process_exit",
+        "runtime_lifecycle",
+        "sensor_health"
+      ]
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "received_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "process_identity": {
+      "type": "object",
+      "properties": {
+        "pid": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "start_time": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cgroup_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "pid",
+        "start_time",
+        "cgroup_id"
+      ],
+      "additionalProperties": false
+    },
+    "operation": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "resource_or_destination": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "policy_verdict": {
+      "enum": [
+        "allowed",
+        "denied",
+        "not_applicable",
+        "unknown"
+      ]
+    },
+    "effect_status": {
+      "enum": [
+        "attempted",
+        "blocked",
+        "completed",
+        "observed",
+        "unknown"
+      ]
+    },
+    "coverage_status": {
+      "enum": [
+        "complete",
+        "partial",
+        "unavailable",
+        "unknown"
+      ]
+    },
+    "correlation_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "evidence_reference": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "details": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema_version",
+    "event_id",
+    "task_id",
+    "contract_version",
+    "capsule_id",
+    "host_id",
+    "source",
+    "event_type",
+    "observed_at",
+    "received_at",
+    "process_identity",
+    "operation",
+    "resource_or_destination",
+    "policy_verdict",
+    "effect_status",
+    "coverage_status",
+    "correlation_id",
+    "evidence_reference",
+    "details"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,21 @@
+{
+  "observed_at": "2026-10-24T06:44:23.881577+00:00",
+  "host": "Windows-11-10.0.26300-SP0",
+  "python": "3.14.2",
+  "tests_run": 51,
+  "passed": 50,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [
+    {
+      "test": "test_real_socket_rejects_unbound_cgroup (test_linux_peer.LinuxPeerTests.test_real_socket_rejects_unbound_cgroup)",
+      "reason": "Linux peer credential/cgroup test requires Linux"
+    }
+  ],
+  "javascript_syntax_passed": true,
+  "javascript_skip_reason": null,
+  "live_linux_container_validated": false,
+  "live_tetragon_validated": false,
+  "real_model_call_validated": false,
+  "full_mvp_complete": false
+}

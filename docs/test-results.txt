@@ -1,0 +1,56 @@
+test_real_socket_rejects_unbound_cgroup (test_linux_peer.LinuxPeerTests.test_real_socket_rejects_unbound_cgroup) ... skipped 'Linux peer credential/cgroup test requires Linux'
+test_dns_rebinding_and_foreign_origin_rejected (test_security.APITests.test_dns_rebinding_and_foreign_origin_rejected) ... ok
+test_harness_and_result_end_to_end (test_security.APITests.test_harness_and_result_end_to_end) ... ok
+test_harness_rejects_agent_code_and_runtime_options (test_security.APITests.test_harness_rejects_agent_code_and_runtime_options) ... ok
+test_launch_refuses_without_falling_back_to_harness (test_security.APITests.test_launch_refuses_without_falling_back_to_harness) ... ok
+test_local_key_required_for_api (test_security.APITests.test_local_key_required_for_api) ... ok
+test_no_http_endpoint_can_forge_sensor_evidence (test_security.APITests.test_no_http_endpoint_can_forge_sensor_evidence) ... ok
+test_only_fixed_dashboard_assets_are_served (test_security.APITests.test_only_fixed_dashboard_assets_are_served) ... ok
+test_business_success_and_blocked_attempt_coexist (test_security.BrokerTests.test_business_success_and_blocked_attempt_coexist) ... ok
+test_data_broker_aggregates_only (test_security.BrokerTests.test_data_broker_aggregates_only) ... ok
+test_execution_deadline_is_enforced (test_security.BrokerTests.test_execution_deadline_is_enforced) ... ok
+test_forged_task_id_cannot_select_another_context (test_security.BrokerTests.test_forged_task_id_cannot_select_another_context) ... ok
+test_fresh_runs_do_not_reuse_reports_or_identity (test_security.BrokerTests.test_fresh_runs_do_not_reuse_reports_or_identity) ... ok
+test_inaccurate_or_encoded_aggregate_denied (test_security.BrokerTests.test_inaccurate_or_encoded_aggregate_denied) ... ok
+test_model_not_silently_simulated (test_security.BrokerTests.test_model_not_silently_simulated) ... ok
+test_model_receives_only_approved_aggregates_and_is_bounded (test_security.BrokerTests.test_model_receives_only_approved_aggregates_and_is_bounded) ... ok
+test_protected_output_holds_on_missing_sensor (test_security.BrokerTests.test_protected_output_holds_on_missing_sensor) ... ok
+test_raw_rows_and_extra_keys_denied_at_approved_destination (test_security.BrokerTests.test_raw_rows_and_extra_keys_denied_at_approved_destination) ... ok
+test_scope_revocation_and_request_budget (test_security.BrokerTests.test_scope_revocation_and_request_budget) ... ok
+test_sql_path_destination_injection_denied (test_security.BrokerTests.test_sql_path_destination_injection_denied) ... ok
+test_contract_cannot_be_overwritten (test_security.ContractTests.test_contract_cannot_be_overwritten) ... ok
+test_contract_rejects_untrusted_approver (test_security.ContractTests.test_contract_rejects_untrusted_approver) ... ok
+test_contract_round_trip_and_revision (test_security.ContractTests.test_contract_round_trip_and_revision) ... ok
+test_contract_signature_checked_not_just_task_id (test_security.ContractTests.test_contract_signature_checked_not_just_task_id) ... ok
+test_expiry_blocks_approval_and_broker (test_security.ContractTests.test_expiry_blocks_approval_and_broker) ... ok
+test_json_rejects_duplicate_keys_and_nonfinite_numbers (test_security.ContractTests.test_json_rejects_duplicate_keys_and_nonfinite_numbers) ... ok
+test_strict_contract_fields_and_limits (test_security.ContractTests.test_strict_contract_fields_and_limits) ... ok
+test_chain_dedup_and_conflicting_replay (test_security.EvidenceTests.test_chain_dedup_and_conflicting_replay) ... ok
+test_concurrent_append_keeps_global_chain_valid (test_security.EvidenceTests.test_concurrent_append_keeps_global_chain_valid) ... ok
+test_index_tampering_detected (test_security.EvidenceTests.test_index_tampering_detected) ... ok
+test_malformed_event_not_ingested (test_security.EvidenceTests.test_malformed_event_not_ingested) ... ok
+test_same_source_id_in_different_sources_is_distinct (test_security.EvidenceTests.test_same_source_id_in_different_sources_is_distinct) ... ok
+test_sql_mutation_and_tampering_detected (test_security.EvidenceTests.test_sql_mutation_and_tampering_detected) ... ok
+test_blocked_remains_blocked_when_coverage_missing (test_security.ReconciliationTests.test_blocked_remains_blocked_when_coverage_missing) ... ok
+test_contract_version_mismatch_unverified (test_security.ReconciliationTests.test_contract_version_mismatch_unverified) ... ok
+test_empty_log_never_establishes_safety (test_security.ReconciliationTests.test_empty_log_never_establishes_safety) ... ok
+test_failed_integrity_ignores_apparent_alignment (test_security.ReconciliationTests.test_failed_integrity_ignores_apparent_alignment) ... ok
+test_forged_host_denial_is_not_trusted_enforcement (test_security.ReconciliationTests.test_forged_host_denial_is_not_trusted_enforcement) ... ok
+test_unexplained_flow_does_not_assert_data_leak (test_security.ReconciliationTests.test_unexplained_flow_does_not_assert_data_leak) ... ok
+test_cgroup_path_escape_is_rejected (test_security.RuntimeTests.test_cgroup_path_escape_is_rejected) ... ok
+test_effective_profile_detects_runtime_drift (test_security.RuntimeTests.test_effective_profile_detects_runtime_drift) ... ok
+test_preflight_failure_never_creates_container (test_security.RuntimeTests.test_preflight_failure_never_creates_container) ... ok
+test_profile_is_fixed_and_pinned (test_security.RuntimeTests.test_profile_is_fixed_and_pinned) ... ok
+test_termination_request_does_not_prove_descendants_stopped (test_security.RuntimeTests.test_termination_request_does_not_prove_descendants_stopped) ... ok
+test_windows_has_no_unrestricted_fallback (test_security.RuntimeTests.test_windows_has_no_unrestricted_fallback) ... ok
+test_ambiguous_container_prefix_is_rejected (test_security.SensorTests.test_ambiguous_container_prefix_is_rejected) ... ok
+test_pid_reuse_and_stale_lifecycle_are_rejected (test_security.SensorTests.test_pid_reuse_and_stale_lifecycle_are_rejected) ... ok
+test_proc_stat_command_parentheses_do_not_break_start_identity (test_security.SensorTests.test_proc_stat_command_parentheses_do_not_break_start_identity) ... ok
+test_real_schema_shape_normalizes_without_arguments (test_security.SensorTests.test_real_schema_shape_normalizes_without_arguments) ... ok
+test_unmapped_container_cannot_choose_task (test_security.SensorTests.test_unmapped_container_cannot_choose_task) ... ok
+test_unsupported_hook_not_fabricated (test_security.SensorTests.test_unsupported_hook_not_fabricated) ... ok
+
+----------------------------------------------------------------------
+Ran 51 tests in 5.550s
+
+OK (skipped=1)

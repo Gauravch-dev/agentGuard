@@ -1,0 +1,101 @@
+{
+  "observed_at": "2026-10-24T06:41:35.619413Z",
+  "host": "LAPTOP-12TEBJE5",
+  "kernel": "6.18.33.2-microsoft-standard-WSL2",
+  "architecture": "x86_64",
+  "cpu_count": 12,
+  "disk_free_bytes": 32812716032,
+  "checks": [
+    {
+      "name": "linux_host",
+      "status": "supported",
+      "evidence": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+      "mandatory": true
+    },
+    {
+      "name": "local_docker_cli",
+      "status": "unsupported",
+      "evidence": null,
+      "mandatory": true
+    },
+    {
+      "name": "cgroup_v2",
+      "status": "supported",
+      "evidence": "presence of /sys/fs/cgroup/cgroup.controllers",
+      "mandatory": true
+    },
+    {
+      "name": "btf",
+      "status": "supported",
+      "evidence": "presence of /sys/kernel/btf/vmlinux",
+      "mandatory": true
+    },
+    {
+      "name": "python",
+      "status": "supported",
+      "evidence": "3.14.4",
+      "mandatory": true
+    },
+    {
+      "name": "docker_daemon",
+      "status": "unsupported",
+      "evidence": "docker unavailable or timed out: FileNotFoundError",
+      "mandatory": true
+    },
+    {
+      "name": "namespace_effectiveness",
+      "status": "untested",
+      "evidence": "requires an owned Linux security-lab run",
+      "mandatory": true
+    },
+    {
+      "name": "apparmor_or_selinux",
+      "status": "untested",
+      "evidence": "requires an owned Linux security-lab run",
+      "mandatory": true
+    },
+    {
+      "name": "clock_synchronization",
+      "status": "untested",
+      "evidence": "requires an owned Linux security-lab run",
+      "mandatory": true
+    },
+    {
+      "name": "sensor_process_probes",
+      "status": "untested",
+      "evidence": "requires an owned Linux security-lab run",
+      "mandatory": true
+    },
+    {
+      "name": "sensor_loss_accounting",
+      "status": "untested",
+      "evidence": "requires an owned Linux security-lab run",
+      "mandatory": true
+    },
+    {
+      "name": "broker_peer_identity",
+      "status": "untested",
+      "evidence": "requires an owned Linux security-lab run",
+      "mandatory": true
+    },
+    {
+      "name": "network_flow_visibility",
+      "status": "untested",
+      "evidence": "requires an owned Linux security-lab run",
+      "mandatory": true
+    },
+    {
+      "name": "termination_descendants",
+      "status": "untested",
+      "evidence": "requires an owned Linux security-lab run",
+      "mandatory": true
+    },
+    {
+      "name": "protected_execution_integration",
+      "status": "unsupported",
+      "evidence": "live coverage attestation and full runtime/broker wiring are not implemented",
+      "mandatory": true
+    }
+  ],
+  "security_claim": "capability inventory; presence alone does not establish effective isolation"
+}

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AgentGuard · Security workbench</title>
+  <link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="/" aria-label="AgentGuard home"><span class="brand-icon">A</span><span>AgentGuard<span class="version">2.0 / DEVELOPMENT</span></span></a>
+    <div class="workspace-label">LOCAL WORKSPACE</div>
+    <nav aria-label="Workspace"><a href="#overview" class="active"><span>◈</span> Investigation</a><a href="#contract"><span>▤</span> Task contract</a><a href="#evidence"><span>≋</span> Evidence journal</a></nav>
+    <div class="boundary"><span class="dot amber"></span><strong>Protected execution offline</strong><p>Linux sensor and broker integration must pass validation before agent execution.</p><span class="small-label">FAIL-CLOSED BY DESIGN</span></div>
+    <div class="sidebar-foot">One job. Defined permissions.<br>Independent evidence.<div>Prototype v0.1.0</div></div>
+  </aside>
+  <main id="overview">
+    <header><div class="breadcrumb">WORKSPACE <span>/</span> INVESTIGATION</div><span class="local-pill"><span class="dot"></span> LOCAL CONTROL PLANE</span></header>
+    <div class="heading-row"><div><div class="eyebrow">TASK-BOUND AGENT SECURITY</div><h1>Every action needs an explanation.</h1><p class="intro">Inspect the job, its permissions, and the evidence behind each decision.</p></div><button id="refresh" class="secondary" hidden>↻ Refresh</button></div>
+    <section id="login" class="login-card"><div><span class="section-number">00</span><h2>Connect to your workbench</h2><p>Paste the local access key printed by <code>python -m agentguard serve</code>. The key stays in this browser tab's memory.</p></div><form id="login-form"><label for="access-key">Local access key</label><div class="connect-row"><input id="access-key" type="password" autocomplete="off" required placeholder="Enter local access key"><button type="submit">Connect <span>→</span></button></div></form></section>
+    <div id="notice" role="status" aria-live="polite" hidden></div>
+    <div id="connected" hidden>
+      <div class="coverage-banner"><span class="coverage-icon">!</span><div><strong>Evidence has boundaries. Keep them visible.</strong><p>This policy harness tests trusted broker decisions. It runs no AI agent or container. Independent OS coverage is unavailable.</p></div><span class="outline-pill">POLICY HARNESS</span></div>
+      <section class="metrics" aria-label="Current run summary"><article><span>BUSINESS OUTCOME</span><strong id="business-metric">No run yet</strong><small>Report completion is separate from security.</small></article><article><span>ENFORCEMENT DENIALS</span><strong id="blocked-metric">—</strong><small>Confirmed broker denials only.</small></article><article><span>INDEPENDENT COVERAGE</span><strong class="amber-text">Unverified</strong><small>No attested host coverage interval.</small></article><article><span>EVIDENCE INTEGRITY</span><strong id="integrity-metric">—</strong><small id="integrity-detail">Local HMAC chain.</small></article></section>
+      <div class="content-grid">
+        <section class="panel task-panel" id="contract"><div class="panel-title"><div><span class="section-number">01</span><h2>Approved task</h2></div><span class="tag">SYNTHETIC DATA</span></div><div class="task-id" id="task-id">FIN-001 <span>/ v1</span></div><h3>Department salary summary</h3><p id="objective"></p><div class="contract-row"><span>Destination</span><strong>Internal reports</strong></div><div class="contract-row"><span>Direct internet</span><strong class="denied-label">Denied</strong></div><div class="contract-row"><span>Contract expires</span><strong id="expiry"></strong></div><div class="operation-label">AUTHORIZED OPERATIONS</div><ul id="operations"></ul><button id="run-harness" class="wide">Run policy harness <span>→</span></button><p class="button-note">Test aggregate access → reject raw rows → save summary.</p><details><summary>View immutable contract</summary><pre id="contract-json"></pre></details></section>
+        <section class="panel assessment-panel"><div class="panel-title"><div><span class="section-number">02</span><h2>Security assessment</h2></div><span class="small-label">MULTIPLE FINDINGS CAN COEXIST</span></div><div id="assessment-empty" class="empty"><span>◎</span><h3>Start with a permitted job.</h3><p>Run the policy harness to inspect real broker receipts, a blocked output attempt and explicitly missing host coverage.</p></div><div id="assessment-content" hidden><div class="assessment-summary"><span class="small-label">CURRENT RUN</span><select id="run-select" aria-label="Select run"></select><div id="classification-pills"></div></div><div id="findings"></div></div></section>
+      </div>
+      <section class="panel evidence-panel" id="evidence"><div class="panel-title"><div><span class="section-number">03</span><h2>Evidence journal</h2></div><span class="small-label">AUTHENTIC SOURCE · DISTINCT EFFECT STAGES</span></div><div class="table-scroll"><table><thead><tr><th>TIME</th><th>SOURCE</th><th>OPERATION</th><th>DECISION / EFFECT</th><th>REFERENCE</th></tr></thead><tbody id="events"><tr><td colspan="5" class="table-empty">No run selected.</td></tr></tbody></table></div></section>
+      <section class="panel result-panel" id="report-panel" hidden><div class="panel-title"><div><span class="section-number">04</span><h2>Approved business result</h2></div><span class="tag">AGGREGATES ONLY · INR</span></div><div id="report"></div></section>
+      <footer>AgentGuard 2.0 <span>Enforce at the boundary. Explain with evidence.</span><span>Security effectiveness awaits Linux testing.</span></footer>
+    </div>
+  </main>
+</body>
+</html>
