@@ -65,6 +65,20 @@ def release_coverage_ready(
         return False
     for source, classes in REQUIRED_COVERAGE.items():
         for event_class in classes:
+            # Known recent loss/outage must hold output even if it starts after
+            # the last completed broker action used as the coverage cutoff.
+            if any(
+                c.source == source
+                and event_class in c.event_classes
+                and c.task_id == binding.task_id
+                and c.capsule_id == binding.capsule_id
+                and not c.simulated
+                and c.start <= checked_at
+                and c.end > start
+                and (c.status != "complete" or c.lost_events)
+                for c in coverage
+            ):
+                return False
             if not any(
                 c.source == source
                 and event_class in c.event_classes

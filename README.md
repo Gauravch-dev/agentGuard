@@ -4,11 +4,25 @@
 
 | Area | Verified today | Remaining |
 |---|---|---|
-| Application | Task Authority, brokers, evidence, reconciliation and dashboard | Complete protected task lifecycle |
-| Linux runtime | Restricted containers, staged admission, real broker peer checks, watchdog and cleanup | Connect staged admission to the full application runtime |
+| Application | Task Authority, brokers, evidence, reconciliation, dashboard and staged lifecycle orchestration | Live validation of lifecycle and report recovery |
+| Linux runtime | Restricted containers, staged launcher, real broker peer checks, watchdog and cleanup | Trusted live admission reviewer and complete monitoring integration |
 | Sensors | Genuine Tetragon process/child observations and sampled loss metrics | File/connect hooks, network flows, continuous export/coverage and timestamp review |
 | AI model | Finance Agent client and local-model broker interface | Actual model setup and benign/injected protected runs |
-| Acceptance | 122 Linux tests plus 13 subtests; selected real Linux experiments | Full S01–S16 and baseline/performance comparisons |
+| Acceptance | 136 Windows tests plus 13 subtests; prior Linux round has 122 tests and selected real experiments | Rerun this round on Linux; full S01–S16 and baseline/performance comparisons |
+
+## Latest application lifecycle round
+
+The application now connects Member 2's staged launcher to persisted task bindings,
+private broker listeners, admission holds, background lifecycle checks, cancellation
+and restart cleanup. Known sensor outages hold reports even when they start after
+the last broker action. The dashboard explains waiting/cleanup states, and the
+Finance client has bounded retries for coverage-held output.
+
+Production admission remains disabled: the trusted live platform reviewer, complete
+continuous sensor coverage and approved model setup are still missing. An optional
+Linux startup flag stages only a waiting bootstrap. See the
+[application lifecycle round and next Linux tasks](docs/application_lifecycle_round.md)
+for exact APIs, validation limits and the return handoff.
 
 ## Latest Linux implementation round
 

@@ -1,7 +1,7 @@
 """Explicit adapters for Member 2 commit 198aea6515954130ed58ed21601a23be767596a0.
 
 Parsing is not authentication. Protected execution remains gated by the actual
-upstream preflight and by the still-missing protected workload launcher.
+upstream preflight and incomplete live sensor/admission validation.
 """
 
 from collections.abc import Iterator
@@ -40,7 +40,7 @@ class Member2RuntimeAdapter:
             "upstream_commit": UPSTREAM_COMMIT,
             "checks": self.last_preflight,
             "protected_execution_ready": False,
-            "reason": "Member 2 protected launcher, live coverage, and socket/container acceptance remain pending",
+            "reason": "Protected application admission and continuous sensor coverage are not yet verified",
         }
 
     def capabilities(self) -> dict:

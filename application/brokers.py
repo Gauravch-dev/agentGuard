@@ -61,6 +61,11 @@ class Broker:
         )
         if binding is None:
             raise PermissionError("Unregistered broker channel")
+        if any(
+            r["body"]["capsule_id"] == binding.capsule_id
+            for r in self.store.evidence(binding.task_id, "channel_revocation")
+        ):
+            raise PermissionError("Channel is durably revoked")
         contract = self.authority.get(binding.task_id, require_active=True)
         row = self.authority.record(binding.task_id)
         if row["state"] != "running" or contract.contract_version != binding.contract_version:

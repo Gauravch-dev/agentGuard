@@ -227,6 +227,47 @@ def test_release_coverage_requires_all_scopes_freshness_and_no_loss(running):
     assert not release_coverage_ready(binding, windows, start, end, end + timedelta(seconds=1))
 
 
+@pytest.mark.parametrize("status,lost", [("partial", 0), ("complete", 1)])
+def test_known_recent_outage_after_last_broker_action_still_holds_output(running, status, lost):
+    (app, client, settings, runtime), task, headers = running
+    binding = runtime.binding
+    cutoff = now()
+    windows = [
+        Coverage(
+            coverage_id=uuid4().hex,
+            task_id=binding.task_id,
+            capsule_id=binding.capsule_id,
+            sensor_id="fixture-sensor",
+            source=source,
+            event_classes=classes,
+            start=binding.process_start,
+            end=cutoff,
+            status="complete",
+        )
+        for source, classes in (
+            ("host_sensor", ("process_exec", "file_access", "connection_attempt")),
+            ("network_sensor", ("egress_flow",)),
+        )
+    ]
+    checked = cutoff + timedelta(seconds=1)
+    assert release_coverage_ready(binding, windows, binding.process_start, cutoff, checked)
+    windows.append(
+        Coverage(
+            coverage_id=uuid4().hex,
+            task_id=binding.task_id,
+            capsule_id=binding.capsule_id,
+            sensor_id="fixture-sensor",
+            source="network_sensor",
+            event_classes=("egress_flow",),
+            start=cutoff + timedelta(milliseconds=100),
+            end=checked,
+            status=status,
+            lost_events=lost,
+        )
+    )
+    assert not release_coverage_ready(binding, windows, binding.process_start, cutoff, checked)
+
+
 def test_peer_bridge_reuses_upstream_proc_parser_and_rejects_reuse(running, tmp_path, monkeypatch):
     import socket
 

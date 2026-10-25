@@ -1,3 +1,13 @@
+# Current application return round
+
+The newer [application lifecycle integration handoff](application_lifecycle_round.md)
+supersedes the earlier launcher-wiring requests below. Pull the new round, validate
+the real staged application path and atomic admission marker, then complete live
+sensor coverage, the trusted platform reviewer and model/S01–S16 acceptance.
+Commit and push the Linux results for the next application review.
+
+---
+
 # Member 2 next round: Linux runtime, sensors, and live validation
 
 Owner: @Gauravch-dev (Member 2). Start from the latest shared `main` branch after

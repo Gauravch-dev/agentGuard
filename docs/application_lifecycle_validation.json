@@ -1,0 +1,35 @@
+{
+  "observed_at": "2026-10-24T18:40:11.182174+00:00",
+  "base_commit": "8509e7a",
+  "platform": "Windows",
+  "tests": {
+    "passed": 136,
+    "skipped": 5,
+    "subtests_passed": 13
+  },
+  "checks": {
+    "pytest": true,
+    "lint": true,
+    "format": true,
+    "application_types": true,
+    "shared_contract_compatibility": true,
+    "dashboard_types_and_build": true,
+    "offline_changed_source_secret_scan": true,
+    "local_browser_protected_launch_refusal": true
+  },
+  "warnings": [
+    "Existing Starlette TestClient/httpx deprecation"
+  ],
+  "linux_tests_skipped": [
+    "SO_PEERCRED",
+    "root-owned runtime records",
+    "Linux boot/monotonic deadlines",
+    "rootful private directories",
+    "atomic admission marker permissions"
+  ],
+  "new_lifecycle_tests_use_explicit_simulations": true,
+  "new_live_linux_validation": false,
+  "actual_model_invoked": false,
+  "production_admission_enabled": false,
+  "full_protected_mvp_complete": false
+}

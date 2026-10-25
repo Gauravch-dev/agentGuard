@@ -1,8 +1,11 @@
 """Authenticated owner API and separate trusted sensor/runtime ingestion surfaces."""
 
+import asyncio
 import json
 import time
 from collections import defaultdict, deque
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Annotated
@@ -19,6 +22,7 @@ from application.authority import Authority
 from application.brokers import Broker
 from application.config import Settings
 from application.coverage import release_coverage_ready
+from application.lifecycle import TaskLifecycle
 from application.member2_bridge import (
     Member2RuntimeAdapter,
     Member2Transfer,
@@ -39,6 +43,7 @@ from application.models import (
     now,
 )
 from application.runtime_adapter import REQUIRED_CONTROLS, RuntimeAdapter, UnavailableRuntime
+from application.staged_runtime import StagedRuntimeAdapter
 from application.store import Store
 from application.tere import reconcile
 
@@ -56,6 +61,8 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
         if not row["started_at"]:
             return False
         start = datetime.fromisoformat(row["started_at"])
+        if isinstance(runtime, StagedRuntimeAdapter):
+            start = min(start, binding.process_start)
         receipts = [
             Receipt.model_validate(r["body"]["response"]["receipt"])
             for r in store.evidence(binding.task_id, "broker")
@@ -74,11 +81,54 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
         coverage_check=release_check,
     )
 
+    lifecycle = (
+        TaskLifecycle(store, authority, broker, runtime, settings)
+        if isinstance(runtime, StagedRuntimeAdapter)
+        else None
+    )
+
+    @asynccontextmanager
+    async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+        monitor = None
+        stopping = asyncio.Event()
+        if lifecycle is not None:
+            await asyncio.to_thread(lifecycle.recover)
+
+            async def refresh_active() -> None:
+                while not stopping.is_set():
+                    try:
+                        await asyncio.wait_for(stopping.wait(), timeout=1)
+                    except TimeoutError:
+                        try:
+                            await asyncio.to_thread(lifecycle.refresh)
+                            app.state.monitor_error = None
+                        except Exception:
+                            app.state.monitor_error = (
+                                "Runtime monitoring unavailable; broker gates remain enforced"
+                            )
+
+            monitor = asyncio.create_task(refresh_active())
+        try:
+            yield
+        finally:
+            if monitor is not None:
+                stopping.set()
+                await monitor
+            if lifecycle is not None:
+                await asyncio.to_thread(lifecycle.shutdown)
+
     app = FastAPI(
-        title="AgentGuard 2.0", version="0.1.0", docs_url=None, redoc_url=None, openapi_url=None
+        title="AgentGuard 2.0",
+        version="0.2.0",
+        docs_url=None,
+        redoc_url=None,
+        openapi_url=None,
+        lifespan=lifespan,
     )
     app.state.store, app.state.authority, app.state.broker = store, authority, broker
     app.state.coverage_policy = release_check
+    app.state.lifecycle = lifecycle
+    app.state.monitor_error = None
     rates: dict[str, deque] = defaultdict(deque)
 
     def owner(authorization: Annotated[str, Header()] = "") -> str:
@@ -174,7 +224,11 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
             "application": "ready",
             "runtime_connected": not isinstance(
                 runtime, (UnavailableRuntime, Member2RuntimeAdapter)
-            ),
+            )
+            or lifecycle is not None,
+            "staged_runtime_connected": lifecycle is not None,
+            "monitor_error": app.state.monitor_error,
+            "protected_execution_ready": False,
             "platform_adapter": "member2"
             if isinstance(runtime, Member2RuntimeAdapter)
             else "custom",
@@ -240,6 +294,11 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
     @app.get("/api/v1/tasks/{task_id}")
     def task(task_id: str, principal: str = Depends(owner)) -> dict:
         row = authority.record(task_id)
+        readiness = [
+            r["body"]
+            for r in store.evidence(task_id, "readiness")
+            if r["body"].get("contract_version", 1) == row["version"]
+        ]
         return {
             "contract": authority.get(task_id),
             "state": row["state"],
@@ -247,22 +306,47 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
             "started_at": row["started_at"],
             "ended_at": row["ended_at"],
             "binding": binding_for(task_id),
-            "readiness": [r["body"] for r in store.evidence(task_id, "readiness")],
+            "readiness": readiness,
+            "execution": lifecycle.status(task_id)
+            if lifecycle
+            else {
+                "phase": row["state"],
+                "reasons": [r["reason"] for r in readiness][-1:],
+            },
         }
 
     @app.post("/api/v1/tasks/{task_id}/revisions", status_code=201)
     def revise(task_id: str, principal: str = Depends(owner)) -> dict:
+        if lifecycle is not None:
+            binding = lifecycle.binding(task_id)
+            if binding is not None:
+                runtime_result = runtime.inspect(binding.capsule_id)
+                if not runtime_result.descendants_exited or runtime_result.simulated:
+                    raise ValueError("Previous capsule containment is unverified")
         return {"contract": authority.revise(task_id, principal), "state": "approved"}
 
     @app.post("/api/v1/tasks/{task_id}/launch")
     def launch(task_id: str, principal: str = Depends(owner)) -> dict:
+        if lifecycle is not None:
+            try:
+                return lifecycle.prepare(task_id)
+            except (PlatformError, OSError, RuntimeError) as exc:
+                raise HTTPException(
+                    503, "Staging failed; inspect readiness and cleanup evidence"
+                ) from exc
         with store.lock:
             contract = authority.get(task_id, require_active=True)
             authority.transition(task_id, "launch_requested")
             requested_at = now()
             try:
                 result = runtime.launch(contract)
-                store.append("readiness", uuid4().hex, task_id, result.model_dump(mode="json"))
+                store.append(
+                    "readiness",
+                    uuid4().hex,
+                    task_id,
+                    result.model_dump(mode="json")
+                    | {"contract_version": contract.contract_version},
+                )
                 if isinstance(runtime, Member2RuntimeAdapter):
                     store.append(
                         "platform_preflight",
@@ -327,11 +411,22 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
                     503, "Runtime launch failed; inspect platform evidence"
                 ) from exc
 
-    @app.post("/api/v1/tasks/{task_id}/terminate")
-    def terminate(task_id: str, principal: str = Depends(owner)) -> dict:
+    @app.post("/api/v1/tasks/{task_id}/terminate", response_model=None)
+    def terminate(task_id: str, principal: str = Depends(owner)) -> dict | JSONResponse:
+        if lifecycle is not None:
+            stopped = lifecycle.stop(task_id)
+            if not stopped["descendants_exited"]:
+                return JSONResponse(stopped, status_code=409)
+            return stopped
         binding = binding_for(task_id)
         if binding is None or authority.record(task_id)["state"] != "running":
             raise ValueError("No active capsule")
+        store.append(
+            "channel_revocation",
+            uuid4().hex,
+            task_id,
+            {"capsule_id": binding.capsule_id, "reason": "OWNER_CANCELLED"},
+        )
         result = runtime.terminate(binding.capsule_id)
         inspected = runtime.inspect(binding.capsule_id)
         store.append(
@@ -353,8 +448,39 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
         authority.transition(task_id, "interrupted")
         return {"state": "interrupted", "descendants_exited": True}
 
+    @app.post("/api/v1/tasks/{task_id}/admit")
+    def admit(
+        task_id: str, payload: EmptyRequest = EmptyRequest(), principal: str = Depends(owner)
+    ) -> dict:
+        if lifecycle is None:
+            raise ValueError("Staged runtime is not connected")
+        try:
+            return lifecycle.admit(task_id)
+        except (PlatformError, OSError, RuntimeError) as exc:
+            raise HTTPException(
+                503, "Admission failed; broker access revoked and cleanup requested"
+            ) from exc
+
+    @app.post("/api/v1/tasks/{task_id}/sync")
+    def sync(
+        task_id: str, payload: EmptyRequest = EmptyRequest(), principal: str = Depends(owner)
+    ) -> dict:
+        if lifecycle is None:
+            raise ValueError("Staged runtime is not connected")
+        return lifecycle.sync(task_id)
+
     @app.post("/internal/v1/tasks/{task_id}/completion")
     def complete(task_id: str, payload: Completion, principal: str = Depends(platform)) -> dict:
+        if lifecycle is not None:
+            binding = lifecycle.binding(task_id)
+            if (
+                binding is None
+                or binding.capsule_id != payload.capsule_id
+                or not payload.descendants_exited
+            ):
+                raise ValueError("Runtime binding mismatch")
+            # Runtime credentials cannot force a caller-chosen terminal outcome.
+            return lifecycle.sync(task_id)
         binding = binding_for(task_id)
         if binding is None or binding.capsule_id != payload.capsule_id:
             raise ValueError("Runtime binding mismatch")
@@ -371,6 +497,11 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
             r["body"]["capsule_id"] == binding.capsule_id for r in store.evidence(task_id, "report")
         ):
             raise ValueError("Business success requires trusted output receipt")
+        if payload.state == "completed" and any(
+            r["body"]["capsule_id"] == binding.capsule_id
+            for r in store.evidence(task_id, "channel_revocation")
+        ):
+            raise ValueError("Cancelled task cannot claim business completion")
         authority.transition(task_id, payload.state)
         store.append("task_result", uuid4().hex, task_id, payload.model_dump(mode="json"))
         return {"state": payload.state}
@@ -487,6 +618,18 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
         ]
         start = datetime.fromisoformat(row["started_at"] or row["created_at"])
         end = datetime.fromisoformat(row["ended_at"]) if row["ended_at"] else now()
+        if lifecycle is not None and binding is not None:
+            start = binding.process_start
+            verified_ends = [
+                r["body"]["execution_end"]
+                for kind in ("task_result", "termination")
+                for r in store.evidence(task_id, kind)
+                if r["body"].get("capsule_id") == binding.capsule_id
+                and r["body"].get("descendants_exited")
+                and r["body"].get("execution_end")
+            ]
+            if verified_ends:
+                end = datetime.fromisoformat(verified_ends[-1])
         findings = reconcile(
             contract,
             binding,
@@ -505,6 +648,24 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
             end,
             integrity,
         )
+        if lifecycle is not None and binding is not None:
+            execution = lifecycle.status(task_id)
+            if execution["phase"] in {"containment_unverified", "awaiting_final_coverage"}:
+                findings.append(
+                    Finding(
+                        classification="Unverified",
+                        reason_code="CONTAINMENT_UNVERIFIED"
+                        if execution["phase"] == "containment_unverified"
+                        else "FINAL_COVERAGE_PENDING",
+                        explanation="Broker access is revoked. "
+                        + (
+                            "Process exit is not independently verified."
+                            if execution["phase"] == "containment_unverified"
+                            else "Final monitoring evidence is still pending."
+                        ),
+                        evidence_references=(binding.capsule_id,),
+                    )
+                )
         conflicts = store.evidence(task_id, "ingestion_conflict")
         if conflicts:
             findings.append(

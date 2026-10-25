@@ -14,9 +14,10 @@ from pathlib import Path
 
 import uvicorn
 
-from agentguard.capsules import private_directory
+from agentguard.capsules import StagedCapsules, private_directory
 from application.api import create_app
 from application.config import SensorIdentity, Settings
+from application.staged_runtime import StagedRuntimeAdapter
 
 
 def load_secrets(root: Path) -> dict:
@@ -46,6 +47,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--state-dir", type=Path, default=Path("/var/lib/agentguard/control"))
     parser.add_argument("--lab-image-id")
+    parser.add_argument(
+        "--staged-image-id", help="Reviewed immutable Finance image ID; bootstrap staging only"
+    )
+    parser.add_argument("--host-id", default="linux-lab-01")
     args = parser.parse_args()
     if sys.platform != "linux" or os.geteuid() != 0:
         parser.error("this baseline requires the trusted rootful Linux host")
@@ -60,7 +65,7 @@ def main():
         approved_lab_image=args.lab_image_id,
         sensors={
             "linux-process-01": SensorIdentity(
-                values["process_sensor"], "linux-lab-01", ("host_sensor", "sensor_health")
+                values["process_sensor"], args.host_id, ("host_sensor", "sensor_health")
             )
         },
     )
@@ -70,7 +75,12 @@ def main():
         "Protected AI admission remains disabled until every required sensor scope is verified.",
         flush=True,
     )
-    uvicorn.run(create_app(settings), host="127.0.0.1", port=8000, access_log=False)
+    runtime = None
+    if args.staged_image_id:
+        runtime = StagedRuntimeAdapter(
+            StagedCapsules(args.staged_image_id, state_root=root / "runtime"), args.host_id
+        )
+    uvicorn.run(create_app(settings, runtime), host="127.0.0.1", port=8000, access_log=False)
 
 
 if __name__ == "__main__":

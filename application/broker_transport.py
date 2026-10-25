@@ -52,11 +52,11 @@ async def serve_socket(
     async def connection(reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
         try:
             raw_socket = writer.get_extra_info("socket")
-            channel = verify(raw_socket)
+            channel = await asyncio.to_thread(verify, raw_socket)
             raw = await asyncio.wait_for(reader.readline(), timeout=5)
             if len(raw) > 16384 or not raw.endswith(b"\n"):
                 raise ValueError("Invalid frame")
-            if verify(raw_socket) != channel:
+            if await asyncio.to_thread(verify, raw_socket) != channel:
                 raise PermissionError("Peer changed while reading")
             request = BrokerRequest.model_validate(strict_json(raw))
             response = await asyncio.to_thread(broker.handle, channel, request)

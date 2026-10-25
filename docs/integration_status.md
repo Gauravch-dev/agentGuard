@@ -2,6 +2,12 @@
 
 Recorded 24 October 2026. This file describes actual implementation and validation, not the target design.
 
+Latest application update (25 October): see
+[the lifecycle integration round](application_lifecycle_round.md) and its recorded
+validation. The historical rows below describe earlier checkpoints. The staged
+application workflow is now implemented; production admission and full live
+monitoring/model acceptance remain blocked.
+
 | Component | Code state | Validation state |
 |---|---|---|
 | Versioned task/event interfaces | Implemented | Strict validation/security regressions pass |

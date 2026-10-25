@@ -9,7 +9,7 @@ from application.store import Store, canonical
 TRANSITIONS: dict[str, set[str]] = {
     "created": {"approved"},
     "approved": {"launch_requested"},
-    "launch_requested": {"running", "failed"},
+    "launch_requested": {"running", "failed", "interrupted"},
     "running": {"completed", "failed", "interrupted"},
     "completed": set(),
     "failed": set(),

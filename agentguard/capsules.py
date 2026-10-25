@@ -90,6 +90,22 @@ class RuntimeRecord:
             temporary.unlink(missing_ok=True)
 
 
+def publish_admission(directory: Path):
+    """Publish a complete, capsule-readable marker despite a private host umask."""
+    temporary = directory / ("admission-" + uuid4().hex + ".tmp")
+    descriptor = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+    try:
+        with os.fdopen(descriptor, "wb") as stream:
+            stream.write(b"admitted-v1\n")
+            stream.flush()
+            os.fchmod(stream.fileno(), 0o444)
+            os.fsync(stream.fileno())
+        # No overwrite and no interval where the bootstrap can read a partial marker.
+        os.link(temporary, directory / "admitted", follow_symlinks=False)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
 class StagedCapsules:
     def __init__(
         self,
@@ -267,13 +283,7 @@ class StagedCapsules:
             directory = Path(value["channel_directory"])
             if not stat.S_ISSOCK((directory / "broker.sock").stat().st_mode):
                 raise PlatformError("registered broker socket missing")
-            descriptor = os.open(
-                directory / "admitted", os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o444
-            )
-            with os.fdopen(descriptor, "wb") as stream:
-                stream.write(b"admitted-v1\n")
-                stream.flush()
-                os.fsync(stream.fileno())
+            publish_admission(directory)
             value["admitted"] = True
             record.write(value)
 

@@ -9,7 +9,12 @@ from pathlib import Path
 import pytest
 
 from agentguard.authority import sample_contract
-from agentguard.capsules import RuntimeRecord, deadline_reached, private_directory
+from agentguard.capsules import (
+    RuntimeRecord,
+    deadline_reached,
+    private_directory,
+    publish_admission,
+)
 from agentguard.platform import PlatformError, verify_inspect
 from agentguard.schema import timestamp
 from agentguard.sensors import MappingError, TetragonNormalizer, Workload
@@ -125,3 +130,20 @@ def test_runtime_state_rejects_shared_directory(tmp_path):
     path.mkdir(mode=0o755)
     with pytest.raises(PlatformError):
         private_directory(path)
+
+
+@pytest.mark.skipif(
+    sys.platform != "linux", reason="Linux admission-file permission semantics required"
+)
+def test_admission_marker_is_complete_readable_and_exclusive_under_private_umask(tmp_path):
+    previous = os.umask(0o077)
+    try:
+        publish_admission(tmp_path)
+    finally:
+        os.umask(previous)
+    marker = tmp_path / "admitted"
+    assert marker.read_bytes() == b"admitted-v1\n"
+    assert marker.stat().st_mode & 0o777 == 0o444
+    with pytest.raises(FileExistsError):
+        publish_admission(tmp_path)
+    assert list(tmp_path.iterdir()) == [marker]

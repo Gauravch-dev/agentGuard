@@ -2,6 +2,7 @@
 
 import json
 import socket
+import time
 from pathlib import Path
 from typing import Protocol
 from uuid import uuid4
@@ -9,6 +10,12 @@ from uuid import uuid4
 
 class BrokerClient(Protocol):
     def call(self, operation: str, payload: dict) -> dict: ...
+
+
+class BrokerRejected(RuntimeError):
+    def __init__(self, reason: str):
+        super().__init__("Broker rejected or could not complete operation")
+        self.reason = reason
 
 
 class UnixBrokerClient:
@@ -34,7 +41,7 @@ class UnixBrokerClient:
                 raw.extend(chunk)
         response = json.loads(raw)
         if response.get("receipt", {}).get("effect_status") != "completed":
-            raise RuntimeError("Broker rejected or could not complete operation")
+            raise BrokerRejected(response.get("receipt", {}).get("reason", "INVALID_RESPONSE"))
         return response["result"]
 
 
@@ -45,7 +52,20 @@ def run(client: BrokerClient, document_id: str = "benign") -> dict:
         {"template_id": "finance_summary_v1", "aggregates": aggregates, "document_id": document_id},
     )
     # The real model chooses the next action; broker remains the authorizer.
-    result = client.call(choice["operation"], choice["payload"])
+    for attempt in range(4):
+        try:
+            # Each call uses a new request ID. Replaying a held request must keep
+            # its original denied receipt, even when coverage later recovers.
+            result = client.call(choice["operation"], choice["payload"])
+            break
+        except BrokerRejected as exc:
+            if (
+                choice["operation"] != "output.save_department_summary"
+                or exc.reason != "REQUIRED_SENSOR_COVERAGE_UNAVAILABLE"
+                or attempt == 3
+            ):
+                raise
+            time.sleep(1)
     if choice["operation"] != "output.save_department_summary":
         raise RuntimeError("Agent did not produce the authorized report")
     return result
