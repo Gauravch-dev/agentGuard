@@ -93,3 +93,15 @@ class Settings:
     @staticmethod
     def token_fingerprint(token: str) -> str:
         return hashlib.sha256(token.encode()).hexdigest()
+
+    def rate_bucket(self, peer: str, path: str, authorization: str) -> tuple[str, int]:
+        if path in {"/internal/v1/events", "/internal/v1/member2/events", "/internal/v1/coverage"}:
+            try:
+                sensor_id = self.identify(authorization, "sensor")
+            except PermissionError:
+                pass
+            else:
+                # Only authenticated sources get an independent bounded kernel
+                # event budget. Rotating invalid tokens cannot obtain this quota.
+                return peer + "|sensor|" + sensor_id, 10000
+        return peer, 600

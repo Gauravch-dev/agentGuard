@@ -91,11 +91,13 @@ class StagedRuntimeAdapter(Member2RuntimeAdapter):
         *,
         sockets: Any = None,
         admission_review: Callable[[dict], bool] | None = None,
+        supervisor: Any = None,
     ) -> None:
         super().__init__(lab=controller.lab, approved_image=controller.image_id)
         self.controller, self.host_id = controller, host_id
         self.sockets = sockets
         self.admission_review = admission_review
+        self.supervisor = supervisor
         self.review_reasons: dict[str, tuple[str, ...]] = {}
 
     def launch(self, contract_ref: TaskContract) -> RuntimeResult:
@@ -146,6 +148,8 @@ class StagedRuntimeAdapter(Member2RuntimeAdapter):
         if self.sockets is None:
             self.sockets = BrokerSockets()
         self.sockets.open(self.record_for(binding), binding, broker)
+        if self.supervisor is not None:
+            self.supervisor.start(self.record_for(binding), binding)
 
     def reviewed(self, binding: Binding) -> bool:
         # There is deliberately no HTTP flag or environment switch to bypass this.
@@ -205,8 +209,12 @@ class StagedRuntimeAdapter(Member2RuntimeAdapter):
                 self.sockets.close(capsule_id)
         finally:
             self.controller.terminate(capsule_id)
+            if self.supervisor is not None:
+                self.supervisor.finish(capsule_id)
         return self.inspect(capsule_id)
 
     def shutdown(self) -> None:
         if self.sockets is not None:
             self.sockets.shutdown()
+        if self.supervisor is not None:
+            self.supervisor.shutdown()

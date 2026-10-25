@@ -16,6 +16,7 @@ import uvicorn
 
 from agentguard.capsules import StagedCapsules, private_directory
 from agentguard.schema import strict_json
+from agentguard.supervisor import ContinuousSupervisor
 from application.api import create_app
 from application.config import SensorIdentity, Settings
 from application.staged_runtime import StagedRuntimeAdapter
@@ -90,7 +91,14 @@ def main():
         "--approved-model-digest",
         help="Reviewed SHA-256 of local qwen2.5:7b; enables only trusted loopback model broker",
     )
+    parser.add_argument(
+        "--continuous-observers",
+        action="store_true",
+        help="Start genuine continuous host observers for staged tasks; known coverage gaps still hold admission",
+    )
     args = parser.parse_args()
+    if args.continuous_observers and (not args.staged_image_id or not args.sensor_registry):
+        parser.error("--continuous-observers requires --staged-image-id and --sensor-registry")
     if sys.platform != "linux" or os.geteuid() != 0:
         parser.error("this baseline requires the trusted rootful Linux host")
     os.umask(0o077)
@@ -120,9 +128,12 @@ def main():
     )
     runtime = None
     if args.staged_image_id:
-        runtime = StagedRuntimeAdapter(
-            StagedCapsules(args.staged_image_id, state_root=root / "runtime"), args.host_id
-        )
+        controller = StagedCapsules(args.staged_image_id, state_root=root / "runtime")
+        runtime = StagedRuntimeAdapter(controller, args.host_id)
+        if args.continuous_observers:
+            runtime.supervisor = ContinuousSupervisor(
+                controller, settings.sensors, args.host_id, state_root=root / "observers"
+            )
     uvicorn.run(create_app(settings, runtime), host="127.0.0.1", port=8000, access_log=False)
 
 

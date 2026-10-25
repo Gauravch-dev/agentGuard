@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-10-25T06:25:46.492891+00:00",
+  "observed_at": "2026-10-25T08:21:26.646348+00:00",
   "platform": "Windows",
   "kernel": "11",
   "python": "3.14.2",
@@ -26,8 +26,8 @@
     }
   },
   "tests": {
-    "passed": 146,
-    "skipped": 11,
+    "passed": 176,
+    "skipped": 15,
     "subtests_passed": 13
   },
   "warnings": [

@@ -1,5 +1,12 @@
 # Latest application review return
 
+Implemented return: [continuous supervisor results and remaining gates](linux_supervisor_round.md).
+Linux revalidation, real continuous event/packet delivery, collector and service
+restarts, conflict/revision checks and warmed strict model calls are recorded there.
+The next platform work is observation from bootstrap birth, broader hook coverage,
+genuine packet/process attribution and source clock/loss semantics. Protected
+Finance/report/S01–S16 acceptance is conditional on that evidence; gates stay held.
+
 See [the application review and current Linux return tasks](application_review_round.md)
 for the checkpoint after `a95e564`. This supersedes the earlier return instructions:
 revalidate replay/conflict semantics, complete continuous supervision, and return

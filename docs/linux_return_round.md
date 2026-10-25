@@ -1,5 +1,12 @@
 # Linux return round — lifecycle and independent observers
 
+The newer [continuous supervisor return](linux_supervisor_round.md) implements the
+tasks following `4a9abea`: continuous authenticated sources, live health/recovery,
+historical queue replay, real conflict checks and strict model/reviewer validation.
+It records 191 passing Linux tests and 176 Windows tests (15 Linux-specific skips),
+plus 13 subtests on each. Full protected Finance acceptance remains blocked by the
+explicit coverage/attribution/clock limits in that handoff. The prior round follows.
+
 Recorded 25 October 2026. Starts from application commit `69cb5a6` and follows
 `MEMBER_2_NEXT_STEPS.md` and `application_lifecycle_round.md`. The MVP remains
 partially implemented. Full protected Finance admission and report release are

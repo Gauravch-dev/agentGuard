@@ -62,6 +62,7 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
             runtime.controller,
             lambda task_id: authority.get(task_id, require_active=True).model_dump(mode="json"),
             model_digest=settings.approved_model_digest,
+            sensor_review=runtime.supervisor.review if runtime.supervisor is not None else None,
         )
 
     def release_check(binding: Binding) -> bool:
@@ -183,13 +184,16 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
         }:
             return JSONResponse({"detail": "Origin rejected"}, status_code=403)
         peer = request.client.host if request.client else "unknown"
+        rate_key, budget = settings.rate_bucket(
+            peer, request.url.path, request.headers.get("authorization", "")
+        )
         stamp = time.monotonic()
-        if len(rates) >= 4096 and peer not in rates:
+        if len(rates) >= 4096 and rate_key not in rates:
             return JSONResponse({"detail": "Rate limit"}, status_code=429)
-        window = rates[peer]
+        window = rates[rate_key]
         while window and window[0] < stamp - 60:
             window.popleft()
-        if len(window) >= 600:
+        if len(window) >= budget:
             return JSONResponse({"detail": "Rate limit"}, status_code=429)
         window.append(stamp)
         body = bytearray()
@@ -229,6 +233,22 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
             if r["body"]["contract_version"] == contract.contract_version
         ]
         return matches[-1] if matches else None
+
+    def observed_binding(
+        task_id: str, capsule_id: str, version: int | None = None
+    ) -> Binding | None:
+        # Historical observation rights never restore broker access or select an
+        # old binding for current admission/output. Ambiguous mappings are refused.
+        if not store.verify_chain():
+            raise PermissionError("Evidence integrity check failed")
+        authority.get(task_id)
+        matches = [
+            Binding.model_validate(row["body"])
+            for row in store.evidence(task_id, "binding")
+            if row["body"]["capsule_id"] == capsule_id
+            and (version is None or row["body"]["contract_version"] == version)
+        ]
+        return matches[0] if len(matches) == 1 else None
 
     @app.get("/api/v1/health")
     def health() -> dict:
@@ -555,7 +575,9 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
     ) -> dict:
         with store.lock:
             identity = settings.sensors[sensor_id]
-            binding = binding_for(payload.task_id)
+            binding = observed_binding(
+                payload.task_id, payload.capsule_id, payload.contract_version
+            )
             if (
                 payload.source not in identity.sources
                 or payload.host_id != identity.host_id
@@ -628,7 +650,7 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
     def ingest_coverage(payload: Coverage, sensor_id: str = Depends(sensor)) -> dict:
         with store.lock:
             identity = settings.sensors[sensor_id]
-            binding = binding_for(payload.task_id)
+            binding = observed_binding(payload.task_id, payload.capsule_id)
             if (
                 payload.sensor_id != sensor_id
                 or payload.source not in identity.sources

@@ -2,6 +2,7 @@
 
 import json
 import os
+import sqlite3
 import sys
 
 import httpx
@@ -103,3 +104,77 @@ def test_second_collector_cannot_share_the_same_checkpoint(tmp_path):
     finally:
         queue.close()
         queue.close()  # Cleanup after a failed restart must not close a reused FD.
+
+
+def test_packet_and_coverage_routes_are_durable_and_cannot_redirect(tmp_path):
+    queue = ExportQueue(tmp_path / "queue", "packet-source")
+    with queue.db:
+        queue.enqueue({"event_id": "actual-source-shape"}, endpoint="events")
+        queue.enqueue({"coverage_id": "partial-test-window"}, endpoint="coverage")
+    queue.close()
+    queue = ExportQueue(tmp_path / "queue", "packet-source")
+    paths = []
+
+    def accept(request):
+        paths.append(str(request.url))
+        return httpx.Response(200, json={"accepted": True})
+
+    with httpx.Client(transport=httpx.MockTransport(accept)) as client:
+        assert queue.drain("x" * 32, client=client) == 2
+    assert paths == [
+        "http://127.0.0.1:8000/internal/v1/events",
+        "http://127.0.0.1:8000/internal/v1/coverage",
+    ]
+    with pytest.raises(ValueError):
+        queue.enqueue({}, endpoint="https://example.invalid")
+    queue.close()
+
+
+def test_existing_queue_schema_migrates_without_discarding_undelivered_evidence(tmp_path):
+    root = tmp_path / "queue"
+    root.mkdir(mode=0o700)
+    path = root / "export.sqlite3"
+    with sqlite3.connect(path) as database:
+        database.execute(
+            "CREATE TABLE frames (seq INTEGER PRIMARY KEY, event_key TEXT UNIQUE NOT NULL, payload TEXT NOT NULL, delivered INTEGER NOT NULL DEFAULT 0)"
+        )
+        database.execute("INSERT INTO frames(event_key,payload) VALUES ('legacy-key','{}')")
+    path.chmod(0o600)
+    queue = ExportQueue(root, "process-source")
+    assert queue.db.execute("SELECT endpoint FROM frames").fetchone()[0] == "member2"
+    assert queue.status()["pending"] == 1
+    queue.close()
+
+
+def test_corrupted_persisted_route_cannot_send_sensor_credentials_elsewhere(tmp_path):
+    queue = ExportQueue(tmp_path / "queue", "test-source")
+    with queue.db:
+        queue.db.execute(
+            "INSERT INTO frames(event_key,payload,endpoint) VALUES ('corrupt','{}','https://example.invalid')"
+        )
+    requests = []
+    with httpx.Client(transport=httpx.MockTransport(lambda r: requests.append(r))) as client:
+        assert queue.drain("x" * 32, client=client) == 0
+    assert requests == [] and queue.status()["pending"] == 1
+    queue.close()
+
+
+def test_queue_migration_cannot_run_without_the_exclusive_collector_lease(tmp_path):
+    import fcntl
+
+    root = tmp_path / "queue"
+    root.mkdir(mode=0o700)
+    path = root / "export.sqlite3"
+    with sqlite3.connect(path) as database:
+        database.execute(
+            "CREATE TABLE frames (seq INTEGER PRIMARY KEY, event_key TEXT UNIQUE NOT NULL, payload TEXT NOT NULL, delivered INTEGER NOT NULL DEFAULT 0)"
+        )
+    path.chmod(0o600)
+    with (root / "collector.lock").open("w") as lease:
+        fcntl.flock(lease.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        with pytest.raises(PermissionError):
+            ExportQueue(root, "test-source")
+        with sqlite3.connect(path) as database:
+            assert "endpoint" not in {
+                row[1] for row in database.execute("PRAGMA table_info(frames)")
+            }

@@ -1,0 +1,13 @@
+{
+  "mode": "real-local-dashboard-observer-smoke",
+  "task_id": "FIN-cdff2832e7b54d30811d43f6ed05dc32",
+  "capsule_id": "capsule-5fdc32f6353e432d9cd3e81caadf177c",
+  "checks": {
+    "all_sources_started": true,
+    "admission_held": true,
+    "start_gap_reported": true,
+    "cleanup_verified": true
+  },
+  "passed": true,
+  "agent_admitted": false
+}

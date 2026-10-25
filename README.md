@@ -2,32 +2,31 @@
 
 **Status: partially implemented MVP. The full handoff is not complete.**
 
-The latest [application review](docs/application_review_round.md) hardens sensor
-replays, version-scoped evidence conflicts, report/admission holds, concurrent
-review decisions and local-model response handling. Local validation passes 169
-Windows tests with 11 Linux-specific skips and 13 subtests. Member 2 must rerun
-this checkpoint on Linux and complete continuous supervision before admission.
+The latest [Linux supervisor return](docs/linux_supervisor_round.md) follows the
+application review with continuous authenticated process/hook/packet collection,
+health and loss checks, collector/service restart recovery and real conflict tests.
+It passes 191 Linux tests and 176 Windows tests (15 Linux-specific skips), plus
+13 subtests on each. Known observation gaps still prevent protected admission.
 
 | Area | Verified today | Remaining |
 |---|---|---|
 | Application | Task Authority, brokers, evidence, reconciliation, dashboard and real staged cancellation/restart checks | Protected report recovery with complete monitoring |
-| Linux runtime | Restricted containers, staged launcher, peer checks, watchdog, cleanup and conservative live reviewer | Live continuous sensor supervisor for admission |
-| Sensors | Genuine process/file/connect records, bounded independent packet capture and durable authenticated export | Broader hooks, continuous capture/health/coverage, packet export and timestamp review |
+| Linux runtime | Restricted containers, staged launcher, peers, watchdog, cleanup and connected continuous supervisor/reviewer | Verified observation from bootstrap birth and complete supported scope |
+| Sensors | Continuous process/hooks/packet metadata, authenticated export, health/loss checks and durable restart replay | Broader hooks, packet/process attribution, clock/loss semantics and complete coverage proof |
 | AI model | Pinned Ollama/Qwen setup and actual benign/injected provider calls | Complete protected benign/injected Finance runs |
-| Acceptance | Current application round: 169 Windows tests and 13 subtests; prior return: 157 Linux tests | Linux revalidation of this review; full S01–S16 and baseline/performance comparisons |
+| Acceptance | 191 Linux tests, 176 Windows tests, real continuous-source/restart/conflict experiments and warmed model checks | Admitted Finance/report continuation, full S01–S16 and baseline/performance comparisons |
 
 ## Latest Linux return round
 
-The new Linux round validates the real application bootstrap, pre-admission peer
-denial, cancellation and crash/restart cleanup. It adds namespace-scoped file and
-connection hooks, a separate packet sensor, a durable source checkpoint/export
-queue, distinct private sensor credentials and a conservative live reviewer.
-Actual kernel records were delivered through the authenticated application API;
-gaps remain recorded and do not become complete coverage.
+The connected supervisor now exports genuine process, file/connect and independent
+packet observations continuously. Live experiments verify collector restart,
+durable replay after a service restart, contradiction holds, revision isolation and
+cleanup. The stricter warmed local model also passed the synthetic provider checks.
 
-See [the Linux return results, commands and remaining gates](docs/linux_return_round.md).
-Protected Finance admission remains held because full continuous sensor
-supervision and coverage are incomplete. The earlier checkpoints below are historical.
+See [current supervisor results and startup commands](docs/linux_supervisor_round.md)
+and [the return history](docs/linux_return_round.md). Protected Finance admission
+remains held because pre-birth observation, broader scope, packet/process attribution
+and source clock/loss proof remain incomplete. Earlier checkpoints below are historical.
 
 ## Latest application lifecycle round
 

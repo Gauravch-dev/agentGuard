@@ -1,5 +1,10 @@
 # Integration status
 
+Latest Linux follow-through (25 October): [continuous supervisor return](linux_supervisor_round.md)
+records real continuous process/hook/packet export, health and durable restart
+recovery, revision-scoped contradictions and strict warmed model calls. Complete
+coverage and protected Finance acceptance remain held for the stated source limits.
+
 Latest Linux return (25 October): [lifecycle and observer results](linux_return_round.md)
 record genuine application/container, file/connect, packet and authenticated
 export checks. Continuous coverage and protected model/report acceptance remain

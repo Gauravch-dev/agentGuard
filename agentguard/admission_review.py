@@ -6,6 +6,7 @@ provider. Its absence is a refusal, even when all effective Docker checks pass.
 
 import re
 import stat
+import time
 from pathlib import Path
 
 import httpx
@@ -13,6 +14,7 @@ import httpx
 from agentguard.capsules import ENTRYPOINT, deadline_reached
 from agentguard.platform import verify_inspect
 from agentguard.transport import process_identity
+from application.model_provider import LocalOllamaModel
 
 
 class LiveAdmissionReview:
@@ -67,17 +69,16 @@ class LiveAdmissionReview:
         if self.model_digest is None:
             reasons.append("APPROVED_MODEL_DIGEST_UNCONFIGURED")
         else:
+            deadline = time.monotonic() + 3
             with httpx.Client(trust_env=False, follow_redirects=False, timeout=3) as client:
-                response = client.get("http://127.0.0.1:11434/api/tags")
-                response.raise_for_status()
-                if len(response.content) > 32768:
-                    raise ValueError("Bounded model registry required")
-                models = response.json()["models"]
-                loaded_response = client.get("http://127.0.0.1:11434/api/ps")
-                loaded_response.raise_for_status()
-                if len(loaded_response.content) > 32768:
-                    raise ValueError("Bounded model status required")
-                loaded = loaded_response.json()["models"]
+                models = LocalOllamaModel.read_json(client, "GET", "/api/tags", deadline)["models"]
+                loaded = LocalOllamaModel.read_json(client, "GET", "/api/ps", deadline)["models"]
+                if (
+                    not isinstance(models, list)
+                    or not isinstance(loaded, list)
+                    or not all(isinstance(model, dict) for model in models + loaded)
+                ):
+                    raise ValueError("Invalid live model registry shape")
             matches = [model for model in models if model["name"] == "qwen2.5:7b"]
             if len(matches) != 1 or matches[0]["digest"] != self.model_digest:
                 reasons.append("CURRENT_MODEL_DIGEST_MISMATCH")

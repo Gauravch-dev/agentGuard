@@ -312,6 +312,8 @@ class TaskLifecycle:
                 self.stop(task_id, "APPLICATION_RESTART")
             else:
                 self.authority.transition(task_id, "failed")
+        if self.runtime.supervisor is not None:
+            self.runtime.supervisor.recover()
 
     def refresh(self) -> None:
         for task_id in self.active_tasks():

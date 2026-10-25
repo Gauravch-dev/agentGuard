@@ -1,0 +1,234 @@
+{
+  "observed_at": "2026-10-25T07:57:15.281143+00:00",
+  "mode": "real-linux-continuous-observer-lab",
+  "image_id": "sha256:04e5827f75ee3ccc71a8f1675caf3306d94e06e289c19666f3c9a9f1a03a16c9",
+  "task_id": "FIN-3bebbd0c01104c4fb334fbc391299628",
+  "capsule_ids": [
+    "capsule-3d46b816f69747c3a383567c61e5f962",
+    "capsule-d3dcec4b8f804eaa95c1d55c195faad7"
+  ],
+  "checks": {
+    "all_three_continuous_sources_observed": true,
+    "genuine_process_file_connect_and_packet_events_delivered": false,
+    "packet_collector_restarted_and_delivery_resumed": true,
+    "partial_or_unknown_coverage_never_promoted": true,
+    "healthy_transport_does_not_admit_finance": true,
+    "identical_provenance_replay_acknowledged": true,
+    "contradictory_provenance_rejected": true,
+    "identical_coverage_replay_acknowledged": true,
+    "contradictory_coverage_rejected": true,
+    "conflict_holds_current_revision": true,
+    "conflict_preserved_in_assessment": true,
+    "cancellation_exit_and_revocation_verified": true,
+    "fresh_revision_not_poisoned_by_prior_conflict": true,
+    "fresh_revision_does_not_bypass_coverage": true,
+    "fresh_capsule_cleanup_verified": true,
+    "no_finance_admission_model_action_or_report": true,
+    "evidence_integrity_verified": true
+  },
+  "passed": false,
+  "snapshots": {
+    "initial": {
+      "epoch": "efa519f6ebfe4e7d8628847dd49f5285",
+      "capsule_id": "capsule-3d46b816f69747c3a383567c61e5f962",
+      "cgroup_inode": 20559,
+      "sources": {
+        "process": {
+          "alive": true,
+          "last_heartbeat": 7410.043956229,
+          "pending": 0,
+          "gaps": 1,
+          "lost": null,
+          "export_failures": 0,
+          "epoch_changed": false
+        },
+        "hooks": {
+          "alive": true,
+          "last_heartbeat": 7410.043956229,
+          "pending": 0,
+          "gaps": 1,
+          "lost": null,
+          "export_failures": 0,
+          "epoch_changed": false
+        },
+        "packet": {
+          "alive": true,
+          "last_heartbeat": 7409.395541371,
+          "pending": 0,
+          "gaps": 1,
+          "lost": 0,
+          "export_failures": 0,
+          "epoch_changed": false
+        }
+      },
+      "reasons": [
+        "BOOTSTRAP_OBSERVATION_START_GAP",
+        "FILE_AND_NETWORK_HOOK_SCOPE_PARTIAL",
+        "HOOKS_LOSS_ACCOUNTING_UNKNOWN",
+        "HOOKS_SOURCE_GAPS",
+        "NETWORK_PROCESS_ATTRIBUTION_UNAVAILABLE",
+        "PACKET_SOURCE_GAPS",
+        "PROCESS_LOSS_ACCOUNTING_UNKNOWN",
+        "PROCESS_SOURCE_GAPS",
+        "SOURCE_CLOCK_SEMANTICS_UNVERIFIED"
+      ],
+      "finished": false,
+      "restarts": {
+        "process": 0,
+        "hooks": 0,
+        "packet": 0
+      },
+      "protected_execution_ready": false,
+      "metrics": {
+        "tetragon_observer_ringbuf_events_lost_total": 0,
+        "tetragon_observer_ringbuf_queue_events_lost_total": 0,
+        "tetragon_events_missing_process_info_total": 0,
+        "tetragon_events_export_failed_total": null
+      }
+    },
+    "after_restart": {
+      "epoch": "efa519f6ebfe4e7d8628847dd49f5285",
+      "capsule_id": "capsule-3d46b816f69747c3a383567c61e5f962",
+      "cgroup_inode": 20559,
+      "sources": {
+        "process": {
+          "alive": true,
+          "last_heartbeat": 7416.017080766,
+          "pending": 0,
+          "gaps": 1,
+          "lost": null,
+          "export_failures": 0,
+          "epoch_changed": false
+        },
+        "hooks": {
+          "alive": true,
+          "last_heartbeat": 7416.017080766,
+          "pending": 231,
+          "gaps": 2,
+          "lost": null,
+          "export_failures": 0,
+          "epoch_changed": false
+        },
+        "packet": {
+          "alive": true,
+          "last_heartbeat": 7415.846183034,
+          "pending": 0,
+          "gaps": 3,
+          "lost": 0,
+          "export_failures": 0,
+          "epoch_changed": true
+        }
+      },
+      "reasons": [
+        "BOOTSTRAP_OBSERVATION_START_GAP",
+        "FILE_AND_NETWORK_HOOK_SCOPE_PARTIAL",
+        "HOOKS_EXPORT_PENDING",
+        "HOOKS_LOSS_ACCOUNTING_UNKNOWN",
+        "HOOKS_SOURCE_GAPS",
+        "NETWORK_PROCESS_ATTRIBUTION_UNAVAILABLE",
+        "PACKET_SOURCE_EOF",
+        "PACKET_SOURCE_EPOCH_CHANGED",
+        "PACKET_SOURCE_GAPS",
+        "PACKET_SOURCE_RESTARTED",
+        "PROCESS_LOSS_ACCOUNTING_UNKNOWN",
+        "PROCESS_SOURCE_GAPS",
+        "SOURCE_CLOCK_SEMANTICS_UNVERIFIED"
+      ],
+      "finished": false,
+      "restarts": {
+        "process": 0,
+        "hooks": 0,
+        "packet": 1
+      },
+      "protected_execution_ready": false,
+      "metrics": {
+        "tetragon_observer_ringbuf_events_lost_total": 0,
+        "tetragon_observer_ringbuf_queue_events_lost_total": 0,
+        "tetragon_events_missing_process_info_total": 0,
+        "tetragon_events_export_failed_total": null
+      }
+    },
+    "final": {
+      "epoch": "efa519f6ebfe4e7d8628847dd49f5285",
+      "capsule_id": "capsule-3d46b816f69747c3a383567c61e5f962",
+      "cgroup_inode": 20559,
+      "sources": {
+        "process": {
+          "alive": false,
+          "last_heartbeat": 7423.476932754,
+          "pending": 0,
+          "gaps": 3,
+          "lost": null,
+          "export_failures": 0,
+          "epoch_changed": false
+        },
+        "hooks": {
+          "alive": false,
+          "last_heartbeat": 7423.476932754,
+          "pending": 478,
+          "gaps": 2,
+          "lost": null,
+          "export_failures": 0,
+          "epoch_changed": false
+        },
+        "packet": {
+          "alive": false,
+          "last_heartbeat": 7420.937535632,
+          "pending": 0,
+          "gaps": 3,
+          "lost": 0,
+          "export_failures": 0,
+          "epoch_changed": true
+        }
+      },
+      "reasons": [
+        "BOOTSTRAP_OBSERVATION_START_GAP",
+        "CONTINUOUS_OBSERVER_STOPPED",
+        "FILE_AND_NETWORK_HOOK_SCOPE_PARTIAL",
+        "HOOKS_SOURCE_EOF",
+        "HOOKS_SOURCE_UNAVAILABLE",
+        "NETWORK_PROCESS_ATTRIBUTION_UNAVAILABLE",
+        "OBSERVED_WORKLOAD_IDENTITY_UNAVAILABLE",
+        "PACKET_SOURCE_EOF",
+        "PACKET_SOURCE_RESTARTED",
+        "PACKET_SOURCE_UNAVAILABLE",
+        "PROCESS_SOURCE_UNAVAILABLE",
+        "SOURCE_CLOCK_SEMANTICS_UNVERIFIED"
+      ],
+      "finished": true,
+      "restarts": {
+        "process": 0,
+        "hooks": 0,
+        "packet": 1
+      },
+      "protected_execution_ready": false
+    }
+  },
+  "admission_hold_reasons": [
+    "REQUIRED_SENSOR_COVERAGE_UNAVAILABLE",
+    "LIVE_PLATFORM_ADMISSION_REVIEW_PENDING",
+    "BOOTSTRAP_OBSERVATION_START_GAP",
+    "FILE_AND_NETWORK_HOOK_SCOPE_PARTIAL",
+    "HOOKS_EXPORT_PENDING",
+    "HOOKS_LOSS_ACCOUNTING_UNKNOWN",
+    "HOOKS_SOURCE_GAPS",
+    "NETWORK_PROCESS_ATTRIBUTION_UNAVAILABLE",
+    "PACKET_SOURCE_EOF",
+    "PACKET_SOURCE_EPOCH_CHANGED",
+    "PACKET_SOURCE_GAPS",
+    "PACKET_SOURCE_RESTARTED",
+    "PROCESS_LOSS_ACCOUNTING_UNKNOWN",
+    "PROCESS_SOURCE_GAPS",
+    "SOURCE_CLOCK_SEMANTICS_UNVERIFIED"
+  ],
+  "event_classes": [
+    "egress_flow",
+    "file_access",
+    "process_exec",
+    "process_exit"
+  ],
+  "negative_protocol_inputs": "Deliberately altered replay/coverage claims were rejected; they are not genuine telemetry",
+  "protected_execution_ready": false,
+  "agent_admitted": false,
+  "full_report_recovery": "blocked: no complete source coverage from bootstrap birth"
+}

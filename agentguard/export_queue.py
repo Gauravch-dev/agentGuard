@@ -32,6 +32,26 @@ class ExportQueue:
         os.close(descriptor)
         if not stat.S_ISREG(info.st_mode) or info.st_uid != os.geteuid() or info.st_mode & 0o077:
             raise PermissionError("Untrusted queue database")
+        import fcntl
+
+        self.lock = os.open(
+            self.directory / "collector.lock", os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600
+        )
+        try:
+            fcntl.flock(self.lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            os.close(self.lock)
+            raise PermissionError("Another collector owns this queue") from None
+        try:
+            self.initialize(database, sensor_id)
+        except BaseException:
+            if hasattr(self, "db"):
+                self.db.close()
+            os.close(self.lock)
+            self.lock = None
+            raise
+
+    def initialize(self, database, sensor_id):
         self.db = sqlite3.connect(database)
         self.db.execute("PRAGMA journal_mode=WAL")
         self.db.execute("PRAGMA synchronous=FULL")
@@ -46,21 +66,14 @@ class ExportQueue:
                 payload TEXT NOT NULL, delivered INTEGER NOT NULL DEFAULT 0);
             CREATE TABLE IF NOT EXISTS gaps (seq INTEGER PRIMARY KEY, reason TEXT NOT NULL);
         """)
+        if "endpoint" not in {row[1] for row in self.db.execute("PRAGMA table_info(frames)")}:
+            self.db.execute(
+                "ALTER TABLE frames ADD COLUMN endpoint TEXT NOT NULL DEFAULT 'member2'"
+            )
+            self.db.commit()
         previous = self._get("sensor_id")
         if previous is not None and previous != sensor_id:
-            self.db.close()
             raise PermissionError("Queue belongs to another sensor")
-        import fcntl
-
-        self.lock = os.open(
-            self.directory / "collector.lock", os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600
-        )
-        try:
-            fcntl.flock(self.lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except OSError:
-            os.close(self.lock)
-            self.db.close()
-            raise PermissionError("Another collector owns this queue") from None
         with self.db:
             self._set("sensor_id", sensor_id)
 
@@ -74,14 +87,18 @@ class ExportQueue:
     def gap(self, reason):
         self.db.execute("INSERT INTO gaps(reason) VALUES (?)", (reason,))
 
-    def enqueue(self, payload):
+    def enqueue(self, payload, *, endpoint="member2"):
+        if endpoint not in {"member2", "events", "coverage"}:
+            raise ValueError("Only fixed local sensor ingestion routes are supported")
         encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False)
-        key = hashlib.sha256((self.sensor_id + "\0" + encoded).encode()).hexdigest()
+        namespace = "" if endpoint == "member2" else endpoint + "\0"
+        key = hashlib.sha256((self.sensor_id + "\0" + namespace + encoded).encode()).hexdigest()
         self.db.execute(
-            "INSERT OR IGNORE INTO frames(event_key,payload) VALUES (?,?)", (key, encoded)
+            "INSERT OR IGNORE INTO frames(event_key,payload,endpoint) VALUES (?,?,?)",
+            (key, encoded, endpoint),
         )
 
-    def tail(self, path: Path, normalize, *, max_frames=256):
+    def tail(self, path: Path, normalize, *, max_frames=256, endpoint="member2"):
         """Checkpoint only durable frames; partial EOF waits, replacement records a gap.
 
         normalize receives an unmodified source line and its content-hash reference.
@@ -138,7 +155,7 @@ class ExportQueue:
                 with self.db:
                     try:
                         payload = normalize(line, reference)
-                        self.enqueue(payload)
+                        self.enqueue(payload, endpoint=endpoint)
                         accepted += 1
                     except (ValueError, KeyError, TypeError, UnicodeError, PermissionError):
                         self.gap("NORMALIZATION_FAILED:" + reference)
@@ -157,13 +174,20 @@ class ExportQueue:
         client = client or httpx.Client(trust_env=False, follow_redirects=False, timeout=5)
         delivered = 0
         try:
-            for seq, encoded in self.db.execute(
-                "SELECT seq,payload FROM frames WHERE delivered=0 ORDER BY seq LIMIT ?",
+            for seq, encoded, endpoint in self.db.execute(
+                "SELECT seq,payload,endpoint FROM frames WHERE delivered=0 ORDER BY seq LIMIT ?",
                 (max_frames,),
             ).fetchall():
                 try:
+                    routes = {
+                        "member2": "/internal/v1/member2/events",
+                        "events": "/internal/v1/events",
+                        "coverage": "/internal/v1/coverage",
+                    }
+                    if endpoint not in routes:
+                        raise ValueError("Invalid persisted delivery route")
                     response = client.post(
-                        f"http://127.0.0.1:{self.api_port}/internal/v1/member2/events",
+                        f"http://127.0.0.1:{self.api_port}" + routes[endpoint],
                         headers={"Authorization": "Bearer " + token},
                         json=json.loads(encoded),
                     )

@@ -21,6 +21,7 @@ import uvicorn
 
 from agentguard.capsules import StagedCapsules, private_directory
 from agentguard.platform import command
+from agentguard.supervisor import ContinuousSupervisor
 from application.api import create_app
 from application.config import SensorIdentity, Settings
 from application.models import now
@@ -31,13 +32,15 @@ from scripts.start_linux import load_secrets, load_sensor_registry
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def configuration(root):
+def configuration(root, model_digest=None):
     values = load_secrets(root)
     return Settings(
         owner_token=values["owner"],
         runtime_token=values["runtime"],
         integrity_key=values["integrity"],
         database=root / "evidence.sqlite3",
+        local_model_enabled=model_digest is not None,
+        approved_model_digest=model_digest,
         sensors=load_sensor_registry(root / "sensors.json", "linux-lab-01")
         if (root / "sensors.json").exists()
         else {
@@ -48,13 +51,22 @@ def configuration(root):
     )
 
 
-def serve(root, image, port):
+def serve(root, image, port, *, continuous=False, model_digest=None):
     os.umask(0o077)
+    settings = configuration(root, model_digest)
     runtime = StagedRuntimeAdapter(
         StagedCapsules(image, state_root=root / "runtime"), "linux-lab-01"
     )
+    if continuous:
+        runtime.supervisor = ContinuousSupervisor(
+            runtime.controller,
+            settings.sensors,
+            "linux-lab-01",
+            state_root=root / "observers",
+            api_port=port,
+        )
     uvicorn.run(
-        create_app(configuration(root), runtime),
+        create_app(settings, runtime),
         host="127.0.0.1",
         port=port,
         access_log=False,
@@ -62,7 +74,7 @@ def serve(root, image, port):
     )
 
 
-def launch_server(root, image, port):
+def launch_server(root, image, port, *, continuous=False, model_digest=None):
     log = root / "server.log"
     with log.open("ab") as stream:
         process = subprocess.Popen(  # noqa: S603 - fixed local module, private state
@@ -77,7 +89,9 @@ def launch_server(root, image, port):
                 image,
                 "--port",
                 str(port),
-            ],
+            ]
+            + (["--continuous-observers"] if continuous else [])
+            + (["--approved-model-digest", model_digest] if model_digest else []),
             cwd=ROOT,
             stdin=subprocess.DEVNULL,
             stdout=stream,
@@ -272,9 +286,17 @@ def main():
     parser.add_argument("--serve", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--state-dir", type=Path, help=argparse.SUPPRESS)
     parser.add_argument("--port", type=int, help=argparse.SUPPRESS)
+    parser.add_argument("--continuous-observers", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument("--approved-model-digest", help=argparse.SUPPRESS)
     args = parser.parse_args()
     if args.serve:
-        serve(private_directory(args.state_dir), args.image_id, args.port)
+        serve(
+            private_directory(args.state_dir),
+            args.image_id,
+            args.port,
+            continuous=args.continuous_observers,
+            model_digest=args.approved_model_digest,
+        )
         return 0
     report = run(args.image_id, args.output)
     print(json.dumps({"passed": report["passed"], "checks": report["checks"]}, indent=2))

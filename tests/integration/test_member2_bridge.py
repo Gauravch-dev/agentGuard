@@ -527,6 +527,46 @@ def test_conflict_from_old_revision_remains_audit_only(running):
     assert len(app.state.store.evidence(task["task_id"], "ingestion_conflict")) == 1
 
 
+def test_late_durable_observations_use_historical_binding_without_restoring_rights(running):
+    from application.brokers import ChannelContext
+    from application.models import Coverage
+
+    (app, client, settings, runtime), task, owner = running
+    binding = runtime.binding
+    value = upstream_process(binding)
+    app.state.authority.transition(task["task_id"], "failed")
+    assert (
+        client.post(f"/api/v1/tasks/{task['task_id']}/revisions", headers=owner).status_code == 201
+    )
+    sensor = {"Authorization": f"Bearer {settings.sensors['lab-sensor'].token}"}
+    response = client.post(
+        "/internal/v1/member2/events",
+        json={"wire_format": "member2-normalized-1.0", "event": value},
+        headers=sensor,
+    )
+    assert response.status_code == 200
+    coverage = Coverage(
+        coverage_id="old-source-window",
+        task_id=binding.task_id,
+        capsule_id=binding.capsule_id,
+        sensor_id="lab-sensor",
+        source="host_sensor",
+        event_classes=("process_exec",),
+        start=binding.process_start,
+        end=now(),
+        status="partial",
+    ).model_dump(mode="json")
+    assert client.post("/internal/v1/coverage", json=coverage, headers=sensor).status_code == 200
+    coverage["lost_events"] = 1  # Deliberately contradictory negative protocol input.
+    assert client.post("/internal/v1/coverage", json=coverage, headers=sensor).status_code == 409
+    conflict = app.state.store.evidence(binding.task_id, "ingestion_conflict")[-1]["body"]
+    assert conflict["contract_version"] == 1
+    result = client.get(f"/api/v1/tasks/{task['task_id']}/result", headers=owner).json()
+    assert "CONFLICTING_DUPLICATE" not in {f["reason_code"] for f in result["findings"]}
+    with pytest.raises(PermissionError):
+        app.state.broker.resolve(ChannelContext(binding.channel_id, binding.capsule_id))
+
+
 def test_real_hook_shape_reconciles_as_attempt_without_enforcement_claim(running):
     from tests.integration.test_live_observers import hook_fixture
 
