@@ -1,5 +1,11 @@
 # Integration status
 
+Current Member 1 checkpoint (25 October): [application implementation completion](application_completion_round.md)
+maps every A1–A8 deliverable, records 195 passing tests and distinguishes completed
+application code from pending joint Linux/model/report acceptance. Revision history,
+monitoring health, review notes and supervisor cleanup are integrated. This is the
+current application status; older implementation tables below are historical.
+
 Latest Linux follow-through (25 October): [continuous supervisor return](linux_supervisor_round.md)
 records real continuous process/hook/packet export, health and durable restart
 recovery, revision-scoped contradictions and strict warmed model calls. Complete

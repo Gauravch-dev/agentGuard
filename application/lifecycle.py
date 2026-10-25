@@ -40,6 +40,7 @@ class TaskLifecycle:
         )
 
     def log(self, kind: str, task_id: str, body: dict) -> None:
+        body = body | {"contract_version": self.authority.record(task_id)["version"]}
         previous = self.store.evidence(task_id, kind)
         if previous and previous[-1]["body"] == body:
             return
@@ -255,6 +256,7 @@ class TaskLifecycle:
                     self.revoke(binding, "PROCESS_EXITED")
                     if self.runtime.sockets is not None:
                         self.runtime.sockets.close(binding.capsule_id)
+                    self.runtime.finish_observation(binding.capsule_id)
                 end = datetime.fromisoformat(value["contained_at"])
                 if not binding.process_start <= end <= now():
                     raise ValueError("Invalid verified runtime end")
@@ -324,11 +326,17 @@ class TaskLifecycle:
                 self.stop(task_id, "RUNTIME_INSPECTION_UNAVAILABLE")
 
     def shutdown(self) -> None:
+        errors = []
         try:
             for task_id in self.active_tasks():
-                self.stop(task_id, "APPLICATION_STOPPED")
+                try:
+                    self.stop(task_id, "APPLICATION_STOPPED")
+                except Exception:
+                    errors.append(task_id)
         finally:
             self.runtime.shutdown()
+        if errors:
+            raise RuntimeError("Some task cleanup remains unverified")
 
     def status(self, task_id: str) -> dict:
         row = self.authority.record(task_id)
@@ -351,7 +359,11 @@ class TaskLifecycle:
             elif row["state"] == "launch_requested":
                 phase = "waiting_for_admission"
                 try:
-                    reasons = self.gates(binding)
+                    # Owner polling must not run Docker/model checks or block
+                    # observer delivery. Admission POST performs the live review.
+                    reasons = self.gates(binding, review=False)
+                    reasons.append("ADMISSION_REVIEW_REQUIRED")
+                    reasons.extend(self.runtime.review_reasons.get(binding.capsule_id, ()))
                 except Exception:
                     reasons = ["Runtime inspection or active contract unavailable"]
             elif any(

@@ -1,5 +1,10 @@
 # Implementation status — 24 October 2026
 
+Historical checkpoint. Current status is [Member 1 implementation completion](../application_completion_round.md)
+and [combined integration status](../integration_status.md). Application A1–A8 code
+is implemented; full admitted Finance and joint S01–S16 acceptance remain pending
+the Linux monitoring requirements documented there.
+
 This is the Member 1 application prototype in the active development workspace. Original
 handoffs are preserved. Shared schemas and additional envelopes are proposed for
 Member 2 review, not jointly signed off. No confidential data or external model

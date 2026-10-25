@@ -234,6 +234,79 @@ def test_staging_registers_binding_but_does_not_authorize_agent(staged):
     assert client.post(f"/api/v1/tasks/{task}/admit").status_code == 403
 
 
+class FixtureObserver:
+    """Records lifecycle signals only; supplies no monitoring evidence."""
+
+    def __init__(self):
+        self.finished = []
+        self.closed = False
+
+    def finish(self, capsule):
+        self.finished.append(capsule)
+
+    def shutdown(self):
+        self.closed = True
+
+
+def test_owner_polling_does_not_execute_live_admission_review(staged):
+    app, client, settings, runtime, controller, owner, task = staged
+    prepare(staged)
+
+    def unexpected_review(value):
+        raise AssertionError("Owner polling must not run the host/model reviewer")
+
+    runtime.admission_review = unexpected_review
+    response = client.get(f"/api/v1/tasks/{task}", headers=owner)
+    assert response.status_code == 200
+    assert "ADMISSION_REVIEW_REQUIRED" in response.json()["execution"]["reasons"]
+
+
+def test_verified_natural_exit_signals_observer_drain_once(staged):
+    app, client, settings, runtime, controller, owner, task = staged
+    binding = prepare(staged)
+    admit(staged, binding)
+    runtime.supervisor = observer = FixtureObserver()
+    controller.finish(binding.capsule_id)
+    app.state.lifecycle.sync(task)
+    app.state.lifecycle.sync(task)
+    assert observer.finished == [binding.capsule_id]
+    assert app.state.lifecycle.revoked(binding)
+
+
+def test_observer_shutdown_is_attempted_after_socket_shutdown_failure(staged, monkeypatch):
+    app, client, settings, runtime, controller, owner, task = staged
+    runtime.supervisor = observer = FixtureObserver()
+
+    def fail():
+        raise OSError("Fixture socket shutdown failure")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(runtime.sockets, "shutdown", fail)
+        with pytest.raises(OSError, match="Fixture socket"):
+            runtime.shutdown()
+    assert observer.closed
+
+
+def test_cleanup_failure_does_not_skip_remaining_tasks_or_runtime(staged, monkeypatch):
+    app, client, settings, runtime, controller, owner, task = staged
+    attempted = []
+    closed = []
+
+    def stop(task_id, reason):
+        attempted.append(task_id)
+        if task_id == "first":
+            raise OSError("Fixture controller failure")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(app.state.lifecycle, "active_tasks", lambda: ["first", "second"])
+        patch.setattr(app.state.lifecycle, "stop", stop)
+        patch.setattr(runtime, "shutdown", lambda: closed.append(True))
+        with pytest.raises(RuntimeError, match="cleanup remains unverified"):
+            app.state.lifecycle.shutdown()
+    assert attempted == ["first", "second"]
+    assert closed == [True]
+
+
 def test_default_review_stays_closed_even_with_fixture_full_coverage(staged):
     app, client, settings, runtime, controller, owner, task = staged
     runtime.admission_review = None

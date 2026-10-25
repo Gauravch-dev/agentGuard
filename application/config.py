@@ -104,4 +104,18 @@ class Settings:
                 # Only authenticated sources get an independent bounded kernel
                 # event budget. Rotating invalid tokens cannot obtain this quota.
                 return peer + "|sensor|" + sensor_id, 10000
+        if path.startswith("/api/v1/"):
+            try:
+                self.identify(authorization, "owner")
+            except PermissionError:
+                pass
+            else:
+                return peer + "|owner", 600
+        if re.fullmatch(r"/internal/v1/tasks/[A-Za-z0-9_.:-]+/completion", path):
+            try:
+                self.identify(authorization, "runtime")
+            except PermissionError:
+                pass
+            else:
+                return peer + "|runtime", 600
         return peer, 600

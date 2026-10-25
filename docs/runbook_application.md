@@ -1,5 +1,11 @@
 # Runbook
 
+For the integrated staged Linux launcher and continuous observers use
+[the current Linux start instructions](linux_supervisor_round.md#reproduce-and-operate).
+For revision history, monitoring health, notes, evidence paging and the current
+application acceptance boundary see [the completed application handoff](application_completion_round.md).
+Earlier adapter descriptions below document the initial implementation checkpoint.
+
 ## Persistent local configuration
 
 Use a private trusted directory outside the capsule for the database and secrets.

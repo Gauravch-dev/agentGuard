@@ -1,0 +1,72 @@
+{
+  "observed_at": "2026-10-25T12:19:56.093073+00:00",
+  "reviewed_upstream_commit": "5c5c79bcee65508d36e7add94ec4b2ffce5c497e",
+  "platform": "Windows",
+  "baseline_tests": {
+    "passed": 176,
+    "skipped": 15,
+    "subtests_passed": 13
+  },
+  "final_tests": {
+    "passed": 195,
+    "skipped": 15,
+    "subtests_passed": 13
+  },
+  "checks": {
+    "pytest": true,
+    "lint": true,
+    "format": true,
+    "application_types": true,
+    "application_type_source_files": 22,
+    "shared_contract_compatibility": true,
+    "dashboard_types_and_build": true,
+    "offline_changed_source_secret_scan": true,
+    "diff_whitespace": true,
+    "python_dependency_audit": "No known vulnerabilities found",
+    "dashboard_dependency_audit": "0 known vulnerabilities"
+  },
+  "browser_checks": {
+    "synthetic_tasks_only": true,
+    "current_revision": true,
+    "historical_controls_disabled": true,
+    "historical_note_saved": true,
+    "note_html_displayed_as_plain_text": true,
+    "missing_binding_and_coverage_visible": true,
+    "live_observer_ui_not_exercised_on_windows": true
+  },
+  "new_tests_use_explicit_simulations": true,
+  "secret_scan_review": {
+    "offline": true,
+    "files_scanned": 19,
+    "candidates": 1,
+    "reviewed_non_secret_candidates": [
+      {
+        "file": "docs/application_completion_validation.json",
+        "line": 3,
+        "type": "Hex High Entropy String",
+        "meaning": "Public reviewed upstream Git commit SHA; matches repository HEAD"
+      }
+    ],
+    "unreviewed_candidates": 0,
+    "secrets_found": 0
+  },
+  "shared_wire_schemas_modified": false,
+  "committed_linux_evidence_modified": false,
+  "new_live_linux_validation": false,
+  "actual_model_invoked_in_this_round": false,
+  "application_implementation_complete": true,
+  "joint_application_acceptance_complete": false,
+  "protected_finance_acceptance_complete": false,
+  "full_protected_mvp_complete": false,
+  "remaining_live_gates": [
+    "BOOTSTRAP_OBSERVATION_START_GAP",
+    "FILE_AND_NETWORK_HOOK_SCOPE_PARTIAL",
+    "NETWORK_PROCESS_ATTRIBUTION_UNAVAILABLE",
+    "SOURCE_CLOCK_SEMANTICS_UNVERIFIED",
+    "UNKNOWN_SOURCE_LOSS_ACCOUNTING",
+    "ADMITTED_FINANCE_AND_S01_S16_ACCEPTANCE"
+  ],
+  "warnings": [
+    "Existing Starlette TestClient/httpx deprecation"
+  ]
+}

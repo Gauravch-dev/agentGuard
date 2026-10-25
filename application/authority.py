@@ -52,26 +52,34 @@ class Authority:
         self.transition(contract.task_id, "approved")
         return contract
 
-    def record(self, task_id: str) -> dict:
+    def record(self, task_id: str, version: int | None = None) -> dict:
+        query = (
+            "SELECT * FROM task_contracts WHERE task_id=? ORDER BY version DESC LIMIT 1"
+            if version is None
+            else "SELECT * FROM task_contracts WHERE task_id=? AND version=?"
+        )
         with self.store.lock:
             row = self.store.db.execute(
-                "SELECT * FROM task_contracts WHERE task_id=? ORDER BY version DESC LIMIT 1",
-                (task_id,),
+                query,
+                (task_id, version) if version is not None else (task_id,),
             ).fetchone()
         if not row:
             raise KeyError("task not found")
         return dict(row)
 
-    def get(self, task_id: str, require_active: bool = False) -> TaskContract:
+    def get(
+        self, task_id: str, require_active: bool = False, *, version: int | None = None
+    ) -> TaskContract:
         if not self.store.verify_chain():
             raise ValueError("INVALID_CONTRACT")
-        row = self.record(task_id)
+        row = self.record(task_id, version)
         body = json.loads(row["body"])
         if not hmac.compare_digest(self.store.sign(body), row["signature"]):
             raise ValueError("INVALID_CONTRACT")
         contract = TaskContract.model_validate(body)
         if require_active and (
             contract.expires_at <= now()
+            or row["version"] != self.record(task_id)["version"]
             or row["state"] not in {"approved", "launch_requested", "running"}
         ):
             raise ValueError("expired or inactive contract")
@@ -93,8 +101,9 @@ class Authority:
             )
 
     def revise(self, task_id: str, approver: str) -> TaskContract:
-        row = self.record(task_id)
-        if row["state"] not in {"completed", "failed", "interrupted"}:
-            raise ValueError("active contracts cannot be revised")
-        self.get(task_id)
-        return self.create(approver, task_id, row["version"] + 1)
+        with self.store.lock:
+            row = self.record(task_id)
+            if row["state"] not in {"completed", "failed", "interrupted"}:
+                raise ValueError("active contracts cannot be revised")
+            self.get(task_id)
+            return self.create(approver, task_id, row["version"] + 1)

@@ -3,7 +3,6 @@
 import asyncio
 import json
 import time
-from collections import defaultdict, deque
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta
@@ -11,7 +10,7 @@ from pathlib import Path
 from typing import Annotated
 from uuid import uuid4
 
-from fastapi import Depends, FastAPI, Header, HTTPException, Request
+from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -44,12 +43,15 @@ from application.models import (
     SecurityEvent,
     now,
 )
+from application.posture import owner_posture
+from application.rate_limit import RequestLimiter
 from application.runtime_adapter import REQUIRED_CONTROLS, RuntimeAdapter, UnavailableRuntime
 from application.staged_runtime import StagedRuntimeAdapter
 from application.store import Store
 from application.tere import reconcile
 
 ROOT = Path(__file__).resolve().parents[1]
+Revision = Annotated[int | None, Query(ge=1)]
 
 
 def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None = None) -> FastAPI:
@@ -142,7 +144,8 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
     app.state.coverage_policy = release_check
     app.state.lifecycle = lifecycle
     app.state.monitor_error = None
-    rates: dict[str, deque] = defaultdict(deque)
+    limiter = RequestLimiter()
+    app.state.request_limiter = limiter
 
     def owner(authorization: Annotated[str, Header()] = "") -> str:
         return settings.identify(authorization, "owner")
@@ -188,14 +191,8 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
             peer, request.url.path, request.headers.get("authorization", "")
         )
         stamp = time.monotonic()
-        if len(rates) >= 4096 and rate_key not in rates:
+        if not limiter.allow(rate_key, budget, stamp):
             return JSONResponse({"detail": "Rate limit"}, status_code=429)
-        window = rates[rate_key]
-        while window and window[0] < stamp - 60:
-            window.popleft()
-        if len(window) >= budget:
-            return JSONResponse({"detail": "Rate limit"}, status_code=429)
-        window.append(stamp)
         body = bytearray()
         async for chunk in request.stream():
             body.extend(chunk)
@@ -224,8 +221,8 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
         )
         return response
 
-    def binding_for(task_id: str) -> Binding | None:
-        contract = authority.get(task_id)
+    def binding_for(task_id: str, version: int | None = None) -> Binding | None:
+        contract = authority.get(task_id, version=version)
         rows = store.evidence(task_id, "binding")
         matches = [
             Binding.model_validate(r["body"])
@@ -248,7 +245,10 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
             if row["body"]["capsule_id"] == capsule_id
             and (version is None or row["body"]["contract_version"] == version)
         ]
-        return matches[0] if len(matches) == 1 else None
+        if len(matches) != 1:
+            return None
+        authority.get(task_id, version=matches[0].contract_version)
+        return matches[0]
 
     @app.get("/api/v1/health")
     def health() -> dict:
@@ -288,7 +288,12 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
             raise ValueError("Fixed lab requires approved task and Member 2 adapter")
         try:
             lab_result = runtime.isolation_lab(contract)
-            store.append("platform_lab", uuid4().hex, task_id, lab_result)
+            store.append(
+                "platform_lab",
+                uuid4().hex,
+                task_id,
+                lab_result | {"contract_version": contract.contract_version},
+            )
             return {
                 "mode": "isolation-lab",
                 "result": lab_result,
@@ -302,6 +307,7 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
                 {
                     "mode": "isolation-lab",
                     "completed": False,
+                    "contract_version": contract.contract_version,
                     "reason": str(exc)[:1024],
                     "protected_execution_ready": False,
                 },
@@ -324,28 +330,54 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
         return [dict(row) for row in rows]
 
     @app.get("/api/v1/tasks/{task_id}")
-    def task(task_id: str, principal: str = Depends(owner)) -> dict:
-        row = authority.record(task_id)
+    def task(task_id: str, version: Revision = None, principal: str = Depends(owner)) -> dict:
+        row = authority.record(task_id, version)
+        current_version = authority.record(task_id)["version"]
+        binding = binding_for(task_id, row["version"])
         readiness = [
             r["body"]
             for r in store.evidence(task_id, "readiness")
             if r["body"].get("contract_version", 1) == row["version"]
         ]
         return {
-            "contract": authority.get(task_id),
+            "contract": authority.get(task_id, version=row["version"]),
+            "current_version": current_version,
+            "is_current": row["version"] == current_version,
             "state": row["state"],
             "created_at": row["created_at"],
             "started_at": row["started_at"],
             "ended_at": row["ended_at"],
-            "binding": binding_for(task_id),
+            "binding": binding,
             "readiness": readiness,
             "execution": lifecycle.status(task_id)
-            if lifecycle
+            if lifecycle and row["version"] == current_version
             else {
                 "phase": row["state"],
                 "reasons": [r["reason"] for r in readiness][-1:],
             },
         }
+
+    @app.get("/api/v1/tasks/{task_id}/revisions")
+    def revisions(task_id: str, principal: str = Depends(owner)) -> list[dict]:
+        authority.get(task_id)
+        with store.lock:
+            rows = store.db.execute(
+                "SELECT version,state,created_at,started_at,ended_at FROM task_contracts WHERE task_id=? ORDER BY version DESC",
+                (task_id,),
+            ).fetchall()
+        return [dict(row) for row in rows]
+
+    @app.get("/api/v1/tasks/{task_id}/posture")
+    def posture(task_id: str, version: Revision = None, principal: str = Depends(owner)) -> dict:
+        contract = authority.get(task_id, version=version)
+        return owner_posture(
+            store,
+            task_id,
+            contract.contract_version,
+            binding_for(task_id, contract.contract_version),
+            runtime,
+            current=contract.contract_version == authority.record(task_id)["version"],
+        )
 
     @app.post("/api/v1/tasks/{task_id}/revisions", status_code=201)
     def revise(task_id: str, principal: str = Depends(owner)) -> dict:
@@ -384,7 +416,11 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
                         "platform_preflight",
                         uuid4().hex,
                         task_id,
-                        {"checks": runtime.last_preflight, "protected_execution_ready": False},
+                        {
+                            "checks": runtime.last_preflight,
+                            "protected_execution_ready": False,
+                            "contract_version": contract.contract_version,
+                        },
                     )
                 binding = result.binding
                 valid = (
@@ -437,7 +473,13 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
                 if authority.record(task_id)["state"] == "launch_requested":
                     authority.transition(task_id, "failed")
                 store.append(
-                    "runtime_error", uuid4().hex, task_id, {"reason": "RUNTIME_LAUNCH_FAILED"}
+                    "runtime_error",
+                    uuid4().hex,
+                    task_id,
+                    {
+                        "reason": "RUNTIME_LAUNCH_FAILED",
+                        "contract_version": contract.contract_version,
+                    },
                 )
                 raise HTTPException(
                     503, "Runtime launch failed; inspect platform evidence"
@@ -673,21 +715,57 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
             return {"accepted": True, "duplicate": not added}
 
     @app.get("/api/v1/tasks/{task_id}/events")
-    def events(task_id: str, principal: str = Depends(owner)) -> list[dict]:
-        authority.get(task_id)
+    def events(
+        task_id: str,
+        version: Revision = None,
+        limit: Annotated[int | None, Query(ge=1, le=500)] = None,
+        before: Annotated[int | None, Query(ge=1)] = None,
+        principal: str = Depends(owner),
+    ) -> list[dict]:
+        authority.get(task_id, version=version)
         if not store.verify_chain():
             raise HTTPException(503, "Evidence integrity check failed")
-        return store.evidence(task_id)
+        rows = store.evidence(task_id)
+        if version is not None:
+            capsule_ids = {
+                r["body"]["capsule_id"]
+                for r in rows
+                if r["kind"] == "binding" and r["body"]["contract_version"] == version
+            }
+            event_ids = {
+                r["identity"]
+                for r in rows
+                if r["kind"] == "event" and r["body"]["event"]["contract_version"] == version
+            }
+
+            def belongs(row: dict) -> bool:
+                body = row["body"]
+                if row["kind"] == "event":
+                    return body["event"]["contract_version"] == version
+                if row["kind"] == "member2_metadata":
+                    return row["identity"] in event_ids
+                if row["kind"] == "broker":
+                    return body["response"]["receipt"]["capsule_id"] in capsule_ids
+                return (
+                    body.get("contract_version", body.get("version", 1)) == version
+                    if "capsule_id" not in body
+                    else body["capsule_id"] in capsule_ids
+                )
+
+            rows = [r for r in rows if belongs(r)]
+        if before is not None:
+            rows = [r for r in rows if r["sequence"] < before]
+        return rows[-limit:] if limit is not None else rows
 
     @app.get("/api/v1/tasks/{task_id}/result")
-    def result(task_id: str, principal: str = Depends(owner)) -> dict:
-        row = authority.record(task_id)
+    def result(task_id: str, version: Revision = None, principal: str = Depends(owner)) -> dict:
+        row = authority.record(task_id, version)
         integrity = store.verify_chain()
         try:
-            contract = authority.get(task_id)
+            contract = authority.get(task_id, version=row["version"])
         except ValueError:
             contract, integrity = None, False
-        binding = binding_for(task_id) if integrity else None
+        binding = binding_for(task_id, row["version"]) if integrity else None
         receipts = [
             Receipt.model_validate(r["body"]["response"]["receipt"])
             for r in store.evidence(task_id, "broker")
@@ -727,7 +805,11 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
             end,
             integrity,
         )
-        if lifecycle is not None and binding is not None:
+        if (
+            lifecycle is not None
+            and binding is not None
+            and row["version"] == authority.record(task_id)["version"]
+        ):
             execution = lifecycle.status(task_id)
             if execution["phase"] in {"containment_unverified", "awaiting_final_coverage"}:
                 findings.append(
@@ -777,11 +859,33 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
         }
 
     @app.post("/api/v1/tasks/{task_id}/notes", status_code=201)
-    def note(task_id: str, payload: ReviewNote, principal: str = Depends(owner)) -> dict:
-        authority.get(task_id)
+    def note(
+        task_id: str, payload: ReviewNote, version: Revision = None, principal: str = Depends(owner)
+    ) -> dict:
+        contract = authority.get(task_id, version=version)
         note_id = uuid4().hex
-        store.append("review_note", note_id, task_id, {"author": principal, "text": payload.text})
+        store.append(
+            "review_note",
+            note_id,
+            task_id,
+            {
+                "author": principal,
+                "text": payload.text,
+                "contract_version": contract.contract_version,
+            },
+        )
         return {"note_id": note_id}
+
+    @app.get("/api/v1/tasks/{task_id}/notes")
+    def notes(
+        task_id: str, version: Revision = None, principal: str = Depends(owner)
+    ) -> list[dict]:
+        authority.get(task_id, version=version)
+        return [
+            r
+            for r in store.evidence(task_id, "review_note")
+            if version is None or r["body"].get("contract_version", 1) == version
+        ]
 
     dist = ROOT / "dashboard" / "application" / "dist"
     if dist.exists():

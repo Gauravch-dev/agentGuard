@@ -213,8 +213,15 @@ class StagedRuntimeAdapter(Member2RuntimeAdapter):
                 self.supervisor.finish(capsule_id)
         return self.inspect(capsule_id)
 
-    def shutdown(self) -> None:
-        if self.sockets is not None:
-            self.sockets.shutdown()
+    def finish_observation(self, capsule_id: str) -> None:
+        """Signal final journal drain; never wait for its HTTP delivery under the store lock."""
         if self.supervisor is not None:
-            self.supervisor.shutdown()
+            self.supervisor.finish(capsule_id)
+
+    def shutdown(self) -> None:
+        try:
+            if self.sockets is not None:
+                self.sockets.shutdown()
+        finally:
+            if self.supervisor is not None:
+                self.supervisor.shutdown()

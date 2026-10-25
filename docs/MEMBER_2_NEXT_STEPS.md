@@ -1,5 +1,12 @@
 # Latest application review return
 
+Current return: [Member 1 implementation completion and Linux tasks](application_completion_round.md).
+Application code and supervisor-facing views are implemented and tested. Please
+own the remaining bootstrap observation, supported-hook scope, process/packet joins,
+clock/loss accounting and genuine protected Finance/S01–S16 acceptance. Pull this
+checkpoint, implement and verify on Linux, then commit/push code and sanitized
+evidence back and reply to issue #1. This supersedes earlier application requests.
+
 Implemented return: [continuous supervisor results and remaining gates](linux_supervisor_round.md).
 Linux revalidation, real continuous event/packet delivery, collector and service
 restarts, conflict/revision checks and warmed strict model calls are recorded there.
