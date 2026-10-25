@@ -16,6 +16,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
+from agentguard.admission_review import LiveAdmissionReview
 from agentguard.platform import PlatformError
 from agentguard.schema import strict_json
 from application.authority import Authority
@@ -55,6 +56,12 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
     runtime = runtime or Member2RuntimeAdapter(approved_image=settings.approved_lab_image)
     store = Store(settings.database, settings.integrity_key)
     authority = Authority(store)
+    if isinstance(runtime, StagedRuntimeAdapter) and runtime.admission_review is None:
+        runtime.admission_review = LiveAdmissionReview(
+            runtime.controller,
+            lambda task_id: authority.get(task_id, require_active=True).model_dump(mode="json"),
+            model_digest=settings.approved_model_digest,
+        )
 
     def release_check(binding: Binding) -> bool:
         row = authority.record(binding.task_id)
@@ -77,7 +84,9 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
     broker = Broker(
         store,
         authority,
-        LocalOllamaModel() if settings.local_model_enabled else DisabledModel(),
+        LocalOllamaModel(settings.approved_model_digest)
+        if settings.local_model_enabled
+        else DisabledModel(),
         coverage_check=release_check,
     )
 

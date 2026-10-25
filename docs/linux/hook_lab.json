@@ -1,0 +1,771 @@
+{
+  "observed_at": "2026-10-25T05:54:11.502022+00:00",
+  "mode": "real-linux-syscall-hook-lab",
+  "image_id": "sha256:04e5827f75ee3ccc71a8f1675caf3306d94e06e289c19666f3c9a9f1a03a16c9",
+  "capsule_id": "capsule-ac91112b939d45148b043a93282417dc",
+  "container_id": "81d65d46492a71f572541a6d88be25415741a9f670c0ba70cacd9ad150952771",
+  "mount_namespace_inode": 4026532357,
+  "cgroup_inode": 18677,
+  "policy_sha256": "7ce97f05056b01bc00503601c1bacd200a6f60524300599a0b73c9e03d3003d3",
+  "policy_status": {
+    "policies": [
+      {
+        "id": "3",
+        "name": "agentguard-1df179e109fa44b5847846fe6cb02e95",
+        "sensors": [
+          "generic_kprobe"
+        ],
+        "enabled": true,
+        "state": "TP_STATE_ENABLED",
+        "kernel_memory_bytes": "7329680",
+        "mode": "TP_MODE_MONITOR_ONLY",
+        "stats": {
+          "action_counters": {
+            "post": "541"
+          }
+        }
+      }
+    ]
+  },
+  "probe_results": {
+    "read_denied": {
+      "errno": 13
+    },
+    "write_denied": {
+      "errno": 30
+    },
+    "tcp_ipv4": {
+      "errno": 101
+    },
+    "udp_dns": {
+      "errno": 101
+    },
+    "udp_ipv6": {
+      "errno": 101
+    }
+  },
+  "events": [
+    {
+      "observed_at": "2026-10-25T05:54:00.725394713Z",
+      "process_start": "2026-10-25T05:53:42.356944067Z",
+      "pid": 7933,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/run/agentguard/admitted"
+        }
+      ],
+      "return": {
+        "long_arg": "-13"
+      },
+      "evidence_reference": "tetragon:61b626a1eeee2c6e58c1d8be4549b3a5298be222002a896d7e58e664a8750c8b"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.161160497Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/bin/../lib/glibc-hwcaps/x86-64-v4/libpython3.14.so.1.0"
+        }
+      ],
+      "return": {
+        "long_arg": "-2"
+      },
+      "evidence_reference": "tetragon:3270545be7339061e2951b0c342f32cdd276a2e3f323163fddb16529060f35ae"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.161460524Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/bin/../lib/glibc-hwcaps/x86-64-v3/libpython3.14.so.1.0"
+        }
+      ],
+      "return": {
+        "long_arg": "-2"
+      },
+      "evidence_reference": "tetragon:bbd2d0b713218a8f7bb8b4c5b03962fe207ecb521f88558c88026677070baaba"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.161653244Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/bin/../lib/glibc-hwcaps/x86-64-v2/libpython3.14.so.1.0"
+        }
+      ],
+      "return": {
+        "long_arg": "-2"
+      },
+      "evidence_reference": "tetragon:a36a8de722dc56c86d521dd5da18250f3ab3ab326ad5db9d898a573dc3014a9d"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.161739675Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/bin/../lib/tls/x86_64/x86_64/libpython3.14.so.1.0"
+        }
+      ],
+      "return": {
+        "long_arg": "-2"
+      },
+      "evidence_reference": "tetragon:8095b6d22c7dfda5e5ec4f8e6d2aac904ec22dfaa583c0e7c190a055709f6b97"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.161795520Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/bin/../lib/tls/x86_64/libpython3.14.so.1.0"
+        }
+      ],
+      "return": {
+        "long_arg": "-2"
+      },
+      "evidence_reference": "tetragon:7f1480c4277ec917f2c80bc3b6593eb665ca26c26e668162a8f33fabfcf54fa3"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.162337756Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/bin/../lib/tls/libpython3.14.so.1.0"
+        }
+      ],
+      "return": {
+        "long_arg": "-2"
+      },
+      "evidence_reference": "tetragon:5875ca4bda0332ce3386bda693d6bef3b50b142d5af545dab2a28ffc8b57a6cc"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.162455451Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/bin/../lib/x86_64/x86_64/libpython3.14.so.1.0"
+        }
+      ],
+      "return": {
+        "long_arg": "-2"
+      },
+      "evidence_reference": "tetragon:d5dc223c86ce1af0b734b8374bb7676a1f04a702067db7564996292f0acdb2a3"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.162894692Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/bin/../lib/x86_64/libpython3.14.so.1.0"
+        }
+      ],
+      "return": {
+        "long_arg": "-2"
+      },
+      "evidence_reference": "tetragon:fdf37703fd5e4217993d96b9af4954bda72c3a0e2e2cea631123531710c2c739"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.162966323Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/bin/../lib/libpython3.14.so.1.0"
+        }
+      ],
+      "return": {
+        "long_arg": "3"
+      },
+      "evidence_reference": "tetragon:386a9e2bdc1999e1e4172a6b932312656b4df5b55793dcd6880bceb003a84ade"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.163359910Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/bin/../lib/libc.so.6"
+        }
+      ],
+      "return": {
+        "long_arg": "-2"
+      },
+      "evidence_reference": "tetragon:40103670d152be66e7d9fed3acaa5563ea593c1cf15b61c1f7ad674730c8bb83"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.163382582Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/etc/ld.so.cache"
+        }
+      ],
+      "return": {
+        "long_arg": "3"
+      },
+      "evidence_reference": "tetragon:de21e1ac0e8bc35a75fe2a48370c2d25edf00a14cbcd4cd3d8349fd732e38b9c"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.163456040Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/lib/x86_64-linux-gnu/libc.so.6"
+        }
+      ],
+      "return": {
+        "long_arg": "3"
+      },
+      "evidence_reference": "tetragon:2bade3221921fa695967e8093202f0003159c241341807990cdbd39713100f78"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.163633080Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/lib/x86_64-linux-gnu/libm.so.6"
+        }
+      ],
+      "return": {
+        "long_arg": "3"
+      },
+      "evidence_reference": "tetragon:0256bc2e72cc8bfb595777d10463494cb56819ef3e837c8c92807292353d2db2"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.166036240Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/lib/locale/locale-archive"
+        }
+      ],
+      "return": {
+        "long_arg": "-2"
+      },
+      "evidence_reference": "tetragon:9dced333da621cb45c64b45e28c5fc6b52f2ad8dca6d0abf8ad45e86e13370bc"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.166155772Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/share/locale/locale.alias"
+        }
+      ],
+      "return": {
+        "long_arg": "-2"
+      },
+      "evidence_reference": "tetragon:24db98b83e32c2fe4a247a637dd7280f80c37653643fa66048ab46d9dede434f"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.166179988Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/lib/locale/C.UTF-8/LC_CTYPE"
+        }
+      ],
+      "return": {
+        "long_arg": "-2"
+      },
+      "evidence_reference": "tetragon:e93d2efc4a98dad5264b6717cda8170e5862a47409586a8639f5b2d4210f97c4"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.166191809Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/lib/locale/C.utf8/LC_CTYPE"
+        }
+      ],
+      "return": {
+        "long_arg": "3"
+      },
+      "evidence_reference": "tetragon:bd308eb4b9b2632bc1725ecc9d777be71394b366d815c4c063c580d9fb3a82c7"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.166269725Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache"
+        }
+      ],
+      "return": {
+        "long_arg": "3"
+      },
+      "evidence_reference": "tetragon:108db29883068fe7ddedd0552b8849eb8708c0fd58892ad884cae1157ebb5cd6"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.166732170Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/proc/self/maps"
+        }
+      ],
+      "return": {
+        "long_arg": "3"
+      },
+      "evidence_reference": "tetragon:3545164810dd5234bcfb380f02586ed6bf76b077a682485f6c4458e3893b24c8"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.171956160Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/pyvenv.cfg"
+        }
+      ],
+      "return": {
+        "long_arg": "-2"
+      },
+      "evidence_reference": "tetragon:830cd83f88879c16b0f50babb63921008e197d088518708953e0bb4766fcfa24"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.172058270Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/bin/pyvenv.cfg"
+        }
+      ],
+      "return": {
+        "long_arg": "-2"
+      },
+      "evidence_reference": "tetragon:0509b501c13c4cdc25091c5de184db7618547c1e5f2bdbc4c0f001acc0475204"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.172122851Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/bin/../lib/libpython3.14.so.1.0._pth"
+        }
+      ],
+      "return": {
+        "long_arg": "-2"
+      },
+      "evidence_reference": "tetragon:834279c64ff98863bad1082fdfc999260beb380be8bf494fd554bfa8e4bb1afe"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.172139251Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/bin/python._pth"
+        }
+      ],
+      "return": {
+        "long_arg": "-2"
+      },
+      "evidence_reference": "tetragon:faa421203d00b7713a026b09b492062a9603359bd2e383ce47f6683ca4415957"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.172150863Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/bin/python3.14._pth"
+        }
+      ],
+      "return": {
+        "long_arg": "-2"
+      },
+      "evidence_reference": "tetragon:8c8af34ef426f7fd71dc095c2838a19cc06927df2385effcb928005cd727f1a0"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.172163327Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/bin/pybuilddir.txt"
+        }
+      ],
+      "return": {
+        "long_arg": "-2"
+      },
+      "evidence_reference": "tetragon:7f5a91acaa30eb3a4d2c4ce372ba8ecb09d8cb44ea1c62657280182d27ad3c77"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.174904725Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/etc/localtime"
+        }
+      ],
+      "return": {
+        "long_arg": "3"
+      },
+      "evidence_reference": "tetragon:858fb05803791ec8de5ed02d5863e93df09dd54b91017adc077666bf8fbd4851"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.175385913Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/lib/python3.14"
+        }
+      ],
+      "return": {
+        "long_arg": "3"
+      },
+      "evidence_reference": "tetragon:da4dfce833ab0b5a495794265714a1375350913711a717c01b7b1bb95cc89e2b"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.175942363Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/lib/python3.14/encodings/__pycache__/__init__.cpython-314.pyc"
+        }
+      ],
+      "return": {
+        "long_arg": "-2"
+      },
+      "evidence_reference": "tetragon:76d30fd2eb412a8d2946ea4fffe0b3a0b092a1064a1cc5569720832c732ddb8b"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.176210932Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/lib/python3.14/encodings/__init__.py"
+        }
+      ],
+      "return": {
+        "long_arg": "3"
+      },
+      "evidence_reference": "tetragon:5bb4ed49a5c1b8961b3a38d7f4d84a531ce11375bfe2815ff526a997d8745918"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.180895500Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/lib/python3.14/encodings/__pycache__/__init__.cpython-314.pyc.128977037586864"
+        }
+      ],
+      "return": {
+        "long_arg": "-30"
+      },
+      "evidence_reference": "tetragon:66853ba17f0887e5628271f9156d1772548cf0e495994d14fc55ea0dd0712975"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.181764783Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/lib/python3.14/encodings"
+        }
+      ],
+      "return": {
+        "long_arg": "3"
+      },
+      "evidence_reference": "tetragon:d3ccfc9bc367833cc661199ee17f6fdf1d98f646016f73b1cb090bc64342025b"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.182156994Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/lib/python3.14/encodings/__pycache__/aliases.cpython-314.pyc"
+        }
+      ],
+      "return": {
+        "long_arg": "-2"
+      },
+      "evidence_reference": "tetragon:29ca172d6ced6d2b844a2850fd824467176e9d768e31925bf3f5d55ec614c178"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.182247765Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/lib/python3.14/encodings/aliases.py"
+        }
+      ],
+      "return": {
+        "long_arg": "3"
+      },
+      "evidence_reference": "tetragon:e5059a563d351bfe7cf66bc5bc40a27b352ff04aa120e89529c23da0260142ea"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.185575438Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/lib/python3.14/encodings/__pycache__/aliases.cpython-314.pyc.128977037064352"
+        }
+      ],
+      "return": {
+        "long_arg": "-30"
+      },
+      "evidence_reference": "tetragon:e58d6dd0cb74466affc8a03ee9bf24cfcd34bcc350be285f66dff78476c11a33"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.185953013Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/lib/python3.14/encodings/__pycache__/utf_8.cpython-314.pyc"
+        }
+      ],
+      "return": {
+        "long_arg": "-2"
+      },
+      "evidence_reference": "tetragon:1f047774e93c244d1cc37326ac2a57d42b0aa5d2bff54bafaa245231a99e35ae"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.186028914Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/lib/python3.14/encodings/utf_8.py"
+        }
+      ],
+      "return": {
+        "long_arg": "3"
+      },
+      "evidence_reference": "tetragon:979740c7d190691a9de12d44867b599b15c4ab8ac9118932f8685b659596238c"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.186665712Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/lib/python3.14/encodings/__pycache__/utf_8.cpython-314.pyc.128977037064464"
+        }
+      ],
+      "return": {
+        "long_arg": "-30"
+      },
+      "evidence_reference": "tetragon:33f4304c11d0d5cb9438e1c0e9a137008e6bfec69de83d4bd39a80ceead6698d"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.192019329Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/lib/python3.14/site-packages"
+        }
+      ],
+      "return": {
+        "long_arg": "3"
+      },
+      "evidence_reference": "tetragon:9fa6fb2d5d34c461511f90310aca4b68b96993131fd9d2831288626c658d6ecd"
+    },
+    {
+      "observed_at": "2026-10-25T05:54:01.192326010Z",
+      "process_start": "2026-10-25T05:54:01.160650580Z",
+      "pid": 8499,
+      "binary": "/usr/local/bin/python",
+      "function_name": "__x64_sys_openat",
+      "args": [
+        {
+          "string_arg": "/usr/local/lib/python3.14/lib-dynload"
+        }
+      ],
+      "return": {
+        "long_arg": "3"
+      },
+      "evidence_reference": "tetragon:201c2a08458e43583d98fd2f16bcc90dc650ff220b911dc8655db8b972bba930"
+    }
+  ],
+  "gaps": [
+    "missing_or_foreign_container_identity",
+    "missing_or_foreign_container_identity",
+    "missing_or_foreign_container_identity",
+    "missing_or_foreign_container_identity",
+    "missing_or_foreign_container_identity",
+    "missing_or_foreign_container_identity",
+    "missing_or_foreign_container_identity",
+    "missing_or_foreign_container_identity",
+    "missing_or_foreign_container_identity",
+    "missing_or_foreign_container_identity",
+    "missing_or_foreign_container_identity",
+    "missing_or_foreign_container_identity",
+    "missing_or_foreign_container_identity",
+    "missing_or_foreign_container_identity",
+    "missing_or_foreign_container_identity",
+    "missing_or_foreign_container_identity",
+    "missing_or_foreign_container_identity"
+  ],
+  "checks": {
+    "namespace_scoped_policy_loaded": true,
+    "file_syscall_observed": true,
+    "connect_syscall_observed": true,
+    "udp_sendto_observed": true,
+    "actual_file_read_refused": true,
+    "actual_file_write_refused": true,
+    "actual_ipv4_tcp_refused": true,
+    "actual_udp_dns_refused": true,
+    "actual_ipv6_udp_refused": true,
+    "no_foreign_attribution": false,
+    "finance_agent_not_admitted": true
+  },
+  "passed": false,
+  "metrics_before": {
+    "observed_at": "2026-10-25T05:54:00.171724Z",
+    "counters": {
+      "tetragon_observer_ringbuf_events_lost_total": 0,
+      "tetragon_observer_ringbuf_queue_events_lost_total": 0,
+      "tetragon_events_missing_process_info_total": 0,
+      "tetragon_events_export_failed_total": null
+    },
+    "scope": "actual Tetragon host-wide counters; missing families are null, never zero"
+  },
+  "metrics_after": {
+    "observed_at": "2026-10-25T05:54:11.096682Z",
+    "counters": {
+      "tetragon_observer_ringbuf_events_lost_total": 0,
+      "tetragon_observer_ringbuf_queue_events_lost_total": 0,
+      "tetragon_events_missing_process_info_total": 0,
+      "tetragon_events_export_failed_total": null
+    },
+    "scope": "actual Tetragon host-wide counters; missing families are null, never zero"
+  },
+  "counter_deltas": {
+    "tetragon_observer_ringbuf_events_lost_total": {
+      "delta": 0,
+      "status": "observed"
+    },
+    "tetragon_observer_ringbuf_queue_events_lost_total": {
+      "delta": 0,
+      "status": "observed"
+    },
+    "tetragon_events_missing_process_info_total": {
+      "delta": 0,
+      "status": "observed"
+    },
+    "tetragon_events_export_failed_total": {
+      "delta": null,
+      "status": "unknown_or_reset"
+    }
+  },
+  "coverage_status": "partial",
+  "protected_execution_ready": false,
+  "private_raw_reference": "operator-retained-linux-hooks:1df179e109fa44b5847846fe6cb02e95",
+  "limitations": [
+    "Bounded subscription, not continuous coverage",
+    "Hooks cover only listed syscalls; not every file or networking mechanism",
+    "Syscall failure is observed, not attributed to a specific enforcement control",
+    "No packet/flow observation is inferred from a connection attempt"
+  ],
+  "event_count": 488,
+  "public_event_selection": "Representative distinct syscall/argument pairs; full source remains in the private raw reference"
+}

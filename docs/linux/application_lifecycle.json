@@ -1,0 +1,79 @@
+{
+  "observed_at": "2026-10-25T06:15:41.590466+00:00",
+  "mode": "real-linux-application-lifecycle",
+  "image_id": "sha256:04e5827f75ee3ccc71a8f1675caf3306d94e06e289c19666f3c9a9f1a03a16c9",
+  "checks": {
+    "cancel_real_bootstrap_staged": true,
+    "cancel_real_peer_denied_before_admission": true,
+    "cancel_all_missing_gates_reported": true,
+    "cancel_verified_response": true,
+    "cancel_verified_cleanup": true,
+    "crash_restart_real_bootstrap_staged": true,
+    "crash_restart_real_peer_denied_before_admission": true,
+    "crash_restart_all_missing_gates_reported": true,
+    "crash_did_not_admit_agent": true,
+    "crash_restart_verified_cleanup": true,
+    "evidence_integrity_valid": true,
+    "no_broker_model_or_report_action": true,
+    "restart_revocation_persisted": true
+  },
+  "passed": true,
+  "runs": [
+    {
+      "scenario": "cancel",
+      "task_id": "FIN-b909654a59d94812bfeac152ea8f4163",
+      "binding": {
+        "task_id": "FIN-b909654a59d94812bfeac152ea8f4163",
+        "contract_version": 1,
+        "capsule_id": "capsule-0f2267946fb64f0fb0cc2e6d80c9d172",
+        "host_id": "linux-lab-01",
+        "cgroup_id": "cg-19695",
+        "process_start": "2026-10-25T06:15:29.257188Z",
+        "registered_at": "2026-10-25T06:15:29.710979Z",
+        "channel_id": "69815b164c914e318bb5efd8128c7116",
+        "simulated": false
+      },
+      "container_id": "a470567eb4a70d344a3288c938684cba5c3552591a04837117a207c33eae765c",
+      "process_start_ticks": "133131",
+      "cgroup_inode": 19695,
+      "admission_hold_reasons": [
+        "REQUIRED_SENSOR_COVERAGE_UNAVAILABLE",
+        "LIVE_PLATFORM_ADMISSION_REVIEW_PENDING",
+        "LOCAL_MODEL_DISABLED"
+      ],
+      "contained_at": "2026-10-25T06:15:32.969069Z",
+      "descendants_exited": true,
+      "channel_revoked": true
+    },
+    {
+      "scenario": "crash_restart",
+      "task_id": "FIN-5788162aae7e41b6a452b2737796dd9b",
+      "binding": {
+        "task_id": "FIN-5788162aae7e41b6a452b2737796dd9b",
+        "contract_version": 1,
+        "capsule_id": "capsule-cdc86e2ff786400d97d7da6ae61b604a",
+        "host_id": "linux-lab-01",
+        "cgroup_id": "cg-19767",
+        "process_start": "2026-10-25T06:15:35.614772Z",
+        "registered_at": "2026-10-25T06:15:36.022034Z",
+        "channel_id": "196ddd5b92d84f928801f0b50b78c8ec",
+        "simulated": false
+      },
+      "container_id": "d415428ef2d87f863e3d16c5c9ccdc97d24e48bf8528b7a02bd6f8d61edb8176",
+      "process_start_ticks": "133765",
+      "cgroup_inode": 19767,
+      "admission_hold_reasons": [
+        "REQUIRED_SENSOR_COVERAGE_UNAVAILABLE",
+        "LIVE_PLATFORM_ADMISSION_REVIEW_PENDING",
+        "LOCAL_MODEL_DISABLED"
+      ],
+      "contained_at": "2026-10-25T06:15:40.126653Z",
+      "descendants_exited": true,
+      "channel_revoked": true
+    }
+  ],
+  "agent_admitted": false,
+  "model_invoked": false,
+  "protected_execution_ready": false,
+  "scope": "Real HTTP API and Linux containers; no fixture controller, admission reviewer or coverage; docker-exec was a trusted negative peer probe only"
+}

@@ -5,6 +5,8 @@ import platform
 import sys
 from pathlib import Path
 
+import httpx
+
 from agentguard.platform import command, host_audit
 from agentguard.schema import timestamp
 
@@ -48,9 +50,28 @@ def main():
         "socket_lab_image": json.loads(
             command(["docker", "image", "inspect", "agentguard-socket-lab:round1"])
         )[0]["Id"],
-        "model_runtime": "not installed or invoked in this round",
+        "finance_image": json.loads(
+            command(["docker", "image", "inspect", "agentguard-finance:round2"])
+        )[0]["Id"],
+        "ollama_release_archive_sha256": versions["ollama_archive_sha256"],
         "full_protected_mvp_complete": False,
     }
+    try:
+        with httpx.Client(trust_env=False, follow_redirects=False, timeout=5) as client:
+            version = client.get("http://127.0.0.1:11434/api/version")
+            version.raise_for_status()
+            models = client.get("http://127.0.0.1:11434/api/tags")
+            models.raise_for_status()
+        result["model_runtime"] = {
+            "version": version.json()["version"],
+            "models": [
+                {key: model[key] for key in ("name", "digest", "size")}
+                for model in models.json()["models"]
+                if model["name"] == "qwen2.5:7b"
+            ],
+        }
+    except (httpx.HTTPError, ValueError, KeyError):
+        result["model_runtime"] = {"status": "unavailable_or_unverified"}
     audit = host_audit()
     audit["host"] = "linux-lab-01"
     (output / "host_capabilities.json").write_text(json.dumps(audit, indent=2) + "\n")

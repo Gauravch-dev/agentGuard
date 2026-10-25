@@ -1,0 +1,80 @@
+{
+  "observed_at": "2026-10-25T06:04:39.773376+00:00",
+  "mode": "real-linux-independent-packet-lab",
+  "image_id": "sha256:04e5827f75ee3ccc71a8f1675caf3306d94e06e289c19666f3c9a9f1a03a16c9",
+  "container_id": "df4933d75fdc948876f6b3b78a4272b45c009d807e41cdbd0ac1eae1fd024722",
+  "capture": {
+    "network_namespace_inode": 4026532362,
+    "capsule_id": "capsule-cd5c286093844505b037147a7a189be6",
+    "cgroup_inode": 18790,
+    "packets": [
+      {
+        "source_ip": "127.0.0.1",
+        "destination_ip": "127.0.0.1",
+        "ip_protocol": 17,
+        "frame_bytes": 62,
+        "packet_type": 4,
+        "interface": "lo",
+        "destination_scope": "loopback"
+      },
+      {
+        "source_ip": "127.0.0.1",
+        "destination_ip": "127.0.0.1",
+        "ip_protocol": 17,
+        "frame_bytes": 62,
+        "packet_type": 0,
+        "interface": "lo",
+        "destination_scope": "loopback"
+      },
+      {
+        "source_ip": "127.0.0.1",
+        "destination_ip": "127.0.0.1",
+        "ip_protocol": 1,
+        "frame_bytes": 90,
+        "packet_type": 4,
+        "interface": "lo",
+        "destination_scope": "loopback"
+      },
+      {
+        "source_ip": "127.0.0.1",
+        "destination_ip": "127.0.0.1",
+        "ip_protocol": 1,
+        "frame_bytes": 90,
+        "packet_type": 0,
+        "interface": "lo",
+        "destination_scope": "loopback"
+      }
+    ],
+    "kernel_packet_count": 4,
+    "kernel_drops": 0,
+    "parser_or_capacity_gaps": 0,
+    "capture_seconds": 4.103515861000005,
+    "payload_retained": false,
+    "coverage_status": "partial",
+    "scope": "Actual AF_PACKET namespace observations; no individual sender PID or encrypted contents inferred"
+  },
+  "attempt_results": {
+    "loopback_selfcheck": {
+      "bytes_sent": 20
+    },
+    "external_attempt": {
+      "errno": 101
+    }
+  },
+  "checks": {
+    "real_loopback_packet_observed": true,
+    "external_attempt_returned_error": true,
+    "no_nonloopback_outgoing_frame_observed": true,
+    "kernel_packet_drops_zero_in_bounded_window": true,
+    "no_parser_or_capacity_gap": true,
+    "payload_not_retained": true,
+    "finance_agent_not_admitted": true
+  },
+  "passed": true,
+  "protected_execution_ready": false,
+  "limitations": [
+    "Bounded packet window, not continuous production coverage",
+    "A failed external connect/send may produce no packet; attempt evidence needs syscall sensor",
+    "Namespace attribution only; no sender PID or packet content claim"
+  ]
+}

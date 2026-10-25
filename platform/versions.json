@@ -6,5 +6,10 @@
   "python_platform": "linux/amd64",
   "tetragon_image": "quay.io/cilium/tetragon@sha256:deda51c3f88e4d26b4d76c99ea207f2b05f9e40c210e0f04a37ca632ab7bf527",
   "tetragon_release": "v1.7.0",
+  "ollama_version": "0.40.11",
+  "ollama_archive_sha256": "7bedab90dd122661be78798e9f0edf37fccf0cccf2699d2c58ea1a3afdc04b6d",
+  "ollama_download_url": "https://github.com/ollama/ollama/releases/download/v0.40.11/ollama-linux-amd64.tar.zst",
+  "approved_model_name": "qwen2.5:7b",
+  "approved_model_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
   "selection_basis": "Resolved from the official registries; selection alone is not execution or signature verification"
 }

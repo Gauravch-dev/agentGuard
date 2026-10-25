@@ -137,6 +137,7 @@ def staged(tmp_path, monkeypatch):
         secrets.token_urlsafe(32),
         database=tmp_path / "lifecycle.sqlite3",
         local_model_enabled=True,
+        approved_model_digest="a" * 64,
         sensors={
             "fixture-sensor": SensorIdentity(
                 secrets.token_urlsafe(32), "fixture-host", ("host_sensor", "network_sensor")

@@ -23,10 +23,17 @@ class Settings:
     integrity_key: str
     database: Path = Path("var/agentguard.sqlite3")
     local_model_enabled: bool = False
+    approved_model_digest: str | None = None
     approved_lab_image: str | None = None
     sensors: dict[str, SensorIdentity] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
+        if self.approved_model_digest is not None and not re.fullmatch(
+            r"[a-f0-9]{64}", self.approved_model_digest
+        ):
+            raise ValueError("Approved local model must have an immutable SHA-256 digest")
+        if self.local_model_enabled and self.approved_model_digest is None:
+            raise ValueError("Enabling local inference requires the reviewed model digest")
         if self.approved_lab_image is not None and not re.fullmatch(
             r"sha256:[a-f0-9]{64}", self.approved_lab_image
         ):
@@ -65,6 +72,7 @@ class Settings:
             integrity_key=os.environ.get("AG_INTEGRITY_KEY", ""),
             approved_lab_image=os.environ.get("AG_LAB_IMAGE_ID") or None,
             local_model_enabled=os.environ.get("AG_LOCAL_MODEL_ENABLED") == "true",
+            approved_model_digest=os.environ.get("AG_APPROVED_MODEL_DIGEST") or None,
             sensors=sensors,
         )
 

@@ -1,10 +1,10 @@
 {
-  "observed_at": "2026-10-24T16:38:37.976246Z",
+  "observed_at": "2026-10-25T06:23:47.848955Z",
   "host": "linux-lab-01",
   "kernel": "6.18.33.2-microsoft-standard-WSL2",
   "architecture": "x86_64",
   "cpu_count": 12,
-  "disk_free_bytes": 30699868160,
+  "disk_free_bytes": 14173868032,
   "checks": [
     {
       "name": "linux_host",

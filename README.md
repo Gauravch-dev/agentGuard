@@ -4,11 +4,24 @@
 
 | Area | Verified today | Remaining |
 |---|---|---|
-| Application | Task Authority, brokers, evidence, reconciliation, dashboard and staged lifecycle orchestration | Live validation of lifecycle and report recovery |
-| Linux runtime | Restricted containers, staged launcher, real broker peer checks, watchdog and cleanup | Trusted live admission reviewer and complete monitoring integration |
-| Sensors | Genuine Tetragon process/child observations and sampled loss metrics | File/connect hooks, network flows, continuous export/coverage and timestamp review |
-| AI model | Finance Agent client and local-model broker interface | Actual model setup and benign/injected protected runs |
-| Acceptance | 136 Windows tests plus 13 subtests; prior Linux round has 122 tests and selected real experiments | Rerun this round on Linux; full S01–S16 and baseline/performance comparisons |
+| Application | Task Authority, brokers, evidence, reconciliation, dashboard and real staged cancellation/restart checks | Protected report recovery with complete monitoring |
+| Linux runtime | Restricted containers, staged launcher, peer checks, watchdog, cleanup and conservative live reviewer | Live continuous sensor supervisor for admission |
+| Sensors | Genuine process/file/connect records, bounded independent packet capture and durable authenticated export | Broader hooks, continuous capture/health/coverage, packet export and timestamp review |
+| AI model | Pinned Ollama/Qwen setup and actual benign/injected provider calls | Complete protected benign/injected Finance runs |
+| Acceptance | 157 Linux tests; 146 Windows tests with 11 Linux-specific skips; 13 subtests on each | Full S01–S16 and baseline/performance comparisons |
+
+## Latest Linux return round
+
+The new Linux round validates the real application bootstrap, pre-admission peer
+denial, cancellation and crash/restart cleanup. It adds namespace-scoped file and
+connection hooks, a separate packet sensor, a durable source checkpoint/export
+queue, distinct private sensor credentials and a conservative live reviewer.
+Actual kernel records were delivered through the authenticated application API;
+gaps remain recorded and do not become complete coverage.
+
+See [the Linux return results, commands and remaining gates](docs/linux_return_round.md).
+Protected Finance admission remains held because full continuous sensor
+supervision and coverage are incomplete. The earlier checkpoints below are historical.
 
 ## Latest application lifecycle round
 

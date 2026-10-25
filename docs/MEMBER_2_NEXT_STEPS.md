@@ -1,5 +1,11 @@
 # Current application return round
 
+Linux follow-through is recorded in [the 25 October Linux return round](linux_return_round.md).
+Real staging/cancellation/restart, scoped hooks, packet self-check and durable
+authenticated hook delivery have been exercised. Full continuous source
+supervision/coverage, protected model/report acceptance and remaining S01–S16
+cases are still open; use that document's remaining-gates table for the next round.
+
 The newer [application lifecycle integration handoff](application_lifecycle_round.md)
 supersedes the earlier launcher-wiring requests below. Pull the new round, validate
 the real staged application path and atomic admission marker, then complete live

@@ -1,5 +1,9 @@
 # Linux implementation and live validation round
 
+The newer [25 October Linux return round](linux_return_round.md) records the
+application lifecycle, syscall-hook, packet and durable exporter follow-through.
+This page retains the 24 October round and its original limitations below.
+
 Owner: Member 2. Date: 24 October 2026. Start point: shared integration commit
 `413d571de02d75b7c382a1bc87881147fc809281`.
 

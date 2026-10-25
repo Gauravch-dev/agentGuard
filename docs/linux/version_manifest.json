@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-10-24T16:38:36.574483Z",
+  "observed_at": "2026-10-25T06:23:46.311562Z",
   "host_id": "linux-lab-01",
   "kernel": "6.18.33.2-microsoft-standard-WSL2",
   "python": "3.14.4",
@@ -17,6 +17,17 @@
   "tetragon_health": "Health Status: running",
   "lab_image": "sha256:1d90211b473268c5cb9067e6f30488d709176352c9eb83f1a223293e851644a1",
   "socket_lab_image": "sha256:fb44fd1a5bb3830faf891e569ffe6656573a1c4d3723c1a6ff5cc8578d30e161",
-  "model_runtime": "not installed or invoked in this round",
-  "full_protected_mvp_complete": false
+  "finance_image": "sha256:04e5827f75ee3ccc71a8f1675caf3306d94e06e289c19666f3c9a9f1a03a16c9",
+  "ollama_release_archive_sha256": "7bedab90dd122661be78798e9f0edf37fccf0cccf2699d2c58ea1a3afdc04b6d",
+  "full_protected_mvp_complete": false,
+  "model_runtime": {
+    "version": "0.40.11",
+    "models": [
+      {
+        "name": "qwen2.5:7b",
+        "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "size": 4683087332
+      }
+    ]
+  }
 }

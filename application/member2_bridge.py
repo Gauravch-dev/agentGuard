@@ -85,14 +85,31 @@ def translate_member2_event(value: dict, sensor_id: str) -> tuple[SecurityEvent,
     if checked["source"] != "host_sensor" or checked["event_type"] not in {
         "process_exec",
         "process_exit",
+        "file_access",
+        "connection_attempt",
     }:
         raise PermissionError(
-            "Only genuine Member 2 process observations are supported by this bridge"
+            "Only supported Member 2 host observations are accepted by this bridge"
         )
     details = checked["details"]
-    allowed = {"sensor_id", "coverage_scope", "attribution_basis", "parent_exec_id"}
+    allowed = {
+        "sensor_id",
+        "coverage_scope",
+        "attribution_basis",
+        "parent_exec_id",
+        "hook_policy",
+        "kernel_return",
+    }
     if details.get("sensor_id") != sensor_id or set(details) - allowed:
         raise PermissionError("Collector identity or metadata scope mismatch")
+    if checked["event_type"] in {"file_access", "connection_attempt"} and (
+        checked["coverage_status"] != "partial"
+        or checked["policy_verdict"] != "unknown"
+        or checked["effect_status"] not in {"attempted", "observed"}
+        or not isinstance(details.get("hook_policy"), str)
+        or type(details.get("kernel_return")) is not int
+    ):
+        raise PermissionError("Hook observation cannot certify enforcement or complete coverage")
     shared = {key: item for key, item in checked.items() if key not in {"received_at", "details"}}
     # Unsupported identifiers or fields are rejected, never truncated or guessed.
     event = SecurityEvent.model_validate(shared)

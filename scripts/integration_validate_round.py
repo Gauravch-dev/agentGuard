@@ -25,7 +25,7 @@ def main():
         "pytest": ["pytest", "-q", "--color=no", "--basetemp", str(temporary)],
         "lint": ["ruff", "check", "."],
         "format": ["ruff", "format", "--check", "."],
-        "application_types": ["mypy"],
+        "application_types": ["mypy", "--cache-dir", str(logs / "mypy-cache")],
         "contract_compatibility": ["scripts.export_contracts", "--check"],
     }
     report = {

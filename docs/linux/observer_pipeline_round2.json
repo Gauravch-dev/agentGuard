@@ -1,0 +1,50 @@
+{
+  "observed_at": "2026-10-25T06:13:07.435821+00:00",
+  "mode": "real-linux-observer-api-pipeline",
+  "image_id": "sha256:04e5827f75ee3ccc71a8f1675caf3306d94e06e289c19666f3c9a9f1a03a16c9",
+  "task_id": "FIN-52d48abee56b456eb68feb29cdaddc17",
+  "capsule_id": "capsule-88b96f554fe24640a24ec92ae68844da",
+  "checks": {
+    "genuine_hook_events_queued": true,
+    "owner_credential_rejected_for_sensor_delivery": true,
+    "restart_preserved_checkpoint": true,
+    "registered_hook_credential_delivered_all_pending": true,
+    "no_coverage_promotion": true,
+    "admission_still_held": true,
+    "verified_cleanup": true,
+    "real_events_persisted_under_distinct_hook_identity": true,
+    "source_metadata_and_server_receipt_separate": true,
+    "evidence_integrity_valid": true,
+    "no_agent_broker_or_report_action": true
+  },
+  "passed": true,
+  "queue_before": {
+    "pending": 144,
+    "delivered": 0,
+    "gaps": 18,
+    "export_failures": 0,
+    "coverage_promoted": false
+  },
+  "queue_after_wrong_credential": {
+    "pending": 144,
+    "delivered": 0,
+    "gaps": 19,
+    "export_failures": 1,
+    "coverage_promoted": false
+  },
+  "queue_after_restart_and_delivery": {
+    "pending": 0,
+    "delivered": 144,
+    "gaps": 19,
+    "export_failures": 1,
+    "coverage_promoted": false
+  },
+  "admission_hold_reasons": [
+    "REQUIRED_SENSOR_COVERAGE_UNAVAILABLE",
+    "LIVE_PLATFORM_ADMISSION_REVIEW_PENDING",
+    "LOCAL_MODEL_DISABLED"
+  ],
+  "coverage_status": "partial",
+  "protected_execution_ready": false,
+  "model_invoked": false
+}

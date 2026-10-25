@@ -1,5 +1,10 @@
 # Integration status
 
+Latest Linux return (25 October): [lifecycle and observer results](linux_return_round.md)
+record genuine application/container, file/connect, packet and authenticated
+export checks. Continuous coverage and protected model/report acceptance remain
+open. Earlier rows below are historical checkpoints.
+
 Recorded 24 October 2026. This file describes actual implementation and validation, not the target design.
 
 Latest application update (25 October): see
