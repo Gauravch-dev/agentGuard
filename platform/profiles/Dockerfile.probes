@@ -1,0 +1,13 @@
+# Synthetic acceptance image only. Supply both reviewed values explicitly.
+ARG PYTHON_BASE
+FROM ${PYTHON_BASE}
+ARG CURL_VERSION
+RUN test -n "$CURL_VERSION" \
+    && apt-get update \
+    && apt-get install --no-install-recommends --yes "curl=$CURL_VERSION" \
+    && rm -rf /var/lib/apt/lists/*
+COPY platform/profiles/admission.py /opt/agentguard/admission.py
+COPY agent_demo/finance_agent.py /opt/agentguard/workload.py
+USER 65532:65532
+WORKDIR /work
+ENTRYPOINT ["python", "-I", "/opt/agentguard/admission.py"]

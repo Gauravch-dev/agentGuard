@@ -2,19 +2,20 @@
 
 **Status: partially implemented MVP. The full handoff is not complete.**
 
-The latest [Linux supervisor return](docs/linux_supervisor_round.md) follows the
-application review with continuous authenticated process/hook/packet collection,
-health and loss checks, collector/service restart recovery and real conflict tests.
-It passes 191 Linux tests and 176 Windows tests (15 Linux-specific skips), plus
-13 subtests on each. Known observation gaps still prevent protected admission.
+The latest [Linux delivery return](docs/linux_delivery_round.md) adds witnessed
+process/file/socket subscriptions before startup, expanded live scope probes,
+persistent queue recovery, real owner-view verification, measured probe baselines
+and a local dashboard limitation/cleanup recording. It passes 231 Linux tests and
+207 Windows tests (24 Linux-specific skips), plus 13 subtests on each. Packet/process
+attribution, consistent source clock/loss proof and full Finance acceptance remain blocked.
 
 | Area | Verified today | Remaining |
 |---|---|---|
 | Application | Task Authority, brokers, evidence, reconciliation, dashboard and real staged cancellation/restart checks | Protected report recovery with complete monitoring |
-| Linux runtime | Restricted containers, staged launcher, peers, watchdog, cleanup and connected continuous supervisor/reviewer | Verified observation from bootstrap birth and complete supported scope |
-| Sensors | Continuous process/hooks/packet metadata, authenticated export, health/loss checks and durable restart replay | Broader hooks, packet/process attribution, clock/loss semantics and complete coverage proof |
+| Linux runtime | Restricted containers, peers, watchdog, verified cleanup and witnessed process/hook subscriptions before startup | Whole-interval coverage, including the later packet attachment |
+| Sensors | Continuous authenticated export, expanded FD/readv/mmap/socket/curl probes and persistent replay | Remaining unsupported mechanisms, genuine packet/process join and source clock/loss proof |
 | AI model | Pinned Ollama/Qwen setup and actual benign/injected provider calls | Complete protected benign/injected Finance runs |
-| Acceptance | 191 Linux tests, 176 Windows tests, real continuous-source/restart/conflict experiments and warmed model checks | Admitted Finance/report continuation, full S01–S16 and baseline/performance comparisons |
+| Acceptance | 231 Linux tests, 207 Windows tests, genuine owner/socket/scope checks, nine probe baseline samples and a limitation recording | Admitted Finance/report continuation, full S01–S16 and Finance baseline/performance comparisons |
 
 ## Latest Linux return round
 
@@ -86,7 +87,7 @@ python -m scripts.start_linux --lab-image-id "$(docker image inspect --format '{
 ```
 
 Keep that terminal open. Open [http://127.0.0.1:8000](http://127.0.0.1:8000), paste
-the printed owner token, click **Connect**, then **+ New**. If the server is already
+the owner token from the root-private control state, click **Connect**, then **+ New**. If the server is already
 running, use it instead of starting another server on the same port. The authorized
 host operator can retrieve its current owner token in another activated terminal:
 

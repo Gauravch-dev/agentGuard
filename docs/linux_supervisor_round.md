@@ -1,5 +1,10 @@
 # Continuous observer return round
 
+Superseded for current implementation/results by the [Linux delivery return](linux_delivery_round.md).
+The historical ten-pass recovery limit below is replaced by persistent bounded
+retries, and process/hook subscriptions now start before bootstrap launch. Whole
+coverage, packet attribution and source clock/loss acceptance remain blocked.
+
 25 October 2026. Implements the Linux return work following application checkpoint
 `4a9abea`. This is real Linux integration work, with the limits below retained.
 It is not a completed protected Finance/S01–S16 acceptance round.

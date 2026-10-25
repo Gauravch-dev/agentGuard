@@ -121,7 +121,7 @@ def main():
         },
     )
     print("AgentGuard integrated Linux dashboard: http://127.0.0.1:8000", flush=True)
-    print("Owner token: " + settings.owner_token, flush=True)
+    print("Owner credential is stored in the root-private control state.", flush=True)
     print(
         "Protected AI admission remains disabled until every required sensor scope is verified.",
         flush=True,

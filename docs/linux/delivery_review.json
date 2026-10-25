@@ -1,0 +1,223 @@
+{
+  "observed_at": "2026-10-25T13:37:41.828715Z",
+  "mode": "real-linux-owner-views-and-delivery-hold",
+  "task_id": "FIN-97b501376ba7436f83d16c4961a1bcc4",
+  "capsule_id": "capsule-6f1552cc1d314d73b0590d8e5664b3ff",
+  "image_id": "sha256:04e5827f75ee3ccc71a8f1675caf3306d94e06e289c19666f3c9a9f1a03a16c9",
+  "checks": {
+    "actual_subscriptions_witnessed_before_bootstrap_start": true,
+    "new_posture_reads_real_current_supervisor": true,
+    "posture_excludes_private_runtime_paths_and_credentials": true,
+    "unknown_source_loss_remains_unknown": true,
+    "mandatory_admission_gates_remain_held": true,
+    "genuine_packet_observation_not_given_a_fabricated_sender": true,
+    "actual_owner_evidence_paging_is_disjoint_and_ordered": true,
+    "real_cancellation_and_channel_revocation_verified": true,
+    "final_observer_drain_signalled_and_stopped": true,
+    "actual_bootstrap_exec_record_retained": true,
+    "uncertain_source_exec_never_becomes_complete_coverage": true,
+    "historical_views_cannot_restore_current_execution": true,
+    "actual_review_notes_stay_revision_scoped": true,
+    "no_agent_admission_broker_action_or_report_created": true,
+    "actual_evidence_integrity_verified": true
+  },
+  "passed": true,
+  "timings": {
+    "launch_with_prebirth_seconds": 27.045234442000037
+  },
+  "prebirth": {
+    "prepared_at": "2026-10-25T13:37:16.813417Z",
+    "process_subscription_witnessed": true,
+    "hook_subscription_witnessed": true,
+    "errors": [],
+    "packet_prebirth_coverage": false,
+    "complete_coverage": false,
+    "frames_received": {
+      "process": 2,
+      "hooks": 909
+    }
+  },
+  "source_exec_observations": [
+    {
+      "observed_at": "2026-10-25T13:37:17.538339551Z",
+      "process_start": "2026-10-25T13:37:17.538339722Z",
+      "evidence_reference": "tetragon:fe0a9917202d82830bb8a5f6d0b33974cda6cb5e060afda1dbaab30298bdfbdf",
+      "accepted": false
+    },
+    {
+      "observed_at": "2026-10-25T13:37:25.231326049Z",
+      "process_start": "2026-10-25T13:37:25.231326088Z",
+      "evidence_reference": "tetragon:f882a008735598144a7bb77a952c02a45cd0b0539d67fd8caa5e59c35c8d5049",
+      "accepted": false
+    },
+    {
+      "observed_at": "2026-10-25T13:37:25.267961281Z",
+      "process_start": "2026-10-25T13:37:25.267961571Z",
+      "evidence_reference": "tetragon:4844b75a711109d4577b15b5717f78591dfeec1f5da3d2edd7ad4927ff175851",
+      "accepted": false
+    }
+  ],
+  "posture": {
+    "contract_version": 1,
+    "historical": false,
+    "checked_at": "2026-10-25T13:37:22.969400+00:00",
+    "protected_execution_ready": false,
+    "coverage": {
+      "status": "unverified",
+      "windows": 0,
+      "gaps": [
+        {
+          "classification": "Unverified",
+          "reason_code": "MISSING_SENSOR_COVERAGE",
+          "explanation": "Incomplete host_sensor/connection_attempt coverage for the execution interval.",
+          "evidence_references": []
+        },
+        {
+          "classification": "Unverified",
+          "reason_code": "MISSING_SENSOR_COVERAGE",
+          "explanation": "Incomplete host_sensor/file_access coverage for the execution interval.",
+          "evidence_references": []
+        },
+        {
+          "classification": "Unverified",
+          "reason_code": "MISSING_SENSOR_COVERAGE",
+          "explanation": "Incomplete host_sensor/process_exec coverage for the execution interval.",
+          "evidence_references": []
+        },
+        {
+          "classification": "Unverified",
+          "reason_code": "MISSING_SENSOR_COVERAGE",
+          "explanation": "Incomplete network_sensor/egress_flow coverage for the execution interval.",
+          "evidence_references": []
+        }
+      ],
+      "through": "2026-10-25T13:37:22.969400+00:00"
+    },
+    "last_sensor_receipt": "2026-10-25T13:37:20.469527+00:00",
+    "observer": {
+      "connected": true,
+      "reasons": [
+        "BOOTSTRAP_OBSERVATION_START_GAP",
+        "FILE_AND_NETWORK_HOOK_SCOPE_PARTIAL",
+        "HOOKS_EXPORT_PENDING",
+        "HOOKS_LOSS_ACCOUNTING_UNKNOWN",
+        "HOOKS_SOURCE_GAPS",
+        "NETWORK_PROCESS_ATTRIBUTION_UNAVAILABLE",
+        "PACKET_SOURCE_GAPS",
+        "PROCESS_LOSS_ACCOUNTING_UNKNOWN",
+        "PROCESS_SOURCE_GAPS",
+        "SOURCE_CLOCK_SEMANTICS_UNVERIFIED"
+      ],
+      "sources": {
+        "process": {
+          "alive": true,
+          "health_age_seconds": 0.13,
+          "fresh": true,
+          "pending": 0,
+          "gaps": 2,
+          "lost": null,
+          "export_failures": 0,
+          "epoch_changed": false
+        },
+        "hooks": {
+          "alive": true,
+          "health_age_seconds": 0.13,
+          "fresh": true,
+          "pending": 51,
+          "gaps": 5,
+          "lost": null,
+          "export_failures": 0,
+          "epoch_changed": false
+        },
+        "packet": {
+          "alive": true,
+          "health_age_seconds": 0.71,
+          "fresh": true,
+          "pending": 0,
+          "gaps": 1,
+          "lost": 0,
+          "export_failures": 0,
+          "epoch_changed": false
+        }
+      },
+      "finished": false
+    }
+  },
+  "admission_hold_reasons": [
+    "REQUIRED_SENSOR_COVERAGE_UNAVAILABLE",
+    "LIVE_PLATFORM_ADMISSION_REVIEW_PENDING",
+    "BOOTSTRAP_OBSERVATION_START_GAP",
+    "FILE_AND_NETWORK_HOOK_SCOPE_PARTIAL",
+    "HOOKS_EXPORT_PENDING",
+    "HOOKS_LOSS_ACCOUNTING_UNKNOWN",
+    "HOOKS_SOURCE_GAPS",
+    "NETWORK_PROCESS_ATTRIBUTION_UNAVAILABLE",
+    "PACKET_SOURCE_GAPS",
+    "PROCESS_LOSS_ACCOUNTING_UNKNOWN",
+    "PROCESS_SOURCE_GAPS",
+    "SOURCE_CLOCK_SEMANTICS_UNVERIFIED",
+    "APPROVED_MODEL_NOT_LOADED"
+  ],
+  "initial_sources": {
+    "process": {
+      "alive": true,
+      "last_heartbeat": 2531.795799128,
+      "pending": 0,
+      "gaps": 2,
+      "lost": null,
+      "export_failures": 0,
+      "epoch_changed": false
+    },
+    "hooks": {
+      "alive": true,
+      "last_heartbeat": 2531.795799128,
+      "pending": 51,
+      "gaps": 5,
+      "lost": null,
+      "export_failures": 0,
+      "epoch_changed": false
+    },
+    "packet": {
+      "alive": true,
+      "last_heartbeat": 2531.218499762,
+      "pending": 0,
+      "gaps": 1,
+      "lost": 0,
+      "export_failures": 0,
+      "epoch_changed": false
+    }
+  },
+  "final_sources": {
+    "process": {
+      "alive": false,
+      "last_heartbeat": 2545.217038383,
+      "pending": 3,
+      "gaps": 5,
+      "lost": null,
+      "export_failures": 0,
+      "epoch_changed": false
+    },
+    "hooks": {
+      "alive": false,
+      "last_heartbeat": 2545.217038383,
+      "pending": 201,
+      "gaps": 15,
+      "lost": null,
+      "export_failures": 0,
+      "epoch_changed": false
+    },
+    "packet": {
+      "alive": false,
+      "last_heartbeat": 2541.337799554,
+      "pending": 0,
+      "gaps": 1,
+      "lost": 0,
+      "export_failures": 0,
+      "epoch_changed": false
+    }
+  },
+  "delivery_complete": false,
+  "protected_finance_acceptance": "blocked",
+  "recording": "Full admitted Finance demo blocked by mandatory source-coverage gates",
+  "private_evidence_reference": "operator-retained-delivery:7473865cee544aceb13d09d6b7f4b640"
+}

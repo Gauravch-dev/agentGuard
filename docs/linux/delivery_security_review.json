@@ -1,0 +1,30 @@
+{
+  "observed_at": "2026-10-25T15:36:13.093339+00:00",
+  "offline_secret_scan": {
+    "network_verification": false,
+    "scope": "Tracked and non-ignored new source/evidence files",
+    "files": 221,
+    "candidates": 30,
+    "credential_findings": 0,
+    "manual_review": "Candidates reviewed as public commit/model/image/source/content hashes and non-secret observer epoch identifiers; no credentials identified"
+  },
+  "locked_python": {
+    "dependencies": 58,
+    "known_advisories": 0
+  },
+  "dashboard": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "probe_image": {
+    "new_apt_packages": 15,
+    "osv_advisory_matches": 54,
+    "triage_required": true,
+    "production_promotion_approved": false
+  },
+  "limits": "Scans are scoped checks, not proof that all software or an entire image is vulnerability-free; no private runtime state or application data was transmitted"
+}

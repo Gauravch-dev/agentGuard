@@ -1,0 +1,461 @@
+{
+  "observed_at": "2026-10-25T13:47:27.643365Z",
+  "mode": "real-linux-expanded-scope-lab",
+  "image_id": "sha256:eadd783313258dc7dbad141fef96b368686f6a2e263c15d700d163226bad8b80",
+  "capsule_id": "capsule-88c9eeef664d4a95a5d8afbb9bb73216",
+  "checks": {
+    "restricted_file_read_refused": true,
+    "readonly_root_write_refused": true,
+    "inherited_fd_read_executed": true,
+    "readv_executed": true,
+    "file_mmap_executed": true,
+    "inherited_fd_actual_path_and_read_observed": true,
+    "readv_actual_path_and_read_observed": true,
+    "mmap_permission_on_actual_probe_path_observed": true,
+    "direct_and_alternate_protocols_refused": true,
+    "child_python_egress_refused": true,
+    "child_curl_egress_refused": true,
+    "actual_curl_connect_hook_captured": true,
+    "actual_file_and_socket_hooks_observed": true,
+    "permission_check_never_claims_completed_read": true,
+    "finance_not_admitted": true,
+    "cleanup_verified": true
+  },
+  "passed": true,
+  "probe_results": {
+    "allowed_open_read": {
+      "outcome": "completed",
+      "value": 32,
+      "elapsed_ns": 204923
+    },
+    "forbidden_shadow_read": {
+      "outcome": "refused",
+      "errno": 13,
+      "elapsed_ns": 75551
+    },
+    "readonly_root_write": {
+      "outcome": "refused",
+      "errno": 30,
+      "elapsed_ns": 57397
+    },
+    "inherited_descriptor_read": {
+      "outcome": "completed",
+      "value": 32,
+      "elapsed_ns": 30996090
+    },
+    "readv": {
+      "outcome": "completed",
+      "value": 32,
+      "elapsed_ns": 198050
+    },
+    "file_mmap": {
+      "outcome": "completed",
+      "value": 1,
+      "elapsed_ns": 198270
+    },
+    "io_uring_setup": {
+      "outcome": "refused",
+      "errno": 1,
+      "elapsed_ns": 177141
+    },
+    "tcp_ipv4": {
+      "outcome": "refused",
+      "errno": 101,
+      "elapsed_ns": 177511
+    },
+    "udp_dns": {
+      "outcome": "refused",
+      "errno": 101,
+      "elapsed_ns": 210644
+    },
+    "udp_ipv6": {
+      "outcome": "refused",
+      "errno": 101,
+      "elapsed_ns": 125875
+    },
+    "raw_socket": {
+      "outcome": "refused",
+      "errno": 1,
+      "elapsed_ns": 20068
+    },
+    "dns_name": {
+      "outcome": "refused",
+      "errno": -3,
+      "elapsed_ns": 10879152
+    },
+    "inherited_socket_loopback": {
+      "outcome": "completed",
+      "value": 20,
+      "elapsed_ns": 57233047
+    },
+    "child_python_egress": {
+      "exit_code": 1
+    },
+    "child_curl_egress": {
+      "outcome": "executed",
+      "exit_code": 7,
+      "elapsed_ns": 22249431
+    }
+  },
+  "hook_matrix": {
+    "__x64_sys_connect": {
+      "captured": 10,
+      "normalized": 6
+    },
+    "__x64_sys_openat": {
+      "captured": 1603,
+      "normalized": 1600
+    },
+    "__x64_sys_sendto": {
+      "captured": 3,
+      "normalized": 2
+    },
+    "security_file_permission": {
+      "captured": 780,
+      "normalized": 760
+    },
+    "security_mmap_file": {
+      "captured": 383,
+      "normalized": 309
+    },
+    "udp_sendmsg": {
+      "captured": 2,
+      "normalized": 2
+    },
+    "udpv6_sendmsg": {
+      "captured": 1,
+      "normalized": 1
+    },
+    "vfs_iter_read": {
+      "captured": 306,
+      "normalized": 306
+    },
+    "vfs_read": {
+      "captured": 332,
+      "normalized": 318
+    },
+    "vfs_readv": {
+      "captured": 1,
+      "normalized": 1
+    },
+    "vfs_write": {
+      "captured": 9,
+      "normalized": 3
+    }
+  },
+  "hooks_by_binary": {
+    "/usr/local/bin/python": {
+      "__x64_sys_openat": 1561,
+      "security_mmap_file": 242,
+      "security_file_permission": 696,
+      "vfs_iter_read": 264,
+      "vfs_read": 290,
+      "vfs_write": 9,
+      "vfs_readv": 1,
+      "__x64_sys_connect": 7,
+      "udp_sendmsg": 2,
+      "__x64_sys_sendto": 3,
+      "udpv6_sendmsg": 1
+    },
+    "/usr/bin/curl": {
+      "security_mmap_file": 141,
+      "__x64_sys_openat": 42,
+      "security_file_permission": 84,
+      "vfs_iter_read": 42,
+      "vfs_read": 42,
+      "__x64_sys_connect": 3
+    }
+  },
+  "normalization_gaps": {
+    "unattributed_or_foreign_source": 175,
+    "MappingError": 122
+  },
+  "event_samples": [
+    {
+      "schema_version": "1.0",
+      "event_id": "45c07ed29c035da2aedc89852076411058b47f7f46f5d2a279d5e159fbf9de8c",
+      "task_id": "FIN-a60ee329267c4842aec102418bc7cdb9",
+      "contract_version": 1,
+      "capsule_id": "capsule-88c9eeef664d4a95a5d8afbb9bb73216",
+      "host_id": "linux-lab-01",
+      "source": "host_sensor",
+      "event_type": "file_access",
+      "observed_at": "2026-10-25T13:46:31.274416Z",
+      "process_identity": {
+        "pid": 23646,
+        "start_time": "2026-10-25T13:46:02.182155Z",
+        "cgroup_id": "cg-4736"
+      },
+      "operation": "openat",
+      "resource_or_destination": "/run/agentguard/admitted",
+      "policy_verdict": "unknown",
+      "effect_status": "attempted",
+      "coverage_status": "partial",
+      "correlation_id": null,
+      "evidence_reference": "tetragon:1d4fede5425e08c79bcedc239afa7185c62e026636a5819831cba36cb3803b20"
+    },
+    {
+      "schema_version": "1.0",
+      "event_id": "85c4a5d4d4f6b998ce06d414ef9bcbc995d3193df19a9da35df3a77b168093e6",
+      "task_id": "FIN-a60ee329267c4842aec102418bc7cdb9",
+      "contract_version": 1,
+      "capsule_id": "capsule-88c9eeef664d4a95a5d8afbb9bb73216",
+      "host_id": "linux-lab-01",
+      "source": "host_sensor",
+      "event_type": "file_access",
+      "observed_at": "2026-10-25T13:46:31.324870Z",
+      "process_identity": {
+        "pid": 23646,
+        "start_time": "2026-10-25T13:46:02.182155Z",
+        "cgroup_id": "cg-4736"
+      },
+      "operation": "openat",
+      "resource_or_destination": "/run/agentguard/admitted",
+      "policy_verdict": "unknown",
+      "effect_status": "attempted",
+      "coverage_status": "partial",
+      "correlation_id": null,
+      "evidence_reference": "tetragon:83ed730aaa52aa1ca38b1f6cf50648e1bc6db0ab6b845407c5083ad1b3d1d0fa"
+    },
+    {
+      "schema_version": "1.0",
+      "event_id": "6ae9a877b04d6e809c209b5064ff81f5646e64bfda80b33d69e238867e89ecb6",
+      "task_id": "FIN-a60ee329267c4842aec102418bc7cdb9",
+      "contract_version": 1,
+      "capsule_id": "capsule-88c9eeef664d4a95a5d8afbb9bb73216",
+      "host_id": "linux-lab-01",
+      "source": "host_sensor",
+      "event_type": "file_access",
+      "observed_at": "2026-10-25T13:46:31.375243Z",
+      "process_identity": {
+        "pid": 23646,
+        "start_time": "2026-10-25T13:46:02.182155Z",
+        "cgroup_id": "cg-4736"
+      },
+      "operation": "openat",
+      "resource_or_destination": "/run/agentguard/admitted",
+      "policy_verdict": "unknown",
+      "effect_status": "attempted",
+      "coverage_status": "partial",
+      "correlation_id": null,
+      "evidence_reference": "tetragon:d33a9ba18190b2f1e8f2ff0c9c6589c463514c8f4abe5b263559474637d1caac"
+    },
+    {
+      "schema_version": "1.0",
+      "event_id": "3a87e08bfc14e9e4fff000f1fc7f90e4598fb0eb9bae221365d41853b6a53c10",
+      "task_id": "FIN-a60ee329267c4842aec102418bc7cdb9",
+      "contract_version": 1,
+      "capsule_id": "capsule-88c9eeef664d4a95a5d8afbb9bb73216",
+      "host_id": "linux-lab-01",
+      "source": "host_sensor",
+      "event_type": "file_access",
+      "observed_at": "2026-10-25T13:46:31.425552Z",
+      "process_identity": {
+        "pid": 23646,
+        "start_time": "2026-10-25T13:46:02.182155Z",
+        "cgroup_id": "cg-4736"
+      },
+      "operation": "openat",
+      "resource_or_destination": "/run/agentguard/admitted",
+      "policy_verdict": "unknown",
+      "effect_status": "attempted",
+      "coverage_status": "partial",
+      "correlation_id": null,
+      "evidence_reference": "tetragon:d86893c9304a70a22d05d39a8307ffcfa726f28dceb9f52f7c02fc2463065400"
+    },
+    {
+      "schema_version": "1.0",
+      "event_id": "18a39c7442890f75d3b86fafe43abbaa20b1770489aad5ff697d2efc9f7b167c",
+      "task_id": "FIN-a60ee329267c4842aec102418bc7cdb9",
+      "contract_version": 1,
+      "capsule_id": "capsule-88c9eeef664d4a95a5d8afbb9bb73216",
+      "host_id": "linux-lab-01",
+      "source": "host_sensor",
+      "event_type": "file_access",
+      "observed_at": "2026-10-25T13:46:31.475831Z",
+      "process_identity": {
+        "pid": 23646,
+        "start_time": "2026-10-25T13:46:02.182155Z",
+        "cgroup_id": "cg-4736"
+      },
+      "operation": "openat",
+      "resource_or_destination": "/run/agentguard/admitted",
+      "policy_verdict": "unknown",
+      "effect_status": "attempted",
+      "coverage_status": "partial",
+      "correlation_id": null,
+      "evidence_reference": "tetragon:bd526f6b4744e06551afd7e620948f05db6c8090a866217bb5e6848b1389f479"
+    },
+    {
+      "schema_version": "1.0",
+      "event_id": "631866864ffed93bb73b7c56db530383c200e3a7c6fc248dfd969e00eef44353",
+      "task_id": "FIN-a60ee329267c4842aec102418bc7cdb9",
+      "contract_version": 1,
+      "capsule_id": "capsule-88c9eeef664d4a95a5d8afbb9bb73216",
+      "host_id": "linux-lab-01",
+      "source": "host_sensor",
+      "event_type": "file_access",
+      "observed_at": "2026-10-25T13:46:31.526133Z",
+      "process_identity": {
+        "pid": 23646,
+        "start_time": "2026-10-25T13:46:02.182155Z",
+        "cgroup_id": "cg-4736"
+      },
+      "operation": "openat",
+      "resource_or_destination": "/run/agentguard/admitted",
+      "policy_verdict": "unknown",
+      "effect_status": "attempted",
+      "coverage_status": "partial",
+      "correlation_id": null,
+      "evidence_reference": "tetragon:6df4d2b048410e6d2b2c2108a261573ff57c5850d52d19a75c90296e483a4465"
+    },
+    {
+      "schema_version": "1.0",
+      "event_id": "6d93b903fd31e8f469b4935f17574453b8572f745dd205fe28b6436d2a758e67",
+      "task_id": "FIN-a60ee329267c4842aec102418bc7cdb9",
+      "contract_version": 1,
+      "capsule_id": "capsule-88c9eeef664d4a95a5d8afbb9bb73216",
+      "host_id": "linux-lab-01",
+      "source": "host_sensor",
+      "event_type": "file_access",
+      "observed_at": "2026-10-25T13:46:31.576433Z",
+      "process_identity": {
+        "pid": 23646,
+        "start_time": "2026-10-25T13:46:02.182155Z",
+        "cgroup_id": "cg-4736"
+      },
+      "operation": "openat",
+      "resource_or_destination": "/run/agentguard/admitted",
+      "policy_verdict": "unknown",
+      "effect_status": "attempted",
+      "coverage_status": "partial",
+      "correlation_id": null,
+      "evidence_reference": "tetragon:4809b8508688f5a113fbe3d983f9e4dfc293912e3a2230672e2cc0aaa0b38a46"
+    },
+    {
+      "schema_version": "1.0",
+      "event_id": "a03279a7957e9e8a6f7af6b29add775d7fadba1827489eb91558d9e4c26d065f",
+      "task_id": "FIN-a60ee329267c4842aec102418bc7cdb9",
+      "contract_version": 1,
+      "capsule_id": "capsule-88c9eeef664d4a95a5d8afbb9bb73216",
+      "host_id": "linux-lab-01",
+      "source": "host_sensor",
+      "event_type": "file_access",
+      "observed_at": "2026-10-25T13:46:31.626749Z",
+      "process_identity": {
+        "pid": 23646,
+        "start_time": "2026-10-25T13:46:02.182155Z",
+        "cgroup_id": "cg-4736"
+      },
+      "operation": "openat",
+      "resource_or_destination": "/run/agentguard/admitted",
+      "policy_verdict": "unknown",
+      "effect_status": "attempted",
+      "coverage_status": "partial",
+      "correlation_id": null,
+      "evidence_reference": "tetragon:797e1c5cf1eec27af045863c782104a0140e4aa06c54c62fba36a67804503048"
+    },
+    {
+      "schema_version": "1.0",
+      "event_id": "d4026cf8d7c5ca8dcf4470504006e652ec50857fe0b59232abdd1466c5797153",
+      "task_id": "FIN-a60ee329267c4842aec102418bc7cdb9",
+      "contract_version": 1,
+      "capsule_id": "capsule-88c9eeef664d4a95a5d8afbb9bb73216",
+      "host_id": "linux-lab-01",
+      "source": "host_sensor",
+      "event_type": "file_access",
+      "observed_at": "2026-10-25T13:46:31.677005Z",
+      "process_identity": {
+        "pid": 23646,
+        "start_time": "2026-10-25T13:46:02.182155Z",
+        "cgroup_id": "cg-4736"
+      },
+      "operation": "openat",
+      "resource_or_destination": "/run/agentguard/admitted",
+      "policy_verdict": "unknown",
+      "effect_status": "attempted",
+      "coverage_status": "partial",
+      "correlation_id": null,
+      "evidence_reference": "tetragon:6e9b6f1a9caa1883c71af15b2685f3ce7719cea13895028a7c4c9591d15d66b9"
+    },
+    {
+      "schema_version": "1.0",
+      "event_id": "48c63cd752ac4fb173b26e8468414d48173265d95053edb1388cd18680928270",
+      "task_id": "FIN-a60ee329267c4842aec102418bc7cdb9",
+      "contract_version": 1,
+      "capsule_id": "capsule-88c9eeef664d4a95a5d8afbb9bb73216",
+      "host_id": "linux-lab-01",
+      "source": "host_sensor",
+      "event_type": "file_access",
+      "observed_at": "2026-10-25T13:46:31.722183Z",
+      "process_identity": {
+        "pid": 25484,
+        "start_time": "2026-10-25T13:46:31.721725Z",
+        "cgroup_id": "cg-4736"
+      },
+      "operation": "openat",
+      "resource_or_destination": "/usr/local/bin/../lib/glibc-hwcaps/x86-64-v4/libpython3.14.so.1.0",
+      "policy_verdict": "unknown",
+      "effect_status": "attempted",
+      "coverage_status": "partial",
+      "correlation_id": null,
+      "evidence_reference": "tetragon:cb5ebde81e611ac25cdd0f40ce8c6c0baae479b9c38f53551e11e89b8101d777"
+    },
+    {
+      "schema_version": "1.0",
+      "event_id": "e3cf3fe2bad983920adc0b6847b8babb03d57c42c39984eceaf37a6b541adf70",
+      "task_id": "FIN-a60ee329267c4842aec102418bc7cdb9",
+      "contract_version": 1,
+      "capsule_id": "capsule-88c9eeef664d4a95a5d8afbb9bb73216",
+      "host_id": "linux-lab-01",
+      "source": "host_sensor",
+      "event_type": "file_access",
+      "observed_at": "2026-10-25T13:46:31.722310Z",
+      "process_identity": {
+        "pid": 25484,
+        "start_time": "2026-10-25T13:46:31.721725Z",
+        "cgroup_id": "cg-4736"
+      },
+      "operation": "openat",
+      "resource_or_destination": "/usr/local/bin/../lib/glibc-hwcaps/x86-64-v3/libpython3.14.so.1.0",
+      "policy_verdict": "unknown",
+      "effect_status": "attempted",
+      "coverage_status": "partial",
+      "correlation_id": null,
+      "evidence_reference": "tetragon:7d0ffd713a7c47b28658ee1d6768b0dd23da6ceabb6612cbaaeee86055f65d2b"
+    },
+    {
+      "schema_version": "1.0",
+      "event_id": "4d470accc395c4e12ecad2ba2e7dd31c33f3c4f5ec2c5abe5e424222842a3f0b",
+      "task_id": "FIN-a60ee329267c4842aec102418bc7cdb9",
+      "contract_version": 1,
+      "capsule_id": "capsule-88c9eeef664d4a95a5d8afbb9bb73216",
+      "host_id": "linux-lab-01",
+      "source": "host_sensor",
+      "event_type": "file_access",
+      "observed_at": "2026-10-25T13:46:31.722335Z",
+      "process_identity": {
+        "pid": 25484,
+        "start_time": "2026-10-25T13:46:31.721725Z",
+        "cgroup_id": "cg-4736"
+      },
+      "operation": "openat",
+      "resource_or_destination": "/usr/local/bin/../lib/glibc-hwcaps/x86-64-v2/libpython3.14.so.1.0",
+      "policy_verdict": "unknown",
+      "effect_status": "attempted",
+      "coverage_status": "partial",
+      "correlation_id": null,
+      "evidence_reference": "tetragon:501821fb31f278265e2910755e008f5b8fbec25682ede5421736eac24d9f1ff9"
+    }
+  ],
+  "source_reference": "operator-retained-scope:1fc4e6073dd745b19116686cddd4ad6e",
+  "coverage_status": "partial",
+  "protected_execution_ready": false,
+  "limits": [
+    "Trusted negative probes, not admitted Finance execution",
+    "mmap permission observation does not prove each page read",
+    "io_uring refusal is not independent syscall observation",
+    "Socket send is not packet delivery or packet-to-process attribution",
+    "No initial subscription or lossless coverage claim"
+  ]
+}

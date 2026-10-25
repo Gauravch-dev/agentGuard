@@ -57,6 +57,16 @@ def main():
         "full_protected_mvp_complete": False,
     }
     try:
+        result["supplemental_probe_image"] = {
+            "image_id": json.loads(
+                command(["docker", "image", "inspect", "agentguard-probes:delivery"])
+            )[0]["Id"],
+            "scope": "Synthetic curl/scope/baseline lab only; advisory findings require triage before any promotion",
+            "dependency_review": "docs/linux/probe_dependency_review.json",
+        }
+    except (ValueError, RuntimeError):
+        result["supplemental_probe_image"] = {"status": "unavailable_or_unverified"}
+    try:
         with httpx.Client(trust_env=False, follow_redirects=False, timeout=5) as client:
             version = client.get("http://127.0.0.1:11434/api/version")
             version.raise_for_status()

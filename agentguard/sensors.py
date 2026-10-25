@@ -6,6 +6,7 @@ from dataclasses import dataclass
 import hashlib
 
 from .schema import canonical, event, parse_time
+from .source_time import ordered_times
 
 
 @dataclass(frozen=True)
@@ -52,9 +53,7 @@ class TetragonNormalizer:
         except ValueError as exc:
             raise MappingError("invalid source timestamp") from exc
         matches = [w for w in self.workloads if w.container_id.startswith(docker_id)
-                   and start_time >= parse_time(w.started_at)
-                   and observed_time >= start_time
-                   and (w.ended_at is None or observed_time <= parse_time(w.ended_at))]
+                   and ordered_times(w.started_at, start, observed, w.ended_at)]
         if len(matches) != 1:
             raise MappingError("ambiguous, expired or unknown workload identity")
         w = matches[0]

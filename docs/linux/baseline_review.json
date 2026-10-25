@@ -1,0 +1,694 @@
+{
+  "observed_at": "2026-10-25T14:03:07.313044Z",
+  "mode": "controlled-synthetic-probe-baselines",
+  "image_id": "sha256:eadd783313258dc7dbad141fef96b368686f6a2e263c15d700d163226bad8b80",
+  "samples": [
+    {
+      "mode": "probe_stdout_only",
+      "iteration": 0,
+      "capsule_id": "capsule-9399af2f56b44a5792d62a549016dc80",
+      "probe_exec_elapsed_ns": 731465222,
+      "reported_probe_outcomes": {
+        "allowed_open_read": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "forbidden_shadow_read": {
+          "outcome": "refused",
+          "errno": 13
+        },
+        "readonly_root_write": {
+          "outcome": "refused",
+          "errno": 30
+        },
+        "inherited_descriptor_read": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "readv": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "file_mmap": {
+          "outcome": "completed",
+          "value": 1
+        },
+        "io_uring_setup": {
+          "outcome": "refused",
+          "errno": 1
+        },
+        "tcp_ipv4": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "udp_dns": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "udp_ipv6": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "raw_socket": {
+          "outcome": "refused",
+          "errno": 1
+        },
+        "dns_name": {
+          "outcome": "refused",
+          "errno": -3
+        },
+        "inherited_socket_loopback": {
+          "outcome": "completed",
+          "value": 20
+        },
+        "child_python_egress": {
+          "exit_code": 1
+        },
+        "child_curl_egress": {
+          "outcome": "executed",
+          "exit_code": 7
+        }
+      },
+      "independent_hook_frames": 0,
+      "independent_file_attempt_observed": false,
+      "independent_connect_attempt_observed": false,
+      "outgoing_packet_metadata_frames": null,
+      "kernel_packet_drops": null,
+      "finance_admitted": false,
+      "cleanup_verified": true
+    },
+    {
+      "mode": "network_metadata_only",
+      "iteration": 0,
+      "capsule_id": "capsule-bfdcfa342e674f3dab89b68729d289c2",
+      "probe_exec_elapsed_ns": 673128961,
+      "reported_probe_outcomes": {
+        "allowed_open_read": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "forbidden_shadow_read": {
+          "outcome": "refused",
+          "errno": 13
+        },
+        "readonly_root_write": {
+          "outcome": "refused",
+          "errno": 30
+        },
+        "inherited_descriptor_read": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "readv": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "file_mmap": {
+          "outcome": "completed",
+          "value": 1
+        },
+        "io_uring_setup": {
+          "outcome": "refused",
+          "errno": 1
+        },
+        "tcp_ipv4": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "udp_dns": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "udp_ipv6": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "raw_socket": {
+          "outcome": "refused",
+          "errno": 1
+        },
+        "dns_name": {
+          "outcome": "refused",
+          "errno": -3
+        },
+        "inherited_socket_loopback": {
+          "outcome": "completed",
+          "value": 20
+        },
+        "child_python_egress": {
+          "exit_code": 1
+        },
+        "child_curl_egress": {
+          "outcome": "executed",
+          "exit_code": 7
+        }
+      },
+      "independent_hook_frames": 0,
+      "independent_file_attempt_observed": false,
+      "independent_connect_attempt_observed": false,
+      "outgoing_packet_metadata_frames": 2,
+      "kernel_packet_drops": 0,
+      "finance_admitted": false,
+      "cleanup_verified": true
+    },
+    {
+      "mode": "combined_partial",
+      "iteration": 0,
+      "capsule_id": "capsule-d8ec93ff9f7843278dae877eb46a3651",
+      "probe_exec_elapsed_ns": 914185506,
+      "reported_probe_outcomes": {
+        "allowed_open_read": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "forbidden_shadow_read": {
+          "outcome": "refused",
+          "errno": 13
+        },
+        "readonly_root_write": {
+          "outcome": "refused",
+          "errno": 30
+        },
+        "inherited_descriptor_read": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "readv": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "file_mmap": {
+          "outcome": "completed",
+          "value": 1
+        },
+        "io_uring_setup": {
+          "outcome": "refused",
+          "errno": 1
+        },
+        "tcp_ipv4": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "udp_dns": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "udp_ipv6": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "raw_socket": {
+          "outcome": "refused",
+          "errno": 1
+        },
+        "dns_name": {
+          "outcome": "refused",
+          "errno": -3
+        },
+        "inherited_socket_loopback": {
+          "outcome": "completed",
+          "value": 20
+        },
+        "child_python_egress": {
+          "exit_code": 1
+        },
+        "child_curl_egress": {
+          "outcome": "executed",
+          "exit_code": 7
+        }
+      },
+      "independent_hook_frames": 2451,
+      "independent_file_attempt_observed": true,
+      "independent_connect_attempt_observed": true,
+      "outgoing_packet_metadata_frames": 2,
+      "kernel_packet_drops": 0,
+      "finance_admitted": false,
+      "cleanup_verified": true
+    },
+    {
+      "mode": "probe_stdout_only",
+      "iteration": 1,
+      "capsule_id": "capsule-3c1fac51977f4d59afe1b86e87fc1441",
+      "probe_exec_elapsed_ns": 689298221,
+      "reported_probe_outcomes": {
+        "allowed_open_read": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "forbidden_shadow_read": {
+          "outcome": "refused",
+          "errno": 13
+        },
+        "readonly_root_write": {
+          "outcome": "refused",
+          "errno": 30
+        },
+        "inherited_descriptor_read": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "readv": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "file_mmap": {
+          "outcome": "completed",
+          "value": 1
+        },
+        "io_uring_setup": {
+          "outcome": "refused",
+          "errno": 1
+        },
+        "tcp_ipv4": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "udp_dns": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "udp_ipv6": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "raw_socket": {
+          "outcome": "refused",
+          "errno": 1
+        },
+        "dns_name": {
+          "outcome": "refused",
+          "errno": -3
+        },
+        "inherited_socket_loopback": {
+          "outcome": "completed",
+          "value": 20
+        },
+        "child_python_egress": {
+          "exit_code": 1
+        },
+        "child_curl_egress": {
+          "outcome": "executed",
+          "exit_code": 7
+        }
+      },
+      "independent_hook_frames": 0,
+      "independent_file_attempt_observed": false,
+      "independent_connect_attempt_observed": false,
+      "outgoing_packet_metadata_frames": null,
+      "kernel_packet_drops": null,
+      "finance_admitted": false,
+      "cleanup_verified": true
+    },
+    {
+      "mode": "network_metadata_only",
+      "iteration": 1,
+      "capsule_id": "capsule-a91f3784af4c41139ea46d0f40d70b4f",
+      "probe_exec_elapsed_ns": 709637252,
+      "reported_probe_outcomes": {
+        "allowed_open_read": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "forbidden_shadow_read": {
+          "outcome": "refused",
+          "errno": 13
+        },
+        "readonly_root_write": {
+          "outcome": "refused",
+          "errno": 30
+        },
+        "inherited_descriptor_read": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "readv": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "file_mmap": {
+          "outcome": "completed",
+          "value": 1
+        },
+        "io_uring_setup": {
+          "outcome": "refused",
+          "errno": 1
+        },
+        "tcp_ipv4": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "udp_dns": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "udp_ipv6": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "raw_socket": {
+          "outcome": "refused",
+          "errno": 1
+        },
+        "dns_name": {
+          "outcome": "refused",
+          "errno": -3
+        },
+        "inherited_socket_loopback": {
+          "outcome": "completed",
+          "value": 20
+        },
+        "child_python_egress": {
+          "exit_code": 1
+        },
+        "child_curl_egress": {
+          "outcome": "executed",
+          "exit_code": 7
+        }
+      },
+      "independent_hook_frames": 0,
+      "independent_file_attempt_observed": false,
+      "independent_connect_attempt_observed": false,
+      "outgoing_packet_metadata_frames": 2,
+      "kernel_packet_drops": 0,
+      "finance_admitted": false,
+      "cleanup_verified": true
+    },
+    {
+      "mode": "combined_partial",
+      "iteration": 1,
+      "capsule_id": "capsule-bb45d6d1acd9490ba457862c46e45504",
+      "probe_exec_elapsed_ns": 893680124,
+      "reported_probe_outcomes": {
+        "allowed_open_read": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "forbidden_shadow_read": {
+          "outcome": "refused",
+          "errno": 13
+        },
+        "readonly_root_write": {
+          "outcome": "refused",
+          "errno": 30
+        },
+        "inherited_descriptor_read": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "readv": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "file_mmap": {
+          "outcome": "completed",
+          "value": 1
+        },
+        "io_uring_setup": {
+          "outcome": "refused",
+          "errno": 1
+        },
+        "tcp_ipv4": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "udp_dns": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "udp_ipv6": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "raw_socket": {
+          "outcome": "refused",
+          "errno": 1
+        },
+        "dns_name": {
+          "outcome": "refused",
+          "errno": -3
+        },
+        "inherited_socket_loopback": {
+          "outcome": "completed",
+          "value": 20
+        },
+        "child_python_egress": {
+          "exit_code": 1
+        },
+        "child_curl_egress": {
+          "outcome": "executed",
+          "exit_code": 7
+        }
+      },
+      "independent_hook_frames": 2451,
+      "independent_file_attempt_observed": true,
+      "independent_connect_attempt_observed": true,
+      "outgoing_packet_metadata_frames": 2,
+      "kernel_packet_drops": 0,
+      "finance_admitted": false,
+      "cleanup_verified": true
+    },
+    {
+      "mode": "probe_stdout_only",
+      "iteration": 2,
+      "capsule_id": "capsule-801ae0f347794ad8b3da968044a3f238",
+      "probe_exec_elapsed_ns": 684788065,
+      "reported_probe_outcomes": {
+        "allowed_open_read": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "forbidden_shadow_read": {
+          "outcome": "refused",
+          "errno": 13
+        },
+        "readonly_root_write": {
+          "outcome": "refused",
+          "errno": 30
+        },
+        "inherited_descriptor_read": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "readv": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "file_mmap": {
+          "outcome": "completed",
+          "value": 1
+        },
+        "io_uring_setup": {
+          "outcome": "refused",
+          "errno": 1
+        },
+        "tcp_ipv4": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "udp_dns": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "udp_ipv6": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "raw_socket": {
+          "outcome": "refused",
+          "errno": 1
+        },
+        "dns_name": {
+          "outcome": "refused",
+          "errno": -3
+        },
+        "inherited_socket_loopback": {
+          "outcome": "completed",
+          "value": 20
+        },
+        "child_python_egress": {
+          "exit_code": 1
+        },
+        "child_curl_egress": {
+          "outcome": "executed",
+          "exit_code": 7
+        }
+      },
+      "independent_hook_frames": 0,
+      "independent_file_attempt_observed": false,
+      "independent_connect_attempt_observed": false,
+      "outgoing_packet_metadata_frames": null,
+      "kernel_packet_drops": null,
+      "finance_admitted": false,
+      "cleanup_verified": true
+    },
+    {
+      "mode": "network_metadata_only",
+      "iteration": 2,
+      "capsule_id": "capsule-37d3997e374c4f5e9897149942b2c6e5",
+      "probe_exec_elapsed_ns": 751064322,
+      "reported_probe_outcomes": {
+        "allowed_open_read": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "forbidden_shadow_read": {
+          "outcome": "refused",
+          "errno": 13
+        },
+        "readonly_root_write": {
+          "outcome": "refused",
+          "errno": 30
+        },
+        "inherited_descriptor_read": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "readv": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "file_mmap": {
+          "outcome": "completed",
+          "value": 1
+        },
+        "io_uring_setup": {
+          "outcome": "refused",
+          "errno": 1
+        },
+        "tcp_ipv4": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "udp_dns": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "udp_ipv6": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "raw_socket": {
+          "outcome": "refused",
+          "errno": 1
+        },
+        "dns_name": {
+          "outcome": "refused",
+          "errno": -3
+        },
+        "inherited_socket_loopback": {
+          "outcome": "completed",
+          "value": 20
+        },
+        "child_python_egress": {
+          "exit_code": 1
+        },
+        "child_curl_egress": {
+          "outcome": "executed",
+          "exit_code": 7
+        }
+      },
+      "independent_hook_frames": 0,
+      "independent_file_attempt_observed": false,
+      "independent_connect_attempt_observed": false,
+      "outgoing_packet_metadata_frames": 2,
+      "kernel_packet_drops": 0,
+      "finance_admitted": false,
+      "cleanup_verified": true
+    },
+    {
+      "mode": "combined_partial",
+      "iteration": 2,
+      "capsule_id": "capsule-c729eeea4e464f178cad21c3426ad011",
+      "probe_exec_elapsed_ns": 901428885,
+      "reported_probe_outcomes": {
+        "allowed_open_read": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "forbidden_shadow_read": {
+          "outcome": "refused",
+          "errno": 13
+        },
+        "readonly_root_write": {
+          "outcome": "refused",
+          "errno": 30
+        },
+        "inherited_descriptor_read": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "readv": {
+          "outcome": "completed",
+          "value": 32
+        },
+        "file_mmap": {
+          "outcome": "completed",
+          "value": 1
+        },
+        "io_uring_setup": {
+          "outcome": "refused",
+          "errno": 1
+        },
+        "tcp_ipv4": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "udp_dns": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "udp_ipv6": {
+          "outcome": "refused",
+          "errno": 101
+        },
+        "raw_socket": {
+          "outcome": "refused",
+          "errno": 1
+        },
+        "dns_name": {
+          "outcome": "refused",
+          "errno": -3
+        },
+        "inherited_socket_loopback": {
+          "outcome": "completed",
+          "value": 20
+        },
+        "child_python_egress": {
+          "exit_code": 1
+        },
+        "child_curl_egress": {
+          "outcome": "executed",
+          "exit_code": 7
+        }
+      },
+      "independent_hook_frames": 2452,
+      "independent_file_attempt_observed": true,
+      "independent_connect_attempt_observed": true,
+      "outgoing_packet_metadata_frames": 2,
+      "kernel_packet_drops": 0,
+      "finance_admitted": false,
+      "cleanup_verified": true
+    }
+  ],
+  "checks": {
+    "all_samples_contained_without_finance_admission": true,
+    "network_taps_observed_actual_loopback_traffic": true,
+    "combined_hooks_observed_file_and_connect_attempts": true
+  },
+  "passed": true,
+  "median_probe_exec_ns": {
+    "probe_stdout_only": 689298221,
+    "network_metadata_only": 709637252,
+    "combined_partial": 901428885
+  },
+  "limits": [
+    "Supplemental probe baseline; application-log-only Finance baseline is blocked",
+    "Base Tetragon process monitor remains on in all modes",
+    "Elapsed exec includes Docker/client/Python startup; excludes observer policy setup and teardown",
+    "Small raw samples, not production latency percentiles or attack-prevention rates",
+    "Packet-only evidence has no originating process or blocked-attempt semantics",
+    "Combined observer remains partial; no complete source coverage or protected output release"
+  ],
+  "full_S16_finance_comparison_complete": false,
+  "protected_execution_ready": false
+}

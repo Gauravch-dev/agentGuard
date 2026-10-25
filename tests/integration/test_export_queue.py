@@ -178,3 +178,35 @@ def test_queue_migration_cannot_run_without_the_exclusive_collector_lease(tmp_pa
             assert "endpoint" not in {
                 row[1] for row in database.execute("PRAGMA table_info(frames)")
             }
+
+
+def test_delivery_budget_yields_without_losing_or_acknowledging_pending_frames(
+    tmp_path, monkeypatch
+):
+    from agentguard import export_queue
+
+    queue = ExportQueue(tmp_path / "queue", "test-source")
+    with queue.db:
+        queue.enqueue({"event_id": "first"})
+        queue.enqueue({"event_id": "second"})
+    ticks = iter([0.0, 0.0, 1.0])
+    from types import SimpleNamespace
+
+    monkeypatch.setattr(export_queue, "time", SimpleNamespace(monotonic=lambda: next(ticks)))
+    with httpx.Client(
+        transport=httpx.MockTransport(lambda r: httpx.Response(200, json={"accepted": True}))
+    ) as client:
+        assert queue.drain("x" * 32, client=client, max_seconds=0.5) == 1
+    assert queue.status()["pending"] == 1
+    assert queue.status()["export_failures"] == 0
+    queue.close()
+
+
+@pytest.mark.parametrize("budget", [0, -1, float("nan"), float("inf"), True, 10])
+def test_invalid_delivery_time_budgets_are_refused(tmp_path, budget):
+    queue = ExportQueue(tmp_path / "queue", "test-source")
+    try:
+        with pytest.raises(ValueError):
+            queue.drain("x" * 32, max_seconds=budget)
+    finally:
+        queue.close()

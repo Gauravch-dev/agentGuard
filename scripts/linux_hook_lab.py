@@ -16,6 +16,7 @@ from uuid import uuid4
 from agentguard.capsules import StagedCapsules, private_directory
 from agentguard.hook_policy import capsule_policy
 from agentguard.platform import command
+from agentguard.policy_control import install_policy, remove_policy
 from application.authority import Authority
 from application.models import now
 from application.store import Store
@@ -41,10 +42,8 @@ def run(image, output):
         policy = capsule_policy(name, namespace)
         policy_file = private / "policy.json"
         policy_file.write_text(json.dumps(policy))
-        remote = "/etc/tetragon/" + name + ".json"
-        command(["docker", "cp", str(policy_file), "agentguard-tetragon:" + remote])
         loaded = True
-        command(["docker", "exec", "agentguard-tetragon", "tetra", "tp", "add", remote], timeout=60)
+        install_policy(policy_file, name)
         policy_status = json.loads(
             command(
                 [
@@ -208,7 +207,7 @@ print(json.dumps(r))
             subscription.wait(timeout=15)
         controller.terminate(value["capsule_id"])
         if loaded:
-            command(["docker", "exec", "agentguard-tetragon", "tetra", "tp", "delete", name])
+            remove_policy(name)
         store.db.close()
 
 

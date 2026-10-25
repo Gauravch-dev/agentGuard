@@ -24,7 +24,7 @@ pythonpath = ["."]
 
 [tool.ruff]
 line-length = 100
-include = ["application/**/*.py", "agent_demo/**/*.py", "agentguard/capsules.py", "agentguard/watchdog.py", "agentguard/export_queue.py", "agentguard/hook_policy.py", "agentguard/network_tap.py", "agentguard/admission_review.py", "agentguard/supervisor.py", "agentguard/observer_health.py", "scripts/export_contracts.py", "scripts/integration_*.py", "scripts/linux_*.py", "scripts/start_linux.py", "tests/unit/**/*.py", "tests/contract/**/*.py", "tests/e2e/**/*.py", "tests/integration/**/*.py", "tests/conftest.py", "tests/__init__.py"]
+include = ["application/**/*.py", "agent_demo/**/*.py", "agentguard/capsules.py", "agentguard/watchdog.py", "agentguard/export_queue.py", "agentguard/hook_policy.py", "agentguard/network_tap.py", "agentguard/admission_review.py", "agentguard/supervisor.py", "agentguard/observer_health.py", "agentguard/source_time.py", "agentguard/prebirth.py", "agentguard/policy_control.py", "scripts/export_contracts.py", "scripts/integration_*.py", "scripts/linux_*.py", "scripts/start_linux.py", "tests/unit/**/*.py", "tests/contract/**/*.py", "tests/e2e/**/*.py", "tests/integration/**/*.py", "tests/conftest.py", "tests/__init__.py"]
 
 [tool.ruff.format]
 line-ending = "lf"

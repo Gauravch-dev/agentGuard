@@ -1,0 +1,241 @@
+{
+  "observed_at": "2026-10-25T15:26:09.926794Z",
+  "mode": "real-linux-owner-views-and-delivery-hold",
+  "task_id": "FIN-05ce5c6a615e4bae9808f3e07c3aad19",
+  "capsule_id": "capsule-39ebe08cde8f431dac09aad4f600e95a",
+  "image_id": "sha256:04e5827f75ee3ccc71a8f1675caf3306d94e06e289c19666f3c9a9f1a03a16c9",
+  "checks": {
+    "actual_subscriptions_witnessed_before_bootstrap_start": true,
+    "new_posture_reads_real_current_supervisor": true,
+    "posture_excludes_private_runtime_paths_and_credentials": true,
+    "unknown_source_loss_remains_unknown": true,
+    "mandatory_admission_gates_remain_held": true,
+    "genuine_packet_observation_not_given_a_fabricated_sender": true,
+    "actual_owner_evidence_paging_is_disjoint_and_ordered": true,
+    "real_cancellation_and_channel_revocation_verified": true,
+    "final_observer_drain_signalled_and_stopped": true,
+    "finished_worker_backlog_retries_without_service_restart": true,
+    "actual_bootstrap_exec_record_retained": true,
+    "uncertain_source_exec_never_becomes_complete_coverage": true,
+    "historical_views_cannot_restore_current_execution": true,
+    "actual_review_notes_stay_revision_scoped": true,
+    "no_agent_admission_broker_action_or_report_created": true,
+    "actual_evidence_integrity_verified": true
+  },
+  "passed": true,
+  "timings": {
+    "launch_with_prebirth_seconds": 26.920775362999848
+  },
+  "prebirth": {
+    "prepared_at": "2026-10-25T15:25:42.694973Z",
+    "process_subscription_witnessed": true,
+    "hook_subscription_witnessed": true,
+    "errors": [],
+    "packet_prebirth_coverage": false,
+    "complete_coverage": false,
+    "frames_received": {
+      "process": 2,
+      "hooks": 1665
+    },
+    "witnesses": {
+      "process": {
+        "evidence_reference": "subscription-witness:5dba9d2ee7b2f156bb9ad0289c8d61c7237a5a764f94e3d49a01c07146dc96dd",
+        "observed_at": "2026-10-25T15:25:42.684206727Z",
+        "received_at": "2026-10-25T15:25:42.692852Z"
+      },
+      "hooks": {
+        "evidence_reference": "subscription-witness:c17acbd5b284bea2a6d55de2cdd509b6beac68d0ad77e8f1b68dbe98d83a76c6",
+        "observed_at": "2026-10-25T15:25:42.686636301Z",
+        "received_at": "2026-10-25T15:25:42.694518Z"
+      }
+    }
+  },
+  "source_exec_observations": [
+    {
+      "observed_at": "2026-10-25T15:25:43.383495025Z",
+      "process_start": "2026-10-25T15:25:43.383495135Z",
+      "evidence_reference": "tetragon:8f4f7b1d98bd3b1c089f9a1256b9d9ea05a25d3a9a5d9b4c11f38dbc3dd7262d",
+      "accepted": false
+    },
+    {
+      "observed_at": "2026-10-25T15:25:51.052637532Z",
+      "process_start": "2026-10-25T15:25:51.052637572Z",
+      "evidence_reference": "tetragon:e56deadc35a47ca19a8e7b91b35a030bf43da59fd8ce2cbb2f9744f9e374abc8",
+      "accepted": false
+    },
+    {
+      "observed_at": "2026-10-25T15:25:51.089629625Z",
+      "process_start": "2026-10-25T15:25:51.089629595Z",
+      "evidence_reference": "tetragon:16c4f8334eb79c3b5c1aed45abfe4288a00e669945319ae3d71a2d32f434e68f",
+      "accepted": true
+    }
+  ],
+  "posture": {
+    "contract_version": 1,
+    "historical": false,
+    "checked_at": "2026-10-25T15:25:48.846289+00:00",
+    "protected_execution_ready": false,
+    "coverage": {
+      "status": "unverified",
+      "windows": 0,
+      "gaps": [
+        {
+          "classification": "Unverified",
+          "reason_code": "MISSING_SENSOR_COVERAGE",
+          "explanation": "Incomplete host_sensor/connection_attempt coverage for the execution interval.",
+          "evidence_references": []
+        },
+        {
+          "classification": "Unverified",
+          "reason_code": "MISSING_SENSOR_COVERAGE",
+          "explanation": "Incomplete host_sensor/file_access coverage for the execution interval.",
+          "evidence_references": []
+        },
+        {
+          "classification": "Unverified",
+          "reason_code": "MISSING_SENSOR_COVERAGE",
+          "explanation": "Incomplete host_sensor/process_exec coverage for the execution interval.",
+          "evidence_references": []
+        },
+        {
+          "classification": "Unverified",
+          "reason_code": "MISSING_SENSOR_COVERAGE",
+          "explanation": "Incomplete network_sensor/egress_flow coverage for the execution interval.",
+          "evidence_references": []
+        }
+      ],
+      "through": "2026-10-25T15:25:48.846289+00:00"
+    },
+    "last_sensor_receipt": "2026-10-25T15:25:46.200654+00:00",
+    "observer": {
+      "connected": true,
+      "reasons": [
+        "BOOTSTRAP_OBSERVATION_START_GAP",
+        "FILE_AND_NETWORK_HOOK_SCOPE_PARTIAL",
+        "HOOKS_EXPORT_PENDING",
+        "HOOKS_LOSS_ACCOUNTING_UNKNOWN",
+        "HOOKS_SOURCE_GAPS",
+        "NETWORK_PROCESS_ATTRIBUTION_UNAVAILABLE",
+        "PACKET_SOURCE_GAPS",
+        "PROCESS_LOSS_ACCOUNTING_UNKNOWN",
+        "PROCESS_SOURCE_GAPS",
+        "SOURCE_CLOCK_SEMANTICS_UNVERIFIED"
+      ],
+      "sources": {
+        "process": {
+          "alive": true,
+          "health_age_seconds": 0.16,
+          "fresh": true,
+          "pending": 0,
+          "gaps": 2,
+          "lost": null,
+          "export_failures": 0,
+          "epoch_changed": false
+        },
+        "hooks": {
+          "alive": true,
+          "health_age_seconds": 0.16,
+          "fresh": true,
+          "pending": 59,
+          "gaps": 5,
+          "lost": null,
+          "export_failures": 0,
+          "epoch_changed": false
+        },
+        "packet": {
+          "alive": true,
+          "health_age_seconds": 0.72,
+          "fresh": true,
+          "pending": 0,
+          "gaps": 1,
+          "lost": 0,
+          "export_failures": 0,
+          "epoch_changed": false
+        }
+      },
+      "finished": false
+    }
+  },
+  "admission_hold_reasons": [
+    "REQUIRED_SENSOR_COVERAGE_UNAVAILABLE",
+    "LIVE_PLATFORM_ADMISSION_REVIEW_PENDING",
+    "BOOTSTRAP_OBSERVATION_START_GAP",
+    "FILE_AND_NETWORK_HOOK_SCOPE_PARTIAL",
+    "HOOKS_EXPORT_PENDING",
+    "HOOKS_LOSS_ACCOUNTING_UNKNOWN",
+    "HOOKS_SOURCE_GAPS",
+    "NETWORK_PROCESS_ATTRIBUTION_UNAVAILABLE",
+    "PACKET_SOURCE_GAPS",
+    "PROCESS_LOSS_ACCOUNTING_UNKNOWN",
+    "PROCESS_SOURCE_GAPS",
+    "SOURCE_CLOCK_SEMANTICS_UNVERIFIED",
+    "APPROVED_MODEL_NOT_LOADED"
+  ],
+  "initial_sources": {
+    "process": {
+      "alive": true,
+      "last_heartbeat": 9037.644669611,
+      "pending": 0,
+      "gaps": 2,
+      "lost": null,
+      "export_failures": 0,
+      "epoch_changed": false
+    },
+    "hooks": {
+      "alive": true,
+      "last_heartbeat": 9037.644669611,
+      "pending": 59,
+      "gaps": 5,
+      "lost": null,
+      "export_failures": 0,
+      "epoch_changed": false
+    },
+    "packet": {
+      "alive": true,
+      "last_heartbeat": 9037.087464944,
+      "pending": 0,
+      "gaps": 1,
+      "lost": 0,
+      "export_failures": 0,
+      "epoch_changed": false
+    }
+  },
+  "final_sources": {
+    "process": {
+      "alive": false,
+      "last_heartbeat": 9046.775971774,
+      "pending": 3,
+      "gaps": 4,
+      "lost": null,
+      "export_failures": 0,
+      "epoch_changed": false
+    },
+    "hooks": {
+      "alive": false,
+      "last_heartbeat": 9046.775971774,
+      "pending": 162,
+      "gaps": 13,
+      "lost": null,
+      "export_failures": 0,
+      "epoch_changed": false
+    },
+    "packet": {
+      "alive": false,
+      "last_heartbeat": 9046.15966654,
+      "pending": 0,
+      "gaps": 1,
+      "lost": 0,
+      "export_failures": 0,
+      "epoch_changed": false
+    }
+  },
+  "retired_delivery": {
+    "naturally_pending_frame": true,
+    "payload_sha256": "042359155455ce142c1f358304f49013029bb2f483ff94e3785142fc06c8bd61",
+    "unchanged_payload_acknowledged_without_restart": true
+  },
+  "delivery_complete": false,
+  "protected_finance_acceptance": "blocked",
+  "recording": "Full admitted Finance demo blocked by mandatory source-coverage gates",
+  "private_evidence_reference": "operator-retained-delivery:199aaaeecf4c4ba9bc4e02fd223a9d4d"
+}

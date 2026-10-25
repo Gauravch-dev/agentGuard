@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-10-25T06:23:46.311562Z",
+  "observed_at": "2026-10-25T15:30:55.721897Z",
   "host_id": "linux-lab-01",
   "kernel": "6.18.33.2-microsoft-standard-WSL2",
   "python": "3.14.4",
@@ -20,6 +20,11 @@
   "finance_image": "sha256:04e5827f75ee3ccc71a8f1675caf3306d94e06e289c19666f3c9a9f1a03a16c9",
   "ollama_release_archive_sha256": "7bedab90dd122661be78798e9f0edf37fccf0cccf2699d2c58ea1a3afdc04b6d",
   "full_protected_mvp_complete": false,
+  "supplemental_probe_image": {
+    "image_id": "sha256:eadd783313258dc7dbad141fef96b368686f6a2e263c15d700d163226bad8b80",
+    "scope": "Synthetic curl/scope/baseline lab only; advisory findings require triage before any promotion",
+    "dependency_review": "docs/linux/probe_dependency_review.json"
+  },
   "model_runtime": {
     "version": "0.40.11",
     "models": [

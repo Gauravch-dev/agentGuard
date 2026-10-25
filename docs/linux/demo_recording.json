@@ -1,0 +1,46 @@
+{
+  "observed_at": "2026-10-25T15:12:22.102Z",
+  "mode": "real-dashboard-limitation-and-cleanup-recording",
+  "run_id": "5ee7050e-45af-4dd5-98d7-cbde12b33443",
+  "task_id": "FIN-fe9ba57e7cd0435ab0a9b4c1938d3ac2",
+  "checks": {
+    "actual_admission_request_held": true,
+    "real_agent_remains_unadmitted": true,
+    "no_report_release_claim": true,
+    "actual_evidence_chain_verified": true,
+    "actual_channel_revoked_after_cleanup": true,
+    "actual_interrupted_state": true,
+    "actual_descendant_exit_verified": true
+  },
+  "passed": true,
+  "video_sha256": "184f962b56643e35f2943826b6eaf682e4f8e2ff773afa5f45025e775abd3c30",
+  "video_bytes": 4221231,
+  "checkpoints": [
+    {
+      "step": "connected_to_real_local_application",
+      "observed_at": "2026-10-25T15:11:15.045Z"
+    },
+    {
+      "step": "real_capsule_staged_after_source_subscription_witnesses",
+      "observed_at": "2026-10-25T15:11:51.627Z"
+    },
+    {
+      "step": "mandatory_admission_hold_and_no_report_confirmed",
+      "observed_at": "2026-10-25T15:11:59.520Z"
+    },
+    {
+      "step": "limitation_recorded_as_revision_review_note",
+      "observed_at": "2026-10-25T15:12:02.405Z"
+    },
+    {
+      "step": "actual_descendants_exited_and_channel_revocation_verified",
+      "observed_at": "2026-10-25T15:12:16.781Z"
+    }
+  ],
+  "browser_version": "156.0.4314.42",
+  "recorder_version": "1.62.1",
+  "artifact_reference": "operator-retained-demo:5ee7050e-45af-4dd5-98d7-cbde12b33443",
+  "delivery_complete": false,
+  "full_finance_demo": "blocked by mandatory source-coverage gates",
+  "publication": "Local recording only; no team upload or Git video binary"
+}

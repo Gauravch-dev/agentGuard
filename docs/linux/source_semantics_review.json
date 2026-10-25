@@ -1,0 +1,130 @@
+{
+  "observed_at": "2026-10-25T14:09:25.614826Z",
+  "mode": "pinned-source-and-live-metric-review",
+  "sources": [
+    {
+      "url": "https://raw.githubusercontent.com/cilium/tetragon/v1.7.0/pkg/ktime/ktime.go",
+      "sha256": "34f69d5d894e0ee9a659502afb144553b6794bf9ba7ca4fa549ad52fe268bf08"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/cilium/tetragon/v1.7.0/pkg/ktime/ktime_linux.go",
+      "sha256": "2303ebc720d63ded3cac296e1405c50668388ab73d96106704c524d09ac2eb50"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/cilium/tetragon/v1.7.0/pkg/exporter/metrics.go",
+      "sha256": "9fa4600ca9102c9bd4f54d7e30c60f5d8ea449a8e94bca6028c4dbbcce813ec0"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/cilium/tetragon/v1.7.0/pkg/exporter/exporter.go",
+      "sha256": "f46524e2f51c3acfba13b759fc1bf6ce642e1659704958fd4524dac4ea3e2f9c"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/cilium/tetragon/v1.7.0/bpf/process/bpf_execve_event.c",
+      "sha256": "29bd471732b457186f926303edf8db3a4daf4cd4eb8787f06de97d89fbd6efe6"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/cilium/tetragon/v1.7.0/pkg/process/process.go",
+      "sha256": "528a2ac50aa035080a9eb6b1280e0a9605ba6c9d7ffac9c41e7293496e5da4d0"
+    }
+  ],
+  "sensor_image": "quay.io/cilium/tetragon@sha256:deda51c3f88e4d26b4d76c99ea207f2b05f9e40c210e0f04a37ca632ab7bf527",
+  "sensor_epoch": "2026-10-25T12:59:23.217317845Z",
+  "source_review": {
+    "per_value_clock_conversion": true,
+    "reviewed_kernel_exec_header_uses_same_time_as_process": true,
+    "process_wall_start_uses_separate_conversion": true,
+    "documented_export_failed_family_declared_in_pinned_exporter": false,
+    "live_exporter_enabled": false
+  },
+  "live_metric_series": {
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"ancestors_info\",event_type=\"PROCESS_EXEC\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"ancestors_info\",event_type=\"PROCESS_EXIT\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"ancestors_info\",event_type=\"PROCESS_KPROBE\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"ancestors_info\",event_type=\"PROCESS_LOADER\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"ancestors_info\",event_type=\"PROCESS_LSM\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"ancestors_info\",event_type=\"PROCESS_THROTTLE\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"ancestors_info\",event_type=\"PROCESS_TRACEPOINT\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"ancestors_info\",event_type=\"PROCESS_UPROBE\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"ancestors_info\",event_type=\"PROCESS_USDT\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"ancestors_info\",event_type=\"RATE_LIMIT_INFO\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"parent_info\",event_type=\"\"}": 8,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"parent_info\",event_type=\"PROCESS_EXEC\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"parent_info\",event_type=\"PROCESS_EXIT\"}": 36,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"parent_info\",event_type=\"PROCESS_KPROBE\"}": 24,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"parent_info\",event_type=\"PROCESS_LOADER\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"parent_info\",event_type=\"PROCESS_LSM\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"parent_info\",event_type=\"PROCESS_THROTTLE\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"parent_info\",event_type=\"PROCESS_TRACEPOINT\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"parent_info\",event_type=\"PROCESS_UPROBE\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"parent_info\",event_type=\"PROCESS_USDT\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"parent_info\",event_type=\"RATE_LIMIT_INFO\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"pod_info\",event_type=\"PROCESS_EXEC\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"pod_info\",event_type=\"PROCESS_EXIT\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"pod_info\",event_type=\"PROCESS_KPROBE\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"pod_info\",event_type=\"PROCESS_LOADER\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"pod_info\",event_type=\"PROCESS_LSM\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"pod_info\",event_type=\"PROCESS_THROTTLE\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"pod_info\",event_type=\"PROCESS_TRACEPOINT\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"pod_info\",event_type=\"PROCESS_UPROBE\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"pod_info\",event_type=\"PROCESS_USDT\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"pod_info\",event_type=\"RATE_LIMIT_INFO\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"process_info\",event_type=\"PROCESS_EXEC\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"process_info\",event_type=\"PROCESS_EXIT\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"process_info\",event_type=\"PROCESS_KPROBE\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"process_info\",event_type=\"PROCESS_LOADER\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"process_info\",event_type=\"PROCESS_LSM\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"process_info\",event_type=\"PROCESS_THROTTLE\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"process_info\",event_type=\"PROCESS_TRACEPOINT\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"process_info\",event_type=\"PROCESS_UPROBE\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"process_info\",event_type=\"PROCESS_USDT\"}": 0,
+    "tetragon_event_cache_fetch_failures_total{entry_type=\"process_info\",event_type=\"RATE_LIMIT_INFO\"}": 0,
+    "tetragon_events_missing_process_info_total": 0,
+    "tetragon_export_ratelimit_events_dropped_total": 0,
+    "tetragon_handler_errors_total{error=\"event_handler_failed\",opcode=\"0\"}": 0,
+    "tetragon_handler_errors_total{error=\"event_handler_failed\",opcode=\"13\"}": 0,
+    "tetragon_handler_errors_total{error=\"event_handler_failed\",opcode=\"14\"}": 0,
+    "tetragon_handler_errors_total{error=\"event_handler_failed\",opcode=\"15\"}": 0,
+    "tetragon_handler_errors_total{error=\"event_handler_failed\",opcode=\"16\"}": 0,
+    "tetragon_handler_errors_total{error=\"event_handler_failed\",opcode=\"23\"}": 0,
+    "tetragon_handler_errors_total{error=\"event_handler_failed\",opcode=\"24\"}": 0,
+    "tetragon_handler_errors_total{error=\"event_handler_failed\",opcode=\"25\"}": 0,
+    "tetragon_handler_errors_total{error=\"event_handler_failed\",opcode=\"26\"}": 0,
+    "tetragon_handler_errors_total{error=\"event_handler_failed\",opcode=\"27\"}": 0,
+    "tetragon_handler_errors_total{error=\"event_handler_failed\",opcode=\"28\"}": 0,
+    "tetragon_handler_errors_total{error=\"event_handler_failed\",opcode=\"5\"}": 0,
+    "tetragon_handler_errors_total{error=\"event_handler_failed\",opcode=\"7\"}": 0,
+    "tetragon_handler_errors_total{error=\"unknown_opcode\",opcode=\"0\"}": 0,
+    "tetragon_handler_errors_total{error=\"unknown_opcode\",opcode=\"13\"}": 0,
+    "tetragon_handler_errors_total{error=\"unknown_opcode\",opcode=\"14\"}": 0,
+    "tetragon_handler_errors_total{error=\"unknown_opcode\",opcode=\"15\"}": 0,
+    "tetragon_handler_errors_total{error=\"unknown_opcode\",opcode=\"16\"}": 0,
+    "tetragon_handler_errors_total{error=\"unknown_opcode\",opcode=\"23\"}": 0,
+    "tetragon_handler_errors_total{error=\"unknown_opcode\",opcode=\"24\"}": 0,
+    "tetragon_handler_errors_total{error=\"unknown_opcode\",opcode=\"25\"}": 0,
+    "tetragon_handler_errors_total{error=\"unknown_opcode\",opcode=\"26\"}": 0,
+    "tetragon_handler_errors_total{error=\"unknown_opcode\",opcode=\"27\"}": 0,
+    "tetragon_handler_errors_total{error=\"unknown_opcode\",opcode=\"28\"}": 0,
+    "tetragon_handler_errors_total{error=\"unknown_opcode\",opcode=\"5\"}": 0,
+    "tetragon_handler_errors_total{error=\"unknown_opcode\",opcode=\"7\"}": 0,
+    "tetragon_notify_overflowed_events_total": 504216,
+    "tetragon_observer_ringbuf_errors_total": 0,
+    "tetragon_observer_ringbuf_events_lost_total": 0,
+    "tetragon_observer_ringbuf_queue_events_lost_total": 0,
+    "tetragon_bpf_missed_events_total": null,
+    "tetragon_field_filter_failed_total": null,
+    "tetragon_events_export_failed_total": null
+  },
+  "unavailable_families": [
+    "tetragon_bpf_missed_events_total",
+    "tetragon_field_filter_failed_total",
+    "tetragon_events_export_failed_total"
+  ],
+  "clock_decision": "Per-value monotonic/wall conversion explains a plausible source of the retained reversal; it does not establish an error bound or repair source ordering",
+  "loss_decision": "File-exporter counters are separate from this gRPC subscriber. Source loss/merge/cache errors and collector queue failures still require measured accounting; absent values stay unknown",
+  "limits": [
+    "Matching source bytes is not proof of equivalence to the running image",
+    "No default zero for absent counters, and no timestamp tolerance introduced",
+    "This report is not a complete-coverage attestation"
+  ],
+  "protected_execution_ready": false
+}

@@ -105,6 +105,7 @@ function App(){
  },[authorized,selected,version,viewNonce,task?.state,task?.is_current,busy,inspecting,reference,note,load]);
  const view=evidence.filter(e=>(filter==='all'||e.kind===filter)&&(!reference||matches(e,reference))).slice().reverse();
  const mutable=task?.is_current===true;
+ const cleanupVerified=task?.execution.channel_revoked===true&&['interrupted','completed'].includes(task.state);
  const query=task?`?version=${task.contract.contract_version}`:'';
  async function mutate(endpoint:string){try{await request(`/api/v1/tasks/${selected}/${endpoint}`,'POST',{})}finally{await load(selected,version)}}
  return <div className="shell">
@@ -121,7 +122,7 @@ function App(){
   <div className="execution" role="status"><strong>{task.execution.phase.replaceAll('_',' ')}</strong><p>{descriptions[task.execution.phase]||'Review runtime readiness and task evidence.'}</p>{task.execution.reasons.map((r,i)=><p key={i}>{explain(r)}</p>)}</div>
   <div className="controls"><button disabled={busy||!mutable||task.state!=='approved'} onClick={()=>void action(()=>mutate('launch'))}>Request verified launch</button>
   {mutable&&task.execution.phase==='waiting_for_admission'&&<button disabled={busy} onClick={()=>void action(()=>mutate('admit'))}>Check admission</button>}
-  <button className="quiet" disabled={busy||!mutable||!task.binding||!['launch_requested','running','failed'].includes(task.state)} onClick={()=>void action(()=>mutate('terminate'))}>{task.execution.channel_revoked?'Retry cleanup':'Cancel and verify cleanup'}</button>
+  <button className="quiet" disabled={busy||!mutable||!task.binding||!['launch_requested','running','failed'].includes(task.state)} onClick={()=>void action(()=>mutate('terminate'))}>{cleanupVerified?'Cleanup verified':task.execution.channel_revoked?'Retry cleanup':'Cancel and verify cleanup'}</button>
   {mutable&&['failed','interrupted','completed'].includes(task.state)&&<button className="quiet" disabled={busy} onClick={()=>void action(async()=>{await request(`/api/v1/tasks/${selected}/revisions`,'POST');select(selected);setRows(await request('/api/v1/tasks'))})}>New approved revision</button>}</div>
   <div className="metrics"><div><span>BUSINESS OUTCOME</span><strong>{result.business_outcome}</strong></div><div><span>EVIDENCE INTEGRITY</span><strong>{result.integrity_verified?'Verified chain':'Unverified'}</strong></div><div><span>RUNTIME IDENTITY</span><strong>{task.binding?'Registered':'Not connected'}</strong></div></div>
   <details><summary>Effective permissions & approval</summary><pre>{JSON.stringify(task.contract,null,2)}</pre></details>

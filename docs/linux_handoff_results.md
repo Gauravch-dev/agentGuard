@@ -1,5 +1,8 @@
 # Linux implementation and live validation round
 
+Current implementation and acceptance state: [Linux delivery return](linux_delivery_round.md).
+The earlier results below are retained as historical evidence.
+
 The newer [25 October Linux return round](linux_return_round.md) records the
 application lifecycle, syscall-hook, packet and durable exporter follow-through.
 This page retains the 24 October round and its original limitations below.

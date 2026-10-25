@@ -54,7 +54,7 @@ def run(image, digest, output):
             base_url=f"http://127.0.0.1:{port}",
             trust_env=False,
             follow_redirects=False,
-            timeout=40,
+            timeout=90,
             headers={"Authorization": "Bearer " + settings.owner_token},
         ) as client:
 
@@ -331,7 +331,24 @@ def main():
     parser.add_argument("--approved-model-digest", required=True)
     parser.add_argument("--output", type=Path, default=ROOT / "docs/linux/continuous_review.json")
     args = parser.parse_args()
-    result = run(args.image_id, args.approved_model_digest, args.output)
+    try:
+        result = run(args.image_id, args.approved_model_digest, args.output)
+    except Exception as exc:
+        # Keep failed positive acceptance attempts visible without publishing
+        # raw diagnostics, credentials or operator-private paths. No replacement
+        # observation class or relaxed clock check makes this a passing run.
+        result = {
+            "observed_at": now().isoformat(),
+            "passed": False,
+            "checks": {},
+            "mode": "real-linux-continuous-observer-lab",
+            "failure_type": type(exc).__name__,
+            "positive_acceptance_established": False,
+            "protected_execution_ready": False,
+            "diagnostics": "Inspect the operator-retained continuous-lab source journals and server log",
+        }
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({"passed": result["passed"], "checks": result["checks"]}, indent=2))
     return 0 if result["passed"] else 1
 

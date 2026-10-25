@@ -6,9 +6,11 @@ required effect. No complete coverage can be produced by this module.
 
 import hashlib
 import json
+import math
 import os
 import sqlite3
 import stat
+import time
 from pathlib import Path
 
 import httpx
@@ -167,9 +169,17 @@ class ExportQueue:
                     raise RuntimeError("Source checkpoint failed to advance")
             return accepted
 
-    def drain(self, token: str, *, client=None, max_frames=256):
+    def drain(self, token: str, *, client=None, max_frames=256, max_seconds=None):
         if len(token) < 32:
             raise ValueError("Registered sensor credential required")
+        if max_seconds is not None and (
+            isinstance(max_seconds, bool)
+            or not isinstance(max_seconds, (int, float))
+            or not math.isfinite(max_seconds)
+            or not 0 < max_seconds <= 5
+        ):
+            raise ValueError("Bounded delivery time budget required")
+        started = time.monotonic()
         owned = client is None
         client = client or httpx.Client(trust_env=False, follow_redirects=False, timeout=5)
         delivered = 0
@@ -178,6 +188,8 @@ class ExportQueue:
                 "SELECT seq,payload,endpoint FROM frames WHERE delivered=0 ORDER BY seq LIMIT ?",
                 (max_frames,),
             ).fetchall():
+                if max_seconds is not None and time.monotonic() - started >= max_seconds:
+                    break  # Fair scheduling only; never discard or acknowledge pending frames.
                 try:
                     routes = {
                         "member2": "/internal/v1/member2/events",

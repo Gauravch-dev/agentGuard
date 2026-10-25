@@ -169,7 +169,7 @@ class StagedCapsules:
                 cwd=Path(__file__).resolve().parents[1],
             )
 
-    def prepare(self, contract: dict):
+    def prepare(self, contract: dict, *, before_start=None):
         contract = validate_contract(contract)
         checks = self.lab.preflight()
         if any(c.status != "passed" for c in checks if c.mandatory):
@@ -219,6 +219,7 @@ class StagedCapsules:
             "descendants_exited": False,
             "channel_revoked": False,
         }
+        observation_cleanup = None
         try:
             effective = self.lab.inspect(container_id)
             effective["Config"]["Entrypoint"] = (effective["Config"].get("Entrypoint") or []) + (
@@ -235,7 +236,11 @@ class StagedCapsules:
             # A separate process exists before container start. Request failure or
             # application termination cannot remove the workload's deadline.
             self._spawn_watchdog(record)
+            if before_start is not None:
+                observation_cleanup = before_start(value)
             validate_contract(contract)
+            if deadline_reached(value):
+                raise PlatformError("deadline reached before bootstrap start")
             self.run(["docker", "start", container_id])
             live = self._inspect(value)
             pid = live["State"]["Pid"]
@@ -257,10 +262,14 @@ class StagedCapsules:
                 record.write(value)
             return value
         except BaseException:
-            if record.path.exists():
-                self.terminate(capsule_id)
-            else:
-                self.run(["docker", "rm", container_id])
+            try:
+                if record.path.exists():
+                    self.terminate(capsule_id)
+                else:
+                    self.run(["docker", "rm", container_id])
+            finally:
+                if observation_cleanup is not None:
+                    observation_cleanup()
             raise
 
     def admit(self, capsule_id):

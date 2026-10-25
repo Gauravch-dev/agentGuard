@@ -19,6 +19,7 @@ from agentguard.capsules import StagedCapsules, private_directory
 from agentguard.export_queue import ExportQueue
 from agentguard.hook_policy import HookNormalizer, capsule_policy
 from agentguard.platform import command
+from agentguard.policy_control import install_policy, remove_policy
 from agentguard.sensors import Workload
 from application.member2_bridge import translate_member2_event
 from application.models import now
@@ -66,11 +67,7 @@ def run(image, output):
                     )
                 )
             )
-            remote = "/etc/tetragon/" + policy + ".json"
-            command(["docker", "cp", str(source_policy), "agentguard-tetragon:" + remote])
-            command(
-                ["docker", "exec", "agentguard-tetragon", "tetra", "tp", "add", remote], timeout=60
-            )
+            install_policy(source_policy, policy)
             raw_path = private / "source.jsonl"
             with raw_path.open("xb") as raw, (private / "source.stderr").open("xb") as errors:
                 subscription = subprocess.Popen(  # noqa: S603 - fixed managed sensor
@@ -215,7 +212,7 @@ def run(image, output):
         if capsule is not None:
             controller.terminate(capsule)
         if policy is not None:
-            command(["docker", "exec", "agentguard-tetragon", "tetra", "tp", "delete", policy])
+            remove_policy(policy)
 
 
 def main():

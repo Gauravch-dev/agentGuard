@@ -1,5 +1,11 @@
 # Integration status
 
+Latest Linux delivery return: [implementation, evidence and open gates](linux_delivery_round.md).
+231 Linux tests and 207 Windows tests pass; actual owner views, before-start source
+witnesses, expanded scope probes, finished-worker replay and a limitation recording
+are verified. Full protected Finance acceptance remains blocked. Older counts below
+describe earlier checkpoints.
+
 Current Member 1 checkpoint (25 October): [application implementation completion](application_completion_round.md)
 maps every A1–A8 deliverable, records 195 passing tests and distinguishes completed
 application code from pending joint Linux/model/report acceptance. Revision history,

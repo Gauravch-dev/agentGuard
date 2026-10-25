@@ -1,5 +1,13 @@
 # Latest application review return
 
+Latest Linux delivery implementation and honest acceptance state:
+[Linux delivery return](linux_delivery_round.md). Before-start source witnesses,
+expanded inherited-FD/readv/mmap/socket/curl probes, persistent final-drain recovery,
+real owner-view checks, nine supplemental baseline samples and a local limitation
+recording are implemented. Complete packet/process attribution, source clock/loss
+proof and full admitted Finance/S01–S16 acceptance remain open. This is not final
+protected MVP completion.
+
 Final delivery ownership: @Gauravch-dev owns the remaining Linux implementation,
 integration of both members' work, full testing, final end-to-end verification and
 demo recording. Member 1's application implementation is handed over. Do not wait

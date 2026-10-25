@@ -1,5 +1,10 @@
 # Acceptance matrix and measured results
 
+Current acceptance state and measured supplemental baselines are in
+[the Linux delivery round](linux_delivery_round.md#s01s16-acceptance-state), with
+[nine actual probe samples](linux/baseline_review.json). The older table below is
+historical. Full admitted Finance/S01–S16 acceptance remains blocked.
+
 24 October 2026. No attack-success, performance, false-positive, latency or overhead numbers have been measured. Unit tests and an authenticated local harness are not full Linux acceptance tests.
 
 | ID | Scenario | Current evidence | Full MVP state |

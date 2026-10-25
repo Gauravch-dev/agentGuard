@@ -101,7 +101,8 @@ class StagedRuntimeAdapter(Member2RuntimeAdapter):
         self.review_reasons: dict[str, tuple[str, ...]] = {}
 
     def launch(self, contract_ref: TaskContract) -> RuntimeResult:
-        value = self.controller.prepare(contract_ref.model_dump(mode="json"))
+        arguments = {"before_start": self.supervisor.prepare} if self.supervisor is not None else {}
+        value = self.controller.prepare(contract_ref.model_dump(mode="json"), **arguments)
         try:
             identity = value["identity"]
             binding = Binding(
@@ -127,7 +128,11 @@ class StagedRuntimeAdapter(Member2RuntimeAdapter):
                 binding=binding,
             )
         except BaseException:
-            self.controller.terminate(value["capsule_id"])
+            try:
+                self.controller.terminate(value["capsule_id"])
+            finally:
+                if self.supervisor is not None:
+                    self.supervisor.finish(value["capsule_id"])
             raise
 
     def record_for(self, binding: Binding) -> dict:

@@ -16,6 +16,7 @@ import threading
 import time
 from dataclasses import asdict, replace
 from datetime import datetime
+from itertools import islice
 from pathlib import Path
 from uuid import uuid4
 
@@ -24,6 +25,8 @@ from agentguard.export_queue import ExportQueue
 from agentguard.hook_policy import HookNormalizer, capsule_policy
 from agentguard.observer_health import SourceHealth, clock_compatible, health_reasons, metric_delta
 from agentguard.platform import command
+from agentguard.policy_control import install_policy, remove_policy
+from agentguard.prebirth import PrebirthCapture
 from agentguard.schema import parse_time, strict_json, timestamp
 from agentguard.sensors import TetragonNormalizer, Workload
 from agentguard.transport import process_identity
@@ -41,6 +44,9 @@ METRICS = (
     "tetragon_notify_overflowed_events_total",
     "tetragon_field_filter_failed_total",
     "tetragon_observer_ringbuf_errors_total",
+    "tetragon_bpf_missed_events_total",
+    "tetragon_event_cache_fetch_failures_total",
+    "tetragon_handler_errors_total",
 )
 
 
@@ -94,6 +100,7 @@ class ContinuousSupervisor:
                 raise ValueError("Distinct registered process/hook/packet sources required")
         self.lock = threading.Lock()
         self.workers = {}
+        self.pending = {}
         self.recovery_stop = threading.Event()
         self.recovery_thread = None
 
@@ -105,12 +112,20 @@ class ContinuousSupervisor:
 
     def replay_pending(self):
         pending = True
-        for _ in range(10):
-            if not pending or self.recovery_stop.wait(1):
+        cursor = 0
+        while True:
+            if self.recovery_stop.wait(1 if pending else 5):
                 return
             pending = False
             summary = []
-            for path in list(self.root.glob("capsule-*/manifest.json"))[:64]:
+            # Keep every pass bounded and rotate fairly through retained
+            # history. A finished worker's backlog does not require a restart.
+            paths = sorted(islice(self.root.glob("capsule-*/manifest.json"), 4097))
+            scan_limited = len(paths) > 4096
+            paths = paths[:4096]
+            selected = (paths[cursor:] + paths[:cursor])[:64]
+            cursor = (cursor + len(selected)) % max(1, len(paths))
+            for path in selected:
                 if self.recovery_stop.is_set():
                     return
                 try:
@@ -118,7 +133,10 @@ class ContinuousSupervisor:
                     if not re.fullmatch(r"capsule-[a-f0-9]{32}", directory.name):
                         raise ValueError("Invalid journal identity")
                     with self.lock:
-                        if directory.name in self.workers:
+                        worker = self.workers.get(directory.name)
+                        if directory.name in self.pending or (
+                            worker is not None and worker.thread.is_alive()
+                        ):
                             continue
                     descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
                     with os.fdopen(descriptor) as source:
@@ -147,7 +165,9 @@ class ContinuousSupervisor:
                                     ),
                                     endpoint="events" if kind == "packet" else "member2",
                                 )
-                            queue.drain(self.sensors[sensor_id].token, max_frames=128)
+                            queue.drain(
+                                self.sensors[sensor_id].token, max_frames=16, max_seconds=0.5
+                            )
                             state = queue.status()
                             pending |= state["pending"] > 0
                             summary.append(
@@ -161,8 +181,39 @@ class ContinuousSupervisor:
                     )
             ObserverWorker.write_private(
                 self.root / "recovery.json",
-                {"observed_at": timestamp(), "queues": summary, "admission_restored": False},
+                {
+                    "observed_at": timestamp(),
+                    "queues": summary,
+                    "admission_restored": False,
+                    "history_scan_limited": scan_limited,
+                },
             )
+
+    def prepare(self, value):
+        """Synchronous pre-start hook: no untrusted capsule process exists yet."""
+        capsule = value["capsule_id"]
+        with self.lock:
+            if capsule in self.pending or capsule in self.workers:
+                raise ValueError("Pre-birth observer identity already registered")
+            if len(self.pending) + sum(w.thread.is_alive() for w in self.workers.values()) >= 4:
+                raise RuntimeError("Concurrent observer budget reached")
+            capture = PrebirthCapture(value, self.root / capsule)
+            self.pending[capsule] = capture
+        try:
+            capture.begin()
+        except BaseException:
+            with self.lock:
+                self.pending.pop(capsule, None)
+            raise
+
+        def abort():
+            try:
+                capture.close()
+            finally:
+                with self.lock:
+                    self.pending.pop(capsule, None)
+
+        return abort
 
     def start(self, value, binding):
         with self.lock:
@@ -170,7 +221,8 @@ class ContinuousSupervisor:
                 raise ValueError("Observer identity already registered")
             if sum(w.thread.is_alive() for w in self.workers.values()) >= 4:
                 raise RuntimeError("Concurrent observer budget reached")
-            worker = ObserverWorker(self, value, binding)
+            capture = self.pending.pop(value["capsule_id"], None)
+            worker = ObserverWorker(self, value, binding, capture=capture)
             self.workers[value["capsule_id"]] = worker
             worker.thread.start()
 
@@ -180,6 +232,9 @@ class ContinuousSupervisor:
             worker = self.workers.get(capsule_id)
             if worker is not None:
                 worker.stop.set()
+            capture = self.pending.pop(capsule_id, None)
+        if capture is not None:
+            capture.close()
 
     def status(self, capsule_id):
         with self.lock:
@@ -199,6 +254,10 @@ class ContinuousSupervisor:
         self.recovery_stop.set()
         with self.lock:
             workers = list(self.workers.values())
+            pending = list(self.pending.values())
+            self.pending.clear()
+        for capture in pending:
+            capture.close()
         for worker in workers:
             worker.stop.set()
         for worker in workers:
@@ -210,7 +269,7 @@ class ContinuousSupervisor:
 
 
 class ObserverWorker:
-    def __init__(self, supervisor, value, binding):
+    def __init__(self, supervisor, value, binding, *, capture=None):
         self.supervisor, self.value, self.binding = supervisor, value, binding
         self.root = private_directory(supervisor.root / value["capsule_id"])
         self.epoch = uuid4().hex
@@ -232,6 +291,12 @@ class ObserverWorker:
         self.clock_bad = False
         self.finished = False
         self.commands = {}
+        self.capture = capture
+        if capture is not None:
+            self.policy = capture.policy
+            self.policy_may_exist = capture.policy_may_exist
+            self.processes.update(capture.processes)
+            self.commands.update(capture.commands)
         self.restarts = {kind: 0 for kind in SOURCE_IDS}
         self.failure_counts = {kind: 0 for kind in SOURCE_IDS}
         self.health_file = self.root / "health.jsonl"
@@ -294,6 +359,7 @@ class ObserverWorker:
             "finished": self.finished,
             "restarts": dict(self.restarts),
             "protected_execution_ready": False,
+            "prebirth": self.capture.proof() if getattr(self, "capture", None) else None,
         }
 
     def note(self, kind, code):
@@ -429,6 +495,9 @@ class ObserverWorker:
         }
 
     def attest_health(self):
+        if self.capture is not None:
+            for code in self.capture.proof()["errors"]:
+                self.note("process", code)
         wall, mono = time.time(), time.monotonic()
         if not clock_compatible(self.last_wall, self.last_mono, wall, mono):
             self.clock_bad = True
@@ -551,17 +620,16 @@ class ObserverWorker:
                     SOURCE_IDS[kind],
                     api_port=self.supervisor.port,
                 )
-            policy_file = self.root / "policy.json"
-            self.write_private(
-                policy_file,
-                capsule_policy(self.policy, verified_mount_namespace(self.value)),
-            )
-            remote = "/etc/tetragon/" + self.policy + ".json"
-            command(["docker", "cp", str(policy_file), "agentguard-tetragon:" + remote])
-            self.policy_may_exist = True
-            command(
-                ["docker", "exec", "agentguard-tetragon", "tetra", "tp", "add", remote], timeout=30
-            )
+            if self.capture is None:
+                policy_file = self.root / "policy.json"
+                self.write_private(
+                    policy_file,
+                    capsule_policy(
+                        self.policy, verified_mount_namespace(self.value), expanded=True
+                    ),
+                )
+                self.policy_may_exist = True
+                install_policy(policy_file, self.policy)
             if self.stop.is_set():
                 return
             common = [
@@ -577,26 +645,27 @@ class ObserverWorker:
                 "tetra",
                 "getevents",
             ]
-            self.spawn(
-                "process",
-                common
-                + [
-                    "--event-types",
-                    "PROCESS_EXEC,PROCESS_EXIT",
-                    "--exclude-fields",
-                    "process.arguments,parent.arguments",
-                ],
-            )
-            self.spawn(
-                "hooks",
-                common
-                + [
-                    "--policy-names",
-                    self.policy,
-                    "--exclude-fields",
-                    "process.arguments,parent.arguments",
-                ],
-            )
+            if self.capture is None:
+                self.spawn(
+                    "process",
+                    common
+                    + [
+                        "--event-types",
+                        "PROCESS_EXEC,PROCESS_EXIT",
+                        "--exclude-fields",
+                        "process.arguments,parent.arguments",
+                    ],
+                )
+                self.spawn(
+                    "hooks",
+                    common
+                    + [
+                        "--policy-names",
+                        self.policy,
+                        "--exclude-fields",
+                        "process.arguments,parent.arguments",
+                    ],
+                )
             self.spawn(
                 "packet",
                 [
@@ -623,8 +692,13 @@ class ObserverWorker:
                         self.root / (kind + ".jsonl"),
                         lambda line, ref, kind=kind: self.normalize(kind, line, ref),
                         endpoint="events" if kind == "packet" else "member2",
+                        max_frames=64,
                     )
-                    queue.drain(self.supervisor.sensors[SOURCE_IDS[kind]].token, max_frames=64)
+                    queue.drain(
+                        self.supervisor.sensors[SOURCE_IDS[kind]].token,
+                        max_frames=16,
+                        max_seconds=0.5,
+                    )
                 self.attest_health()
                 end = timestamp()
                 self.coverage(start, end)
@@ -639,6 +713,8 @@ class ObserverWorker:
             self.note("process", "CONTINUOUS_OBSERVER_FAILED")
         finally:
             self.stop.set()
+            if self.capture is not None:
+                self.capture.stop.set()
             for process in self.processes.values():
                 if process.poll() is None:
                     try:
@@ -656,7 +732,13 @@ class ObserverWorker:
                     process.wait(timeout=3)
             for reader in self.readers:
                 reader.join(timeout=3)
-            for process in self.processes.values():
+            if self.capture is not None:
+                for reader in self.capture.readers:
+                    reader.join(timeout=3)
+            streams = set(self.processes.values())
+            if self.capture is not None:
+                streams.update(self.capture.processes.values())
+            for process in streams:
                 if process.stdout is not None:
                     process.stdout.close()
             try:
@@ -677,20 +759,16 @@ class ObserverWorker:
                 queue.close()
             if self.policy_may_exist:
                 try:
-                    command(
-                        [
-                            "docker",
-                            "exec",
-                            "agentguard-tetragon",
-                            "tetra",
-                            "tp",
-                            "delete",
-                            self.policy,
-                        ],
-                        timeout=5,
-                    )
+                    remove_policy(self.policy)
+                    if self.capture is not None:
+                        self.capture.policy_may_exist = False
                 except Exception:
                     self.note("hooks", "OBSERVER_POLICY_CLEANUP_UNVERIFIED")
+            if self.capture is not None:
+                try:
+                    self.capture.cleanup_canary()
+                except OSError:
+                    self.note("hooks", "OBSERVER_CANARY_CLEANUP_UNVERIFIED")
             self.finished = True
             with self.lock:
                 self.sources = {

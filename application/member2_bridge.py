@@ -12,6 +12,7 @@ from typing import Any
 
 from pydantic import Field
 
+from agentguard.hook_policy import FILE_CHECKS, FILE_IO, SOCKET_IO, hook_effect
 from agentguard.platform import DockerLab, PlatformError, host_audit
 from agentguard.schema import validate_contract, validate_event
 from agentguard.sensors import MappingError, TetragonNormalizer, Workload
@@ -113,16 +114,16 @@ def translate_member2_event(value: dict, sensor_id: str) -> tuple[SecurityEvent,
         raise PermissionError("Hook observation cannot certify enforcement or complete coverage")
     if checked["event_type"] in {"file_access", "connection_attempt"}:
         operations = (
-            {"openat", "openat2"}
+            {"openat", "openat2"} | FILE_IO | FILE_CHECKS
             if checked["event_type"] == "file_access"
-            else {"connect", "sendto", "sendmsg", "sendmmsg"}
+            else {"connect", "sendto", "sendmsg", "sendmmsg"} | SOCKET_IO
         )
         returned = details["kernel_return"]
         if (
             checked["operation"] not in operations
             or not re.fullmatch(r"agentguard-[a-f0-9]{32}", details["hook_policy"])
             or not -(2**63) <= returned < 2**63
-            or checked["effect_status"] != ("attempted" if returned < 0 else "observed")
+            or checked["effect_status"] != hook_effect(checked["operation"], returned)
         ):
             raise PermissionError("Hook semantics do not match the recorded operation and return")
     shared = {key: item for key, item in checked.items() if key not in {"received_at", "details"}}
