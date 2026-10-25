@@ -1,5 +1,12 @@
 # Latest application review return
 
+Final delivery ownership: @Gauravch-dev owns the remaining Linux implementation,
+integration of both members' work, full testing, final end-to-end verification and
+demo recording. Member 1's application implementation is handed over. Do not wait
+for a separate Member 1 verification round; return application defects only when
+they need Member 1's help. Follow the final delivery checklist in
+[the application completion handoff](application_completion_round.md#final-delivery-ownership).
+
 Current return: [Member 1 implementation completion and Linux tasks](application_completion_round.md).
 Application code and supervisor-facing views are implemented and tested. Please
 own the remaining bootstrap observation, supported-hook scope, process/packet joins,

@@ -126,8 +126,37 @@ authorization, coverage/conflict gates, synthetic-only input and local-only mode
    repository, then reply to issue #1 with the exact commit/branch, tests, artifact
    links and remaining blockers. No force push or gate relaxation.
 
-Member 1's remaining joint work is to pull that return, reconcile the actual
-admitted run/report and S01–S16 evidence, fix any demonstrated application issues,
-and sign off application acceptance. A percentage cannot turn those missing
-results into completion. Production SSO, multi-worker storage and public hosting
-are outside this local MVP and are not prerequisites invented for this handoff.
+## Final delivery ownership
+
+The team has assigned final delivery to Member 2, @Gauravch-dev, because the Linux
+host is under his control. Member 1's application implementation is handed over.
+Member 2 owns integrating both members' work, running the final application and
+platform verification, resolving integration defects, and making the final demo
+recording. A separate Member 1 sign-off round is not required. Ask Member 1 for
+help only if an application defect needs it; preserve the reviewed trust boundaries
+and coordinate any shared schema change through its compatibility process.
+
+Final delivery checklist:
+
+- Complete the Linux coverage and attribution work above, then run the combined
+  tests, schema/static/build checks and genuine end-to-end scenarios on Linux.
+- Verify actual benign/injected Finance behavior, report correctness, broker
+  denials, source health/loss, cleanup, expiry/restart and cross-capsule isolation.
+  Complete the S01–S16 matrix and measured baselines with evidence links.
+- Record the final integrated application working on the real Linux host. Show
+  task approval, actual admitted model-driven Finance execution, verified internal
+  report, independent evidence/findings, denied operations and verified cleanup.
+  Keep business success and security findings separate. Clearly label any
+  supplemental deterministic attack driver or simulation. If gates remain held,
+  show the limitation and report delivery as blocked rather than complete.
+- Keep credentials, private host paths, raw confidential data and private runtime
+  files out of the recording and committed artifacts. Use synthetic data and the
+  approved local model only. Provide the recording through an agreed team location.
+- Commit and push the final code, runbook, sanitized evidence and honest acceptance
+  matrix. Reply to issue #1 with the exact commit/branch, test results, remaining
+  limitations and the recording location or link. Do not commit a large video
+  binary into Git just to include the recording.
+
+The full protected MVP is complete only when the required real results pass;
+transferring ownership does not change that requirement. Production SSO,
+multi-worker storage and public hosting remain outside this local MVP.
