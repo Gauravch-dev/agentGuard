@@ -97,10 +97,16 @@ class LiveAdmissionReview:
             reasons.append("DEADLINE_REACHED_DURING_REVIEW")
         return reasons
 
-    def __call__(self, value):
+    def assess(self, value):
         try:
-            self.last_reasons = self.reasons(value)
+            return self.reasons(value)
         except Exception:
             # Missing kernel/daemon/model/collector proof is a hold, never approval.
-            self.last_reasons = ["LIVE_PLATFORM_REVIEW_UNAVAILABLE"]
-        return not self.last_reasons
+            return ["LIVE_PLATFORM_REVIEW_UNAVAILABLE"]
+
+    def __call__(self, value):
+        reasons = self.assess(value)
+        self.last_reasons = reasons
+        # Diagnostic state can change in a concurrent review of another capsule.
+        # Only this invocation's result may decide admission.
+        return not reasons

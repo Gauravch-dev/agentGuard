@@ -1,9 +1,10 @@
-"""Explicit adapters for Member 2 commit 198aea6515954130ed58ed21601a23be767596a0.
+"""Explicit process/hook adapters for the reviewed Member 2 Linux return round.
 
 Parsing is not authentication. Protected execution remains gated by the actual
 upstream preflight and incomplete live sensor/admission validation.
 """
 
+import re
 from collections.abc import Iterator
 from dataclasses import asdict
 from pathlib import Path
@@ -18,7 +19,7 @@ from agentguard.transport import PeerAuthorizer
 from application.brokers import Broker, ChannelContext
 from application.models import Binding, RuntimeResult, SecurityEvent, StrictModel, TaskContract
 
-UPSTREAM_COMMIT = "198aea6515954130ed58ed21601a23be767596a0"  # pragma: allowlist secret
+UPSTREAM_COMMIT = "a95e564ef2277535833fd99905415b957976229a"  # pragma: allowlist secret
 
 
 class Member2Transfer(StrictModel):
@@ -110,6 +111,20 @@ def translate_member2_event(value: dict, sensor_id: str) -> tuple[SecurityEvent,
         or type(details.get("kernel_return")) is not int
     ):
         raise PermissionError("Hook observation cannot certify enforcement or complete coverage")
+    if checked["event_type"] in {"file_access", "connection_attempt"}:
+        operations = (
+            {"openat", "openat2"}
+            if checked["event_type"] == "file_access"
+            else {"connect", "sendto", "sendmsg", "sendmmsg"}
+        )
+        returned = details["kernel_return"]
+        if (
+            checked["operation"] not in operations
+            or not re.fullmatch(r"agentguard-[a-f0-9]{32}", details["hook_policy"])
+            or not -(2**63) <= returned < 2**63
+            or checked["effect_status"] != ("attempted" if returned < 0 else "observed")
+        ):
+            raise PermissionError("Hook semantics do not match the recorded operation and return")
     shared = {key: item for key, item in checked.items() if key not in {"received_at", "details"}}
     # Unsupported identifiers or fields are rejected, never truncated or guessed.
     event = SecurityEvent.model_validate(shared)

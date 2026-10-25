@@ -1,0 +1,41 @@
+{
+  "observed_at": "2026-10-25T06:59:20.221243+00:00",
+  "reviewed_upstream_commit": "a95e564ef2277535833fd99905415b957976229a",
+  "platform": "Windows",
+  "baseline_tests": {
+    "passed": 146,
+    "skipped": 11,
+    "subtests_passed": 13
+  },
+  "final_tests": {
+    "passed": 169,
+    "skipped": 11,
+    "subtests_passed": 13
+  },
+  "checks": {
+    "pytest": true,
+    "lint": true,
+    "format": true,
+    "application_types": true,
+    "shared_contract_compatibility": true,
+    "dashboard_types_and_build": true,
+    "offline_changed_source_secret_scan": true,
+    "diff_whitespace": true
+  },
+  "new_tests_use_explicit_simulations_or_http_mocks": true,
+  "reviewed_committed_linux_artifacts": [
+    "docs/linux/application_lifecycle.json",
+    "docs/linux/observer_pipeline_round2.json",
+    "docs/linux/model_lab.json"
+  ],
+  "committed_linux_evidence_modified": false,
+  "new_live_linux_validation": false,
+  "actual_model_invoked_in_this_round": false,
+  "visual_browser_retest_in_this_round": false,
+  "continuous_supervisor_complete": false,
+  "protected_finance_acceptance_complete": false,
+  "full_protected_mvp_complete": false,
+  "warnings": [
+    "Existing Starlette TestClient/httpx deprecation"
+  ]
+}

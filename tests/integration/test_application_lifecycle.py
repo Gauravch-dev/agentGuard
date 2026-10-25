@@ -409,3 +409,65 @@ def test_background_monitor_contains_on_coverage_loss_without_owner_polling(stag
     assert refreshed.wait(4), "The background lifecycle monitor did not run"
     assert app.state.authority.record(task)["state"] == "interrupted"
     assert controller.values[binding.capsule_id]["descendants_exited"]
+
+
+def conflicting_coverage(stack, binding):
+    app, client, settings, runtime, controller, owner, task = stack
+    original = app.state.store.evidence(task, "coverage")[0]["body"]
+    response = client.post(
+        "/internal/v1/coverage",
+        json=original | {"lost_events": 1},
+        headers={"Authorization": f"Bearer {settings.sensors['fixture-sensor'].token}"},
+    )
+    assert response.status_code == 409
+
+
+def test_conflicting_source_evidence_blocks_admission_despite_complete_coverage(staged):
+    app, client, settings, runtime, controller, owner, task = staged
+    binding = prepare(staged)
+    cover(staged, binding)
+    conflicting_coverage(staged, binding)
+    cover(staged, binding)
+    response = client.post(f"/api/v1/tasks/{task}/admit", headers=owner)
+    assert response.json()["agent_admitted"] is False
+    assert "SOURCE_EVIDENCE_CONFLICT" in response.json()["reasons"]
+    assert not controller.values[binding.capsule_id]["admitted"]
+
+
+def test_final_coverage_cannot_hide_a_recorded_source_conflict(staged):
+    app, client, settings, runtime, controller, owner, task = staged
+    binding = prepare(staged)
+    admit(staged, binding)
+    cover(staged, binding)
+    assert output(app, binding).receipt.effect_status == "completed"
+    conflicting_coverage(staged, binding)
+    controller.finish(binding.capsule_id)
+    cover(staged, binding)
+    assert app.state.lifecycle.sync(task)["state"] == "failed"
+    result = client.get(f"/api/v1/tasks/{task}/result", headers=owner).json()
+    assert "CONFLICTING_DUPLICATE" in {f["reason_code"] for f in result["findings"]}
+
+
+def test_live_admission_reason_is_scoped_to_the_reviewed_capsule(staged, monkeypatch):
+    from agentguard.admission_review import LiveAdmissionReview
+
+    app, client, settings, runtime, controller, owner, task = staged
+    binding = prepare(staged)
+    cover(staged, binding)
+    review = LiveAdmissionReview(None, None)
+    monkeypatch.setattr(
+        review,
+        "reasons",
+        lambda value: [
+            "CONTINUOUS_SENSOR_SUPERVISION_UNAVAILABLE",
+            "not a safe reason: private path",
+        ],
+    )
+    runtime.admission_review = review
+    response = client.post(f"/api/v1/tasks/{task}/admit", headers=owner)
+    assert response.json()["agent_admitted"] is False
+    assert response.json()["reasons"] == [
+        "LIVE_PLATFORM_ADMISSION_REVIEW_PENDING",
+        "CONTINUOUS_SENSOR_SUPERVISION_UNAVAILABLE",
+    ]
+    assert not controller.values[binding.capsule_id]["admitted"]

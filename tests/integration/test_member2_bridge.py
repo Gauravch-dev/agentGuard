@@ -7,6 +7,7 @@ from uuid import uuid4
 
 import pytest
 
+from agentguard.hook_policy import HookNormalizer
 from agentguard.platform import Check
 from agentguard.schema import validate_contract
 from agentguard.sensors import Workload
@@ -421,6 +422,154 @@ def test_legacy_payroll_fixture_cannot_change_canonical_totals(running):
     response = call(app, runtime, "output.save_department_summary", department_summary())
     assert response.receipt.reason == "TOTALS_MISMATCH"
     assert not app.state.store.evidence(task["task_id"], "report")
+
+
+def test_changed_replayed_provenance_is_preserved_as_a_conflict(running):
+    (app, client, settings, runtime), task, owner = running
+    value = upstream_process(runtime.binding)
+    sensor = {"Authorization": f"Bearer {settings.sensors['lab-sensor'].token}"}
+    payload = {"wire_format": "member2-normalized-1.0", "event": value}
+    assert (
+        client.post("/internal/v1/member2/events", json=payload, headers=sensor).status_code == 200
+    )
+    value["details"]["attribution_basis"] = "contradictory-source-map"
+    for _ in range(2):
+        assert (
+            client.post("/internal/v1/member2/events", json=payload, headers=sensor).status_code
+            == 409
+        )
+    conflicts = app.state.store.evidence(task["task_id"], "ingestion_conflict")
+    assert len(conflicts) == 1
+    assert conflicts[0]["body"]["reason"] == "EVENT_PROVENANCE_CHANGED"
+    assert conflicts[0]["body"]["contract_version"] == 1
+    original = app.state.store.evidence(task["task_id"], "member2_metadata")[0]["body"]
+    assert original["details"]["attribution_basis"] != "contradictory-source-map"
+    assert not app.state.coverage_policy(runtime.binding)
+    result = client.get(f"/api/v1/tasks/{task['task_id']}/result", headers=owner).json()
+    assert "CONFLICTING_DUPLICATE" in {f["reason_code"] for f in result["findings"]}
+
+
+def test_source_replay_after_adapter_upgrade_preserves_first_metadata(running, monkeypatch):
+    (app, client, settings, runtime), task, owner = running
+    payload = {"wire_format": "member2-normalized-1.0", "event": upstream_process(runtime.binding)}
+    sensor = {"Authorization": f"Bearer {settings.sensors['lab-sensor'].token}"}
+    assert (
+        client.post("/internal/v1/member2/events", json=payload, headers=sensor).status_code == 200
+    )
+    original = app.state.store.evidence(task["task_id"], "member2_metadata")[0]["body"]
+    monkeypatch.setattr("application.member2_bridge.UPSTREAM_COMMIT", "b" * 40)
+    response = client.post("/internal/v1/member2/events", json=payload, headers=sensor)
+    assert response.json()["duplicate"] is True
+    assert app.state.store.evidence(task["task_id"], "ingestion_conflict") == []
+    assert app.state.store.evidence(task["task_id"], "member2_metadata")[0]["body"] == original
+
+
+def test_conflicting_coverage_holds_release_even_after_fresh_complete_windows(running):
+    (app, client, settings, runtime), task, owner = running
+    app.state.broker.coverage_check = app.state.coverage_policy
+    binding = runtime.binding
+    sensor = {"Authorization": f"Bearer {settings.sensors['lab-sensor'].token}"}
+    windows = []
+    for source, classes in (
+        ("host_sensor", ("process_exec", "file_access", "connection_attempt")),
+        ("network_sensor", ("egress_flow",)),
+    ):
+        window = Coverage(
+            coverage_id=uuid4().hex,
+            task_id=binding.task_id,
+            capsule_id=binding.capsule_id,
+            sensor_id="lab-sensor",
+            source=source,
+            event_classes=classes,
+            start=binding.process_start,
+            end=now(),
+            status="complete",
+        )
+        windows.append(window.model_dump(mode="json"))
+        assert (
+            client.post("/internal/v1/coverage", json=windows[-1], headers=sensor).status_code
+            == 200
+        )
+    assert app.state.coverage_policy(binding)
+    assert client.post("/internal/v1/coverage", json=windows[0], headers=sensor).json()["duplicate"]
+    changed = windows[0] | {"lost_events": 1}
+    assert client.post("/internal/v1/coverage", json=changed, headers=sensor).status_code == 409
+    for window in windows:
+        fresh = window | {"coverage_id": uuid4().hex, "end": now().isoformat()}
+        assert client.post("/internal/v1/coverage", json=fresh, headers=sensor).status_code == 200
+    assert not app.state.coverage_policy(binding)
+    denied = call(
+        app, runtime, "output.save_department_summary", department_totals().model_dump(mode="json")
+    )
+    assert denied.receipt.reason == "REQUIRED_SENSOR_COVERAGE_UNAVAILABLE"
+    assert app.state.store.evidence(binding.task_id, "report") == []
+    assert app.state.store.evidence(binding.task_id, "coverage")[0]["body"]["lost_events"] == 0
+
+
+def test_conflict_from_old_revision_remains_audit_only(running):
+    (app, client, settings, runtime), task, owner = running
+    value = upstream_process(runtime.binding)
+    payload = {"wire_format": "member2-normalized-1.0", "event": value}
+    sensor = {"Authorization": f"Bearer {settings.sensors['lab-sensor'].token}"}
+    assert (
+        client.post("/internal/v1/member2/events", json=payload, headers=sensor).status_code == 200
+    )
+    value["resource_or_destination"] = "changed-source-resource"
+    assert (
+        client.post("/internal/v1/member2/events", json=payload, headers=sensor).status_code == 409
+    )
+    app.state.authority.transition(task["task_id"], "failed")
+    assert (
+        client.post(f"/api/v1/tasks/{task['task_id']}/revisions", headers=owner).status_code == 201
+    )
+    result = client.get(f"/api/v1/tasks/{task['task_id']}/result", headers=owner).json()
+    assert "CONFLICTING_DUPLICATE" not in {f["reason_code"] for f in result["findings"]}
+    assert len(app.state.store.evidence(task["task_id"], "ingestion_conflict")) == 1
+
+
+def test_real_hook_shape_reconciles_as_attempt_without_enforcement_claim(running):
+    from tests.integration.test_live_observers import hook_fixture
+
+    (app, client, settings, runtime), task, owner = running
+    binding = runtime.binding
+    workload = Workload(
+        "a" * 64,
+        binding.cgroup_id,
+        binding.task_id,
+        1,
+        binding.capsule_id,
+        binding.host_id,
+        binding.process_start.isoformat(),
+    )
+    raw = hook_fixture()
+    raw["process_kprobe"]["process"]["start_time"] = binding.process_start.isoformat()
+    raw["time"] = now().isoformat()
+    value = HookNormalizer(
+        "lab-sensor", [workload], [raw["process_kprobe"]["policy_name"]]
+    ).normalize(raw, "protected-hook:fixture")
+    sensor = {"Authorization": f"Bearer {settings.sensors['lab-sensor'].token}"}
+    response = client.post(
+        "/internal/v1/member2/events",
+        json={"wire_format": "member2-normalized-1.0", "event": value},
+        headers=sensor,
+    )
+    assert response.status_code == 200, response.text
+    result = client.get(f"/api/v1/tasks/{task['task_id']}/result", headers=owner).json()
+    assert {f["reason_code"] for f in result["findings"]} >= {
+        "EFFECT_NOT_CONFIRMED",
+        "EVENT_COVERAGE_LIMITED",
+    }
+    assert not any(f["classification"] == "Blocked" for f in result["findings"])
+    assert app.state.store.evidence(binding.task_id, "coverage") == []
+    value["effect_status"] = "observed"  # The captured negative return cannot establish an effect.
+    assert (
+        client.post(
+            "/internal/v1/member2/events",
+            json={"wire_format": "member2-normalized-1.0", "event": value},
+            headers=sensor,
+        ).status_code
+        == 403
+    )
 
 
 @pytest.mark.parametrize(

@@ -23,6 +23,7 @@ from application.authority import Authority
 from application.brokers import Broker
 from application.config import Settings
 from application.coverage import release_coverage_ready
+from application.evidence_policy import binding_has_conflicts, source_conflicts
 from application.lifecycle import TaskLifecycle
 from application.member2_bridge import (
     Member2RuntimeAdapter,
@@ -64,6 +65,8 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
         )
 
     def release_check(binding: Binding) -> bool:
+        if binding_has_conflicts(store, binding):
+            return False
         row = authority.record(binding.task_id)
         if not row["started_at"]:
             return False
@@ -515,6 +518,38 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
         store.append("task_result", uuid4().hex, task_id, payload.model_dump(mode="json"))
         return {"state": payload.state}
 
+    def record_source_conflict(
+        binding: Binding, sensor_id: str, identity: str, reason: str, incoming: dict
+    ) -> None:
+        body = {
+            "sensor_id": sensor_id,
+            "source_identity": identity,
+            "contract_version": binding.contract_version,
+            "capsule_id": binding.capsule_id,
+            "reason": reason,
+            "incoming_fingerprint": store.sign(incoming),
+        }
+        store.append("ingestion_conflict", store.sign(body), binding.task_id, body)
+
+    def existing_source(kind: str, identity: str) -> dict | None:
+        row = store.db.execute(
+            "SELECT body FROM evidence WHERE kind=? AND identity=?", (kind, identity)
+        ).fetchone()
+        return json.loads(row[0]) if row else None
+
+    def stable_metadata(metadata: dict | None) -> dict | None:
+        # Receipt time and the server adapter build can change on a replay.
+        # The source details and wire format must remain immutable.
+        return (
+            {
+                key: value
+                for key, value in metadata.items()
+                if key not in {"collector_received_at", "upstream_commit"}
+            }
+            if metadata is not None
+            else None
+        )
+
     def ingest_canonical(
         payload: SecurityEvent, sensor_id: str, metadata: dict | None = None
     ) -> dict:
@@ -539,20 +574,29 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
                 or binding.contract_version != payload.contract_version
             ):
                 raise PermissionError("Unregistered capsule mapping")
-            existing = [
-                r
-                for r in store.evidence(payload.task_id, "event")
-                if r["identity"] == f"{sensor_id}:{payload.event_id}"
-            ]
-            if existing:
-                if existing[0]["body"]["event"] != payload.model_dump(mode="json"):
-                    store.append(
-                        "ingestion_conflict",
-                        uuid4().hex,
-                        payload.task_id,
-                        {"event_id": payload.event_id, "sensor_id": sensor_id},
+            source_identity = f"{sensor_id}:{payload.event_id}"
+            existing = existing_source("event", source_identity)
+            if existing is not None:
+                if existing["event"] != payload.model_dump(mode="json"):
+                    record_source_conflict(
+                        binding,
+                        sensor_id,
+                        source_identity,
+                        "EVENT_BODY_CHANGED",
+                        payload.model_dump(mode="json"),
                     )
                     raise ValueError("Conflicting duplicate event")
+                if stable_metadata(
+                    existing_source("member2_metadata", source_identity)
+                ) != stable_metadata(metadata):
+                    record_source_conflict(
+                        binding,
+                        sensor_id,
+                        source_identity,
+                        "EVENT_PROVENANCE_CHANGED",
+                        stable_metadata(metadata) or {},
+                    )
+                    raise ValueError("Conflicting event provenance")
                 return {"accepted": True, "duplicate": True}
             envelope = EventEnvelope(event=payload, sensor_id=sensor_id, received_at=now())
             with store.transaction():
@@ -582,25 +626,29 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
 
     @app.post("/internal/v1/coverage")
     def ingest_coverage(payload: Coverage, sensor_id: str = Depends(sensor)) -> dict:
-        identity = settings.sensors[sensor_id]
-        binding = binding_for(payload.task_id)
-        if (
-            payload.sensor_id != sensor_id
-            or payload.source not in identity.sources
-            or payload.simulated
-            or binding is None
-            or payload.capsule_id != binding.capsule_id
-            or identity.host_id != binding.host_id
-            or payload.end > now() + timedelta(seconds=5)
-        ):
-            raise PermissionError("Invalid coverage provenance")
-        store.append(
-            "coverage",
-            f"{sensor_id}:{payload.coverage_id}",
-            payload.task_id,
-            payload.model_dump(mode="json"),
-        )
-        return {"accepted": True}
+        with store.lock:
+            identity = settings.sensors[sensor_id]
+            binding = binding_for(payload.task_id)
+            if (
+                payload.sensor_id != sensor_id
+                or payload.source not in identity.sources
+                or payload.simulated
+                or binding is None
+                or payload.capsule_id != binding.capsule_id
+                or identity.host_id != binding.host_id
+                or payload.end > now() + timedelta(seconds=5)
+            ):
+                raise PermissionError("Invalid coverage provenance")
+            source_identity = f"{sensor_id}:{payload.coverage_id}"
+            encoded = payload.model_dump(mode="json")
+            previous = existing_source("coverage", source_identity)
+            if previous is not None and previous != encoded:
+                record_source_conflict(
+                    binding, sensor_id, source_identity, "COVERAGE_BODY_CHANGED", encoded
+                )
+                raise ValueError("Conflicting coverage evidence")
+            added = store.append("coverage", source_identity, payload.task_id, encoded)
+            return {"accepted": True, "duplicate": not added}
 
     @app.get("/api/v1/tasks/{task_id}/events")
     def events(task_id: str, principal: str = Depends(owner)) -> list[dict]:
@@ -675,7 +723,7 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
                         evidence_references=(binding.capsule_id,),
                     )
                 )
-        conflicts = store.evidence(task_id, "ingestion_conflict")
+        conflicts = source_conflicts(store, task_id, row["version"])
         if conflicts:
             findings.append(
                 Finding(

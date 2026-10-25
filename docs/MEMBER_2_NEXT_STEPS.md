@@ -1,3 +1,12 @@
+# Latest application review return
+
+See [the application review and current Linux return tasks](application_review_round.md)
+for the checkpoint after `a95e564`. This supersedes the earlier return instructions:
+revalidate replay/conflict semantics, complete continuous supervision, and return
+real protected Finance/S01–S16 evidence without relaxing any admission gates.
+
+---
+
 # Current application return round
 
 Linux follow-through is recorded in [the 25 October Linux return round](linux_return_round.md).

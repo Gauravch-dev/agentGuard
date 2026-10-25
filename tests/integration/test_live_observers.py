@@ -4,6 +4,8 @@ import copy
 import json
 import os
 import sys
+import threading
+from concurrent.futures import ThreadPoolExecutor
 
 import pytest
 
@@ -102,6 +104,34 @@ def test_missing_live_review_proof_cannot_approve_even_a_well_formed_record():
     review = LiveAdmissionReview(None, None)
     assert review({}) is False
     assert review.last_reasons == ["LIVE_PLATFORM_REVIEW_UNAVAILABLE"]
+
+
+def test_concurrent_admission_diagnostics_cannot_change_another_capsule_decision():
+    rejected_ready, accepted_done = threading.Event(), threading.Event()
+
+    class ConcurrentReview(LiveAdmissionReview):
+        @property
+        def last_reasons(self):
+            return self.diagnostic
+
+        @last_reasons.setter
+        def last_reasons(self, reasons):
+            self.diagnostic = reasons
+            if reasons:
+                rejected_ready.set()
+                assert accepted_done.wait(3)
+            elif rejected_ready.is_set():
+                accepted_done.set()
+
+        def reasons(self, value):
+            return ["CURRENT_EFFECTIVE_PROFILE_REFUSED"] if value["reject"] else []
+
+    review = ConcurrentReview(None, None)
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        rejected = executor.submit(review, {"reject": True})
+        assert rejected_ready.wait(3)
+        assert review({"reject": False}) is True
+        assert rejected.result(timeout=3) is False
 
 
 @pytest.mark.skipif(

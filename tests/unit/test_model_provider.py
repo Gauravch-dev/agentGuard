@@ -113,3 +113,147 @@ def test_model_digest_mismatch_never_returns_a_choice(monkeypatch, change_after_
 def test_unpinned_local_model_is_refused():
     with pytest.raises(ValueError):
         LocalOllamaModel()
+
+
+@pytest.mark.parametrize(
+    "envelope",
+    [
+        None,
+        [],
+        {"message": []},
+        {"message": {"content": {}}},
+        {"done": False, "message": {"content": '{"operation":"data.get_raw_payroll"}'}},
+        {"model": "other-model", "message": {"content": '{"operation":"data.get_raw_payroll"}'}},
+        {
+            "message": {
+                "content": '{"operation":"data.get_raw_payroll","operation":"output.save_department_summary"}'
+            }
+        },
+    ],
+)
+def test_malformed_model_envelope_is_unavailable_and_clears_old_metrics(monkeypatch, envelope):
+    original = httpx.Client
+
+    def handle(request):
+        if request.url.path == "/api/tags":
+            return httpx.Response(
+                200, json={"models": [{"name": "qwen2.5:7b", "digest": "a" * 64}]}
+            )
+        return httpx.Response(200, content=json.dumps(envelope).encode())
+
+    monkeypatch.setattr(
+        httpx, "Client", lambda **kwargs: original(transport=httpx.MockTransport(handle), **kwargs)
+    )
+    provider = LocalOllamaModel("a" * 64)
+    provider.last_metrics = {"total_duration": 123}
+    with pytest.raises(ModelUnavailable):
+        provider.choose(
+            ModelRequest(template_id="finance_summary_v1", aggregates=department_totals())
+        )
+    assert provider.last_metrics == {}
+
+
+@pytest.mark.parametrize("registry", [None, [], {"models": None}, {"models": [None]}])
+def test_invalid_registry_never_starts_inference(monkeypatch, registry):
+    original = httpx.Client
+    paths = []
+
+    def handle(request):
+        paths.append(request.url.path)
+        return httpx.Response(200, content=json.dumps(registry).encode())
+
+    monkeypatch.setattr(
+        httpx, "Client", lambda **kwargs: original(transport=httpx.MockTransport(handle), **kwargs)
+    )
+    with pytest.raises(ModelUnavailable):
+        LocalOllamaModel("a" * 64).choose(
+            ModelRequest(template_id="finance_summary_v1", aggregates=department_totals())
+        )
+    assert paths == ["/api/tags"]
+
+
+def test_registry_body_is_bounded_while_reading(monkeypatch):
+    original = httpx.Client
+    chunks = []
+
+    class Oversize(httpx.SyncByteStream):
+        def __iter__(self):
+            for index in range(10):
+                chunks.append(index)
+                yield b" " * 20000
+
+    monkeypatch.setattr(
+        httpx,
+        "Client",
+        lambda **kwargs: original(
+            transport=httpx.MockTransport(lambda request: httpx.Response(200, stream=Oversize())),
+            **kwargs,
+        ),
+    )
+    with pytest.raises(ModelUnavailable):
+        LocalOllamaModel("a" * 64).choose(
+            ModelRequest(template_id="finance_summary_v1", aggregates=department_totals())
+        )
+    assert chunks == [0, 1]
+
+
+def test_whole_provider_exchange_has_one_deadline(monkeypatch):
+    original = httpx.Client
+    clock = [10.0]
+    monkeypatch.setattr("application.model_provider.time.monotonic", lambda: clock[0])
+    paths = []
+
+    def handle(request):
+        paths.append(request.url.path)
+        if request.url.path == "/api/tags":
+            return httpx.Response(
+                200, json={"models": [{"name": "qwen2.5:7b", "digest": "a" * 64}]}
+            )
+        clock[0] = 41.0
+        return httpx.Response(
+            200, json={"message": {"content": '{"operation":"data.get_raw_payroll"}'}}
+        )
+
+    monkeypatch.setattr(
+        httpx, "Client", lambda **kwargs: original(transport=httpx.MockTransport(handle), **kwargs)
+    )
+    with pytest.raises(ModelUnavailable, match="deadline"):
+        LocalOllamaModel("a" * 64).choose(
+            ModelRequest(template_id="finance_summary_v1", aggregates=department_totals())
+        )
+    assert paths == ["/api/tags", "/api/chat"]
+
+
+def test_bad_model_envelope_produces_unknown_broker_receipt(running, monkeypatch):
+    from application.brokers import ChannelContext
+    from application.models import BrokerRequest
+
+    (app, client, settings, runtime), task, owner = running
+    original = httpx.Client
+
+    def handle(request):
+        return (
+            httpx.Response(200, json={"models": [{"name": "qwen2.5:7b", "digest": "a" * 64}]})
+            if request.url.path == "/api/tags"
+            else httpx.Response(200, json=[])
+        )
+
+    monkeypatch.setattr(
+        httpx, "Client", lambda **kwargs: original(transport=httpx.MockTransport(handle), **kwargs)
+    )
+    app.state.broker.model = LocalOllamaModel("a" * 64)
+    response = app.state.broker.handle(
+        ChannelContext(runtime.binding.channel_id, runtime.binding.capsule_id),
+        BrokerRequest(
+            request_id="malformed-model",
+            operation="model.generate_report_draft",
+            payload={
+                "template_id": "finance_summary_v1",
+                "aggregates": department_totals().model_dump(mode="json"),
+            },
+        ),
+    )
+    assert response.receipt.effect_status == "unknown"
+    assert response.receipt.reason == "MODEL_UNAVAILABLE"
+    assert len(app.state.store.evidence(task["task_id"], "broker")) == 1
+    assert app.state.store.evidence(task["task_id"], "report") == []

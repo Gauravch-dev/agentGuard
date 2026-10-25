@@ -23,6 +23,12 @@ const reasonLabels:Record<string,string>={
  REQUIRED_SENSOR_COVERAGE_UNAVAILABLE:'Required file, process, and network monitoring is missing, stale, or reports lost events.',
  LIVE_PLATFORM_ADMISSION_REVIEW_PENDING:'The live Linux profile and monitoring integration still need platform verification.',
  LOCAL_MODEL_DISABLED:'The approved local AI model is disabled.',
+ SOURCE_EVIDENCE_CONFLICT:'Sensor records contradict earlier evidence. Admission and report release are held; review the evidence before starting a new revision.',
+ CONTINUOUS_SENSOR_SUPERVISION_UNAVAILABLE:'Continuous monitoring is not yet connected for every required sensor.',
+ LIVE_PLATFORM_REVIEW_UNAVAILABLE:'Current Linux platform verification could not be completed.',
+ APPROVED_MODEL_DIGEST_UNCONFIGURED:'The approved local model has not been configured.',
+ APPROVED_MODEL_NOT_LOADED:'The approved local model is not loaded yet.',
+ CURRENT_MODEL_DIGEST_MISMATCH:'The installed local model does not match the approved version.',
  CHANNEL_REVOKED:'This broker connection has been revoked.'
 };
 

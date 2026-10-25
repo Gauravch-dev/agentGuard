@@ -7,6 +7,7 @@ from application.authority import Authority
 from application.brokers import Broker
 from application.config import Settings
 from application.coverage import coverage_findings, release_coverage_ready
+from application.evidence_policy import binding_has_conflicts
 from application.models import Binding, Coverage, State, now
 from application.staged_runtime import BASE_CONTROLS, StagedRuntimeAdapter
 from application.store import Store
@@ -65,6 +66,8 @@ class TaskLifecycle:
         ]
 
     def monitored(self, binding: Binding) -> bool:
+        if binding_has_conflicts(self.store, binding):
+            return False
         checked = now()
         return release_coverage_ready(
             binding,
@@ -79,10 +82,13 @@ class TaskLifecycle:
         self.authority.get(binding.task_id, require_active=True)
         if self.revoked(binding):
             reasons.append("CHANNEL_REVOKED")
+        if binding_has_conflicts(self.store, binding):
+            reasons.append("SOURCE_EVIDENCE_CONFLICT")
         if not self.monitored(binding):
             reasons.append("REQUIRED_SENSOR_COVERAGE_UNAVAILABLE")
         if review and not self.runtime.reviewed(binding):
             reasons.append("LIVE_PLATFORM_ADMISSION_REVIEW_PENDING")
+            reasons.extend(self.runtime.review_reasons.get(binding.capsule_id, ()))
         if not self.settings.local_model_enabled:
             reasons.append("LOCAL_MODEL_DISABLED")
         return reasons
@@ -267,7 +273,12 @@ class TaskLifecycle:
                     and now() < end + timedelta(seconds=30)
                 ):
                     return {"state": row["state"], "phase": "awaiting_final_coverage"}
-                success = inspected.state == "completed" and bool(reports) and not pending
+                success = (
+                    inspected.state == "completed"
+                    and bool(reports)
+                    and not pending
+                    and not binding_has_conflicts(self.store, binding)
+                )
                 self.authority.transition(task_id, "completed" if success else "failed")
                 self.log(
                     "task_result",

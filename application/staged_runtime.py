@@ -1,10 +1,11 @@
 """Application adapter for Member 2's real staged controller.
 
-No production admission reviewer is supplied yet. Preparing a trusted bootstrap
-does not admit agent code or claim sensor readiness. Tests inject explicit doubles.
+The production reviewer still requires a live sensor supervisor. Preparing a
+trusted bootstrap does not admit agent code or claim sensor readiness.
 """
 
 import asyncio
+import re
 import threading
 from collections.abc import Callable
 from datetime import datetime
@@ -12,6 +13,7 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
+from agentguard.admission_review import LiveAdmissionReview
 from application.broker_transport import serve_socket
 from application.brokers import Broker
 from application.member2_bridge import Member2ChannelAuthorizer, Member2RuntimeAdapter
@@ -94,6 +96,7 @@ class StagedRuntimeAdapter(Member2RuntimeAdapter):
         self.controller, self.host_id = controller, host_id
         self.sockets = sockets
         self.admission_review = admission_review
+        self.review_reasons: dict[str, tuple[str, ...]] = {}
 
     def launch(self, contract_ref: TaskContract) -> RuntimeResult:
         value = self.controller.prepare(contract_ref.model_dump(mode="json"))
@@ -146,6 +149,15 @@ class StagedRuntimeAdapter(Member2RuntimeAdapter):
 
     def reviewed(self, binding: Binding) -> bool:
         # There is deliberately no HTTP flag or environment switch to bypass this.
+        self.review_reasons[binding.capsule_id] = ()
+        if isinstance(self.admission_review, LiveAdmissionReview):
+            reasons = self.admission_review.assess(self.record_for(binding))
+            self.review_reasons[binding.capsule_id] = tuple(
+                code
+                for code in reasons
+                if isinstance(code, str) and re.fullmatch(r"[A-Z][A-Z0-9_]{0,127}", code)
+            )
+            return not reasons
         return self.admission_review is not None and self.admission_review(self.record_for(binding))
 
     def capabilities(self) -> dict:

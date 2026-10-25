@@ -7,6 +7,12 @@ open. Earlier rows below are historical checkpoints.
 
 Recorded 24 October 2026. This file describes actual implementation and validation, not the target design.
 
+Current application review (25 October): see
+[the review fixes and next Linux tasks](application_review_round.md) and
+`application_review_validation.json`. Source conflicts now hold admission/release,
+model replies are bounded and strict, and admission decisions are invocation-local.
+Complete continuous supervision and protected Finance acceptance remain pending.
+
 Latest application update (25 October): see
 [the lifecycle integration round](application_lifecycle_round.md) and its recorded
 validation. The historical rows below describe earlier checkpoints. The staged

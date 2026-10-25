@@ -2,13 +2,19 @@
 
 **Status: partially implemented MVP. The full handoff is not complete.**
 
+The latest [application review](docs/application_review_round.md) hardens sensor
+replays, version-scoped evidence conflicts, report/admission holds, concurrent
+review decisions and local-model response handling. Local validation passes 169
+Windows tests with 11 Linux-specific skips and 13 subtests. Member 2 must rerun
+this checkpoint on Linux and complete continuous supervision before admission.
+
 | Area | Verified today | Remaining |
 |---|---|---|
 | Application | Task Authority, brokers, evidence, reconciliation, dashboard and real staged cancellation/restart checks | Protected report recovery with complete monitoring |
 | Linux runtime | Restricted containers, staged launcher, peer checks, watchdog, cleanup and conservative live reviewer | Live continuous sensor supervisor for admission |
 | Sensors | Genuine process/file/connect records, bounded independent packet capture and durable authenticated export | Broader hooks, continuous capture/health/coverage, packet export and timestamp review |
 | AI model | Pinned Ollama/Qwen setup and actual benign/injected provider calls | Complete protected benign/injected Finance runs |
-| Acceptance | 157 Linux tests; 146 Windows tests with 11 Linux-specific skips; 13 subtests on each | Full S01–S16 and baseline/performance comparisons |
+| Acceptance | Current application round: 169 Windows tests and 13 subtests; prior return: 157 Linux tests | Linux revalidation of this review; full S01–S16 and baseline/performance comparisons |
 
 ## Latest Linux return round
 
