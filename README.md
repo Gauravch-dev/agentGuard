@@ -2,6 +2,11 @@
 
 **Status: partially implemented MVP. The full handoff is not complete.**
 
+The [26 October staging correction](docs/staging_startup_fix.md) fixes a cold sensor
+policy-load timeout and adds visible launch progress. A real staging/hold/cleanup
+check passes, along with 232 Linux tests and 13 subtests. Full AI admission remains
+held on the independent monitoring gaps below.
+
 The latest [Linux delivery return](docs/linux_delivery_round.md) adds witnessed
 process/file/socket subscriptions before startup, expanded live scope probes,
 persistent queue recovery, real owner-view verification, measured probe baselines

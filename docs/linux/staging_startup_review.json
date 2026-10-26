@@ -1,0 +1,33 @@
+{
+  "observed_at": "2026-10-26T10:44:06.096415Z",
+  "mode": "real-linux-staging-smoke",
+  "checks": {
+    "trusted_bootstrap_staged": true,
+    "agent_not_admitted": true,
+    "real_process_and_hook_witnesses": true,
+    "witnesses_precede_bootstrap_birth": true,
+    "original_execution_limit_retained": true,
+    "incomplete_monitoring_still_holds_admission": true,
+    "no_report_released": true,
+    "evidence_chain_verified": true,
+    "cleanup_verified": true
+  },
+  "agent_admitted": false,
+  "full_protected_mvp_complete": false,
+  "task_id": "FIN-bf820c2bb47943f6960350c5c9672c0b",
+  "staging_seconds": 56.745,
+  "admission_reasons": [
+    "REQUIRED_SENSOR_COVERAGE_UNAVAILABLE",
+    "LIVE_PLATFORM_ADMISSION_REVIEW_PENDING",
+    "BOOTSTRAP_OBSERVATION_START_GAP",
+    "FILE_AND_NETWORK_HOOK_SCOPE_PARTIAL",
+    "HOOKS_SOURCE_UNAVAILABLE",
+    "NETWORK_PROCESS_ATTRIBUTION_UNAVAILABLE",
+    "PACKET_SOURCE_UNAVAILABLE",
+    "PROCESS_SOURCE_UNAVAILABLE",
+    "SOURCE_CLOCK_SEMANTICS_UNVERIFIED",
+    "SUPERVISOR_HEALTH_STALE",
+    "APPROVED_MODEL_NOT_LOADED"
+  ],
+  "passed": true
+}

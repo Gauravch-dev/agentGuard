@@ -58,7 +58,7 @@ function App(){
  const [task,setTask]=useState<Task|null>(null),[result,setResult]=useState<Result|null>(null);
  const [evidence,setEvidence]=useState<Evidence[]>([]),[notes,setNotes]=useState<Evidence[]>([]),[revisions,setRevisions]=useState<Revision[]>([]);
  const [posture,setPosture]=useState<Posture|null>(null),[platform,setPlatform]=useState<Record<string,unknown>|null>(null);
- const [error,setError]=useState(''),[busy,setBusy]=useState(false),[filter,setFilter]=useState('all'),[reference,setReference]=useState(''),[note,setNote]=useState('');
+ const [error,setError]=useState(''),[busy,setBusy]=useState(false),[launching,setLaunching]=useState(false),[filter,setFilter]=useState('all'),[reference,setReference]=useState(''),[note,setNote]=useState('');
  const epoch=useRef(0);
  const request=useCallback(async(path:string,method='GET',body?:unknown)=>{
   const response=await fetch(path,{method,headers:{Authorization:`Bearer ${token}`,...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined});
@@ -119,8 +119,8 @@ function App(){
   <div className="sectionline"><div><div className="eyebrow">APPROVED FINANCE TASK</div><h2>Department summary</h2><code>{selected}</code></div><label>Revision <select aria-label="Contract revision" disabled={busy} value={version} onChange={e=>select(selected,e.target.value)}><option value="">Current · v{task.current_version}</option>{revisions.map(r=><option key={r.version} value={r.version}>v{r.version} · {r.state}</option>)}</select></label><span className="state">{task.state}</span></div>
   {!mutable&&<div className="execution">Historical revision · execution controls are disabled. Evidence and review notes remain available.</div>}
   {result.simulated&&<div className="error">SIMULATED TEST DATA · No live host evidence</div>}
-  <div className="execution" role="status"><strong>{task.execution.phase.replaceAll('_',' ')}</strong><p>{descriptions[task.execution.phase]||'Review runtime readiness and task evidence.'}</p>{task.execution.reasons.map((r,i)=><p key={i}>{explain(r)}</p>)}</div>
-  <div className="controls"><button disabled={busy||!mutable||task.state!=='approved'} onClick={()=>void action(()=>mutate('launch'))}>Request verified launch</button>
+  <div className="execution" role="status" aria-live="polite"><strong>{launching?'Preparing restricted environment':task.execution.phase.replaceAll('_',' ')}</strong><p>{launching?'Installing required monitoring before startup. This can take up to two minutes. The AI agent has not been admitted.':descriptions[task.execution.phase]||'Review runtime readiness and task evidence.'}</p>{!launching&&task.execution.reasons.map((r,i)=><p key={i}>{explain(r)}</p>)}</div>
+  <div className="controls"><button disabled={busy||!mutable||task.state!=='approved'} onClick={()=>void action(async()=>{setLaunching(true);try{await mutate('launch')}finally{setLaunching(false)}})}>{launching?'Preparing environment…':'Request verified launch'}</button>
   {mutable&&task.execution.phase==='waiting_for_admission'&&<button disabled={busy} onClick={()=>void action(()=>mutate('admit'))}>Check admission</button>}
   <button className="quiet" disabled={busy||!mutable||!task.binding||!['launch_requested','running','failed'].includes(task.state)} onClick={()=>void action(()=>mutate('terminate'))}>{cleanupVerified?'Cleanup verified':task.execution.channel_revoked?'Retry cleanup':'Cancel and verify cleanup'}</button>
   {mutable&&['failed','interrupted','completed'].includes(task.state)&&<button className="quiet" disabled={busy} onClick={()=>void action(async()=>{await request(`/api/v1/tasks/${selected}/revisions`,'POST');select(selected);setRows(await request('/api/v1/tasks'))})}>New approved revision</button>}</div>

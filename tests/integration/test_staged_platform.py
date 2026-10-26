@@ -11,6 +11,7 @@ import pytest
 from agentguard.authority import sample_contract
 from agentguard.capsules import (
     RuntimeRecord,
+    StagedCapsules,
     deadline_reached,
     private_directory,
     publish_admission,
@@ -119,6 +120,63 @@ def test_monotonic_expiry_and_boot_change_cannot_extend_deadline():
     value["monotonic_deadline"] = time.monotonic() + 60
     value["boot_id"] = "a-different-boot"
     assert deadline_reached(value)
+
+
+@pytest.mark.skipif(
+    sys.platform != "linux" or not hasattr(os, "geteuid") or os.geteuid() != 0,
+    reason="Root-private Linux staging records required",
+)
+def test_slow_monitor_setup_cannot_extend_deadline_or_start_expired_bootstrap(
+    tmp_path, monkeypatch
+):
+    from agentguard import capsules
+
+    fixture = upstream_tests.RuntimeTests()
+    fixture.setUp()
+    calls, terminated, cleaned, setup = [], [], [], []
+    controller = StagedCapsules(
+        fixture.image,
+        state_root=tmp_path / "runtime",
+        channel_root=tmp_path / "channels",
+        runner=lambda args: calls.append(args) or "a" * 64,
+    )
+    info = copy.deepcopy(fixture.info)
+    info["Config"]["Entrypoint"] = ["python"]
+    info["Config"]["Cmd"] = ["-I", "/opt/agentguard/admission.py"]
+
+    def inspect(container):
+        directory = next(controller.channel_root.iterdir())
+        info["HostConfig"]["Mounts"] = [{"Type": "bind"}]
+        info["Mounts"] = [
+            {
+                "Type": "bind",
+                "Source": str(directory),
+                "Destination": "/run/agentguard",
+                "RW": False,
+                "Propagation": "rprivate",
+            }
+        ]
+        return copy.deepcopy(info)
+
+    monkeypatch.setattr(controller.lab, "preflight", lambda: [])
+    monkeypatch.setattr(controller.lab, "inspect", inspect)
+    monkeypatch.setattr(controller, "_spawn_watchdog", lambda record: None)
+    monkeypatch.setattr(controller, "terminate", terminated.append)
+    clock = [time.monotonic()]
+    monkeypatch.setattr(capsules.time, "monotonic", lambda: clock[0])
+
+    def before_start(value):
+        setup.append((value["capsule_id"], value["deadline"], value["monotonic_deadline"]))
+        clock[0] += fixture.contract["limits"]["max_execution_seconds"] + 1
+        return lambda: cleaned.append(value["capsule_id"])
+
+    with pytest.raises(PlatformError, match="deadline reached before bootstrap start"):
+        controller.prepare(fixture.contract, before_start=before_start)
+    capsule, deadline, monotonic_deadline = setup[0]
+    record = controller.record(capsule).read()
+    assert (record["deadline"], record["monotonic_deadline"]) == (deadline, monotonic_deadline)
+    assert not any(args[:2] == ["docker", "start"] for args in calls)
+    assert terminated == cleaned == [capsule]
 
 
 @pytest.mark.skipif(

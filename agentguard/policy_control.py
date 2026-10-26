@@ -16,6 +16,13 @@ from agentguard.capsules import private_directory
 from agentguard.platform import command
 from agentguard.schema import strict_json
 
+# Expanded policies contain 19 entry/return hook pairs. On a cold WSL kernel,
+# verification can still be running after the old 40-second RPC deadline. Do not
+# cancel the RPC halfway through loading and then race its cleanup. This bounded
+# setup wait does not change the capsule's original wall/monotonic deadline;
+# StagedCapsules checks both again before starting the bootstrap.
+POLICY_LOAD_SECONDS = 90
+
 
 @contextmanager
 def policy_lock(root=Path("/run/agentguard/policy-control"), *, seconds=35):
@@ -74,12 +81,12 @@ def install_policy(path, name):
                 "exec",
                 "agentguard-tetragon",
                 "tetra",
-                "--timeout=40s",
+                f"--timeout={POLICY_LOAD_SECONDS}s",
                 "tp",
                 "add",
                 remote,
             ],
-            timeout=45,
+            timeout=POLICY_LOAD_SECONDS + 5,
         )
 
 

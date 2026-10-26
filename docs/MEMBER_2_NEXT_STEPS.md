@@ -1,5 +1,9 @@
 # Latest application review return
 
+The [26 October staging correction](staging_startup_fix.md) fixes the observed
+policy-load timeout without relaxing admission or extending workload deadlines.
+Real staging/hold/cleanup passes; the full monitoring requirements below remain open.
+
 Latest Linux delivery implementation and honest acceptance state:
 [Linux delivery return](linux_delivery_round.md). Before-start source witnesses,
 expanded inherited-FD/readv/mmap/socket/curl probes, persistent final-drain recovery,
