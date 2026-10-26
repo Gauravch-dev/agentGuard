@@ -2,6 +2,9 @@
 
 **Status: partially implemented MVP. The full handoff is not complete.**
 
+[Recordings and screenshots](docs/demos/README.md) include both retained demo videos,
+the redesigned UI, and before/after staging evidence, with hashes and honest scope notes.
+
 The [redesigned dashboard](docs/dashboard_redesign.md) provides guided task setup,
 a progress tracker and separate Overview, Activity, Security checks and Report views.
 Use **New task → Review permissions → Create task → Start safety check**.

@@ -39,8 +39,8 @@
   ],
   "browser_version": "156.0.4314.42",
   "recorder_version": "1.62.1",
-  "artifact_reference": "operator-retained-demo:5ee7050e-45af-4dd5-98d7-cbde12b33443",
+  "artifact_reference": "docs/demos/2026-10-25-delivery-hold/agentguard-delivery-hold.webm",
   "delivery_complete": false,
   "full_finance_demo": "blocked by mandatory source-coverage gates",
-  "publication": "Local recording only; no team upload or Git video binary"
+  "publication": "Committed to the repository on 2026-10-26 at the user's request; original media bytes preserved."
 }

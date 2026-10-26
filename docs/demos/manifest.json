@@ -1,0 +1,64 @@
+{
+  "published_on": "2026-10-26",
+  "recordings": 2,
+  "screenshots": 9,
+  "duplicate_raw_video_copies": "Two page@ exports match the named recordings byte for byte; one copy of each unique recording is published.",
+  "scope": "Genuine staging/admission-hold/cleanup recordings and UI/startup screenshots; not full protected Finance acceptance.",
+  "files": [
+    {
+      "path": "2026-10-25-delivery-hold-earlier/agentguard-delivery-hold.webm",
+      "bytes": 4716889,
+      "sha256": "56c33e8a5ab41a0a689a3b79bf36d4f1b72deb97705f0a0ed8380f529ed8ba07"
+    },
+    {
+      "path": "2026-10-25-delivery-hold-earlier/monitoring.png",
+      "bytes": 57957,
+      "sha256": "8cb9c75071b04f8806e5acfd38a5541ef245e400ffc8dc163f34556aec1002e9"
+    },
+    {
+      "path": "2026-10-25-delivery-hold-earlier/verified-cleanup.png",
+      "bytes": 72836,
+      "sha256": "f8425c12abc2274472093c9aa60e4ef72c8708a06622db7bb1ea533157230020"
+    },
+    {
+      "path": "2026-10-25-delivery-hold/agentguard-delivery-hold.webm",
+      "bytes": 4221231,
+      "sha256": "184f962b56643e35f2943826b6eaf682e4f8e2ff773afa5f45025e775abd3c30"
+    },
+    {
+      "path": "2026-10-25-delivery-hold/monitoring.png",
+      "bytes": 57992,
+      "sha256": "47b860bb016c22e05d59ab635062e1d5c53df16a3b24227243ae12ee69b9bbae"
+    },
+    {
+      "path": "2026-10-25-delivery-hold/verified-cleanup.png",
+      "bytes": 70900,
+      "sha256": "f7c885eabc16b3ba5df8b05251af5be1dc67e035e8fb18a3d6850e078cf37c20"
+    },
+    {
+      "path": "2026-10-26-screenshots/agentguard-walkthrough.png",
+      "bytes": 36818,
+      "sha256": "53b13926d5fd58c2ee553bf7788beae14b4b9f561130fe5342e9da16b08b0e2e"
+    },
+    {
+      "path": "2026-10-26-screenshots/staging-fixed.png",
+      "bytes": 36913,
+      "sha256": "de6ee8dba37fa590069c2afaced1735b6f44d5ece35eb3612569c2ceed1e2b2c"
+    },
+    {
+      "path": "2026-10-26-screenshots/staging-progress.png",
+      "bytes": 32806,
+      "sha256": "b0e21754975bc37ce38fcac820a7ea0c223ebd1d93502a2b784c7800b4fc3c80"
+    },
+    {
+      "path": "2026-10-26-screenshots/ui-redesign-desktop.png",
+      "bytes": 63824,
+      "sha256": "ea78f76b35d6ab8607de6a11cfe3d19b2052b36e5255798945b89bbc53d03a9f"
+    },
+    {
+      "path": "2026-10-26-screenshots/ui-redesign-live.png",
+      "bytes": 44983,
+      "sha256": "4e9970281846913978fd80380bacb32bb8db26e275ed57a580d3ee28a4592435"
+    }
+  ]
+}
