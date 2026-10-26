@@ -2,6 +2,11 @@
 
 **Status: partially implemented MVP. The full handoff is not complete.**
 
+**Next developer:** use the [run, finish, verify and record handoff](docs/NEXT_DEVELOPER_HANDOFF.md).
+It separates Windows preview from real Linux execution, explains the remaining
+blockers, provides current startup/check commands and defines evidence required
+for a genuine completed Finance demo.
+
 [Recordings and screenshots](docs/demos/README.md) include both retained demo videos,
 the redesigned UI, and before/after staging evidence, with hashes and honest scope notes.
 

@@ -1,5 +1,10 @@
 # Latest application review return
 
+Start here for the next round: [run, finish, verify and record handoff](NEXT_DEVELOPER_HANDOFF.md)
+(26 October). It identifies what actually passed, what remains blocked, the
+current Linux/Windows startup paths, real verification commands and the difference
+between the existing hold/cleanup recorder and a future positive Finance demo.
+
 The [26 October staging correction](staging_startup_fix.md) fixes the observed
 policy-load timeout without relaxing admission or extending workload deadlines.
 Real staging/hold/cleanup passes; the full monitoring requirements below remain open.
