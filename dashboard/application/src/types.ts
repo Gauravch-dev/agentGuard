@@ -1,0 +1,9 @@
+export type TaskRow = {task_id:string;version:number;state:string};
+export type Finding = {classification:string;reason_code:string;explanation:string;evidence_references:string[]};
+export type Execution = {phase:string;reasons:string[];channel_revoked?:boolean;agent_admitted?:boolean};
+export type Task = {contract:Record<string,unknown>;state:string;binding:Record<string,unknown>|null;readiness:Record<string,unknown>[];execution:Execution;is_current:boolean;current_version:number};
+export type Result = {business_outcome:string;findings:Finding[];reports:Record<string,unknown>[];integrity_verified:boolean;simulated:boolean};
+export type Evidence = {sequence:number;identity:string;kind:string;received_at:string;body:Record<string,unknown>};
+export type Revision = {version:number;state:string};
+export type Source = {alive:boolean;fresh:boolean;health_age_seconds:number|null;pending:number|null;gaps:number|null;lost:number|null;export_failures:number|null};
+export type Posture = {historical:boolean;last_sensor_receipt:string|null;coverage:{status:string;windows:number;gaps:Finding[]};observer:{connected:boolean;reasons:string[];sources:Record<string,Source>}};

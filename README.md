@@ -2,6 +2,10 @@
 
 **Status: partially implemented MVP. The full handoff is not complete.**
 
+The [redesigned dashboard](docs/dashboard_redesign.md) provides guided task setup,
+a progress tracker and separate Overview, Activity, Security checks and Report views.
+Use **New task → Review permissions → Create task → Start safety check**.
+
 The [26 October staging correction](docs/staging_startup_fix.md) fixes a cold sensor
 policy-load timeout and adds visible launch progress. A real staging/hold/cleanup
 check passes, along with 232 Linux tests and 13 subtests. Full AI admission remains
@@ -92,7 +96,7 @@ python -m scripts.start_linux --lab-image-id "$(docker image inspect --format '{
 ```
 
 Keep that terminal open. Open [http://127.0.0.1:8000](http://127.0.0.1:8000), paste
-the owner token from the root-private control state, click **Connect**, then **+ New**. If the server is already
+the owner token from the root-private control state, click **Connect workspace**, then **New task**. If the server is already
 running, use it instead of starting another server on the same port. The authorized
 host operator can retrieve its current owner token in another activated terminal:
 
@@ -101,9 +105,9 @@ python -c "import json; print(json.load(open('/var/lib/agentguard/control/creden
 ```
 
 The Linux service preserves its private credentials and database outside capsules.
-Stop it with Ctrl+C. **Request verified launch** currently refuses execution because
-the full runtime and required sensor coverage are incomplete; no protected binding
-or business success should be created by that refusal.
+Stop it with Ctrl+C. **Start safety check** prepares an isolated bootstrap and
+registers its runtime identity. **Check readiness** still holds AI admission while
+required monitoring is incomplete. Staging alone produces no business success or report.
 
 In another Ubuntu terminal, open the checkout and activate the same environment.
 Run the automated suite or the complete regression/static checks:
