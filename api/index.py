@@ -50,6 +50,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.middleware("http")
+async def debug_paths(request: Request, call_next):
+    if request.url.path == "/debug":
+        return JSONResponse({
+            "path": request.url.path,
+            "scope_path": request.scope.get("path"),
+            "root_path": request.scope.get("root_path"),
+            "headers": dict(request.headers),
+            "routes": [str(getattr(r, "path", None)) for r in app.routes],
+        })
+    return await call_next(request)
+
 # Mount SPA index fallback if dist directory is present
 dist = Path(__file__).resolve().parent.parent / "dashboard" / "application" / "dist"
 if dist.exists():
