@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+import os
 import time
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
@@ -179,9 +180,14 @@ def create_app(settings: Settings | None = None, runtime: RuntimeAdapter | None 
     @app.middleware("http")
     async def guard(request: Request, call_next):  # type: ignore[no-untyped-def]
         host = request.headers.get("host", "").split(":")[0]
-        if host not in {"127.0.0.1", "localhost", "testserver"}:
+        allowed_hosts = {"127.0.0.1", "localhost", "testserver"}
+        if os.environ.get("VERCEL") or os.environ.get("AG_ALLOW_ALL_HOSTS") or host.endswith(".vercel.app"):
+            allowed_hosts.add(host)
+        if host not in allowed_hosts:
             return JSONResponse({"detail": "Local host only"}, status_code=400)
-        if request.headers.get("origin") and request.headers["origin"] not in {
+        origin = request.headers.get("origin")
+        is_cloud = os.environ.get("VERCEL") or os.environ.get("AG_ALLOW_ALL_HOSTS") or host.endswith(".vercel.app")
+        if origin and not is_cloud and origin not in {
             "http://127.0.0.1:8000",
             "http://localhost:8000",
         }:
