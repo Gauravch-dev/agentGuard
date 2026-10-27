@@ -27,8 +27,10 @@ const reasonLabels:Record<string,string>={
 };
 const explain=(code:string)=>reasonLabels[code]||code.replaceAll('_',' ');
 
+const DEFAULT_DEMO_TOKEN = 'agentguard_owner_token_32chars_min_secret!';
+
 function App(){
- const [token,setToken]=useState(''),[authorized,setAuthorized]=useState(false);
+ const [token,setToken]=useState(DEFAULT_DEMO_TOKEN),[authorized,setAuthorized]=useState(false);
  const [rows,setRows]=useState<TaskRow[]>([]),[selected,setSelected]=useState(''),[version,setVersion]=useState('');
  const [viewNonce,setViewNonce]=useState(0),[inspecting,setInspecting]=useState(false);
  const [task,setTask]=useState<Task|null>(null),[result,setResult]=useState<Result|null>(null);
@@ -63,6 +65,9 @@ function App(){
   if(selected)await load(selected,version);
   else if(data.length)select((data.find((row:TaskRow)=>row.state==='approved')||data[0]).task_id);
  }
+ useEffect(()=>{
+  void refresh().catch(()=>{});
+ },[]);
  useEffect(()=>{
   if(!selected||!authorized)return;
   let active=true;
