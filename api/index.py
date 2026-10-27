@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
+from fastapi import Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse
 from application.config import Settings
 from application.store import Store
 from application.authority import Authority
@@ -47,3 +49,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Mount SPA index fallback if dist directory is present
+dist = Path(__file__).resolve().parent.parent / "dashboard" / "application" / "dist"
+if dist.exists():
+    @app.get("/index.html", include_in_schema=False)
+    def index_html():
+        return FileResponse(dist / "index.html")
+
+    @app.exception_handler(404)
+    async def spa_fallback(request: Request, exc):
+        if request.method == "GET" and not request.url.path.startswith(("/api/", "/internal/", "/assets/")):
+            return FileResponse(dist / "index.html")
+        return JSONResponse({"detail": "Not Found"}, status_code=404)
