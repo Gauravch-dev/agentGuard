@@ -50,16 +50,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Middleware to restore original request path from Vercel rewrite headers
+# Middleware to restore original path from Vercel rewrite query parameter ($1)
 @app.middleware("http")
 async def restore_vercel_path(request: Request, call_next):
-    matched = (
-        request.headers.get("x-matched-path")
-        or request.headers.get("x-invoke-path")
-        or request.headers.get("x-real-path")
-    )
-    if matched:
-        request.scope["path"] = matched.split("?")[0]
+    raw_path = request.query_params.get("path")
+    if raw_path is not None:
+        request.scope["path"] = "/" + raw_path.lstrip("/")
     return await call_next(request)
 
 # Mount SPA index fallback if dist directory is present
@@ -71,12 +67,6 @@ if dist.exists():
 
     @app.exception_handler(404)
     async def spa_fallback(request: Request, exc):
-        return JSONResponse(
-            {
-                "error": "404 Not Found",
-                "received_path": request.url.path,
-                "scope_path": request.scope.get("path"),
-                "headers": dict(request.headers),
-            },
-            status_code=404,
-        )
+        if request.method == "GET" and not request.url.path.startswith(("/api/", "/internal/", "/assets/")):
+            return FileResponse(dist / "index.html")
+        return JSONResponse({"detail": "Not Found"}, status_code=404)
