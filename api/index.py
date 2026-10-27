@@ -50,16 +50,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Middleware to restore original request path from Vercel rewrite headers
 @app.middleware("http")
-async def debug_paths(request: Request, call_next):
-    if request.url.path == "/debug":
-        return JSONResponse({
-            "path": request.url.path,
-            "scope_path": request.scope.get("path"),
-            "root_path": request.scope.get("root_path"),
-            "headers": dict(request.headers),
-            "routes": [str(getattr(r, "path", None)) for r in app.routes],
-        })
+async def restore_vercel_path(request: Request, call_next):
+    matched = (
+        request.headers.get("x-matched-path")
+        or request.headers.get("x-invoke-path")
+        or request.headers.get("x-real-path")
+    )
+    if matched:
+        request.scope["path"] = matched.split("?")[0]
     return await call_next(request)
 
 # Mount SPA index fallback if dist directory is present
