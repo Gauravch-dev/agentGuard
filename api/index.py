@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from fastapi.middleware.cors import CORSMiddleware
 from application.config import Settings
 from application.api import create_app
 from application.runtime_adapter import UnavailableRuntime
@@ -24,6 +25,15 @@ settings = Settings(
 # Vercel Serverless runs without local Linux Docker daemon
 runtime = UnavailableRuntime()
 app = create_app(settings=settings, runtime=runtime)
+
+# Enable CORS for browser / external dashboard requests
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Provide fallback root response if static frontend is not present
 has_root = any(getattr(route, "path", None) == "/" for route in app.routes)
