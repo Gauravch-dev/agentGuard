@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 from fastapi.middleware.cors import CORSMiddleware
 from application.config import Settings
+from application.store import Store
+from application.authority import Authority
 from application.api import create_app
 from application.runtime_adapter import UnavailableRuntime
 
@@ -22,11 +24,22 @@ settings = Settings(
     integrity_key=integrity_key,
 )
 
+# Auto-seed initial demo task FIN-001 if freshly initialized
+try:
+    _store = Store(settings.database, settings.integrity_key)
+    _auth = Authority(_store)
+    try:
+        _auth.record("FIN-001")
+    except KeyError:
+        _auth.create("synthetic-finance-owner", "FIN-001")
+except Exception:
+    pass
+
 # Vercel Serverless runs without local Linux Docker daemon
 runtime = UnavailableRuntime()
 app = create_app(settings=settings, runtime=runtime)
 
-# Enable CORS for browser / external dashboard requests
+# Enable CORS for cross-origin or local requests
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -34,19 +47,3 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Provide fallback root response if static frontend is not present
-has_root = any(getattr(route, "path", None) == "/" for route in app.routes)
-if not has_root:
-    @app.get("/", include_in_schema=False)
-    def root():
-        return {
-            "name": "AgentGuard API",
-            "version": "0.2.0",
-            "status": "ready",
-            "endpoints": {
-                "health": "/api/v1/health",
-                "tasks": "/api/v1/tasks",
-                "platform": "/api/v1/platform",
-            },
-        }

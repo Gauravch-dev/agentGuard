@@ -1,0 +1,7 @@
+{
+  "name": "agentguard",
+  "private": true,
+  "scripts": {
+    "build": "npm --prefix dashboard/application install && npm --prefix dashboard/application run build"
+  }
+}
